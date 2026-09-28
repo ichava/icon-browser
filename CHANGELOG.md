@@ -56,6 +56,17 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
   consumer that does not declare it cannot resolve core at all. The entry is harmless
   until then. Nothing here is on Packagist.
 
+### Fixed
+
+- **The Docs link pointed at the pre-rename path.** The Inertia port brought react-browser's
+  `/documentation/ichava/browser/` into `core/config.ts` and the `HelpMenu` fallback, and the
+  checked-in `inertia-app.js` carried both. They now read `/documentation/ichava/icon-browser/`,
+  and `docsUrl.test.ts` derives the expected URL from `composer.json`'s `name`, so a rename
+  cannot leave it behind again.
+- **CI never ran the frontend tests.** The Inertia UI arrived with 22 vitest files and a
+  `typecheck:inertia` script, and no workflow ran npm. `tests.yml` gains a `Frontend` job
+  that installs, typechecks and runs vitest on every pull request.
+
 ## [0.4.1] - 2026-09-26
 
 ### Changed
