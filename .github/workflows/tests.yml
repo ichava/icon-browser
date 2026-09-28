@@ -12,6 +12,32 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  frontend:
+    name: Frontend (vitest + typecheck)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    # The Inertia UI (#49) shipped 22 vitest files and a typecheck script, and no
+    # workflow ran npm at all, so none of them had ever run in CI.
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      # No lock file is committed (org rule), so this resolves fresh, like composer update.
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Typecheck
+        run: npm run typecheck:inertia
+
+      - name: Vitest
+        run: npm run test:js
+
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 15

@@ -63,6 +63,9 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
   checked-in `inertia-app.js` carried both. They now read `/documentation/ichava/icon-browser/`,
   and `docsUrl.test.ts` derives the expected URL from `composer.json`'s `name`, so a rename
   cannot leave it behind again.
+- **CI never ran the frontend tests.** The Inertia UI arrived with 22 vitest files and a
+  `typecheck:inertia` script, and no workflow ran npm. `tests.yml` gains a `Frontend` job
+  that installs, typechecks and runs vitest on every pull request.
 
 ## [0.4.1] - 2026-09-26
 
