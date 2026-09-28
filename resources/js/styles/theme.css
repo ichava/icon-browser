@@ -5,9 +5,9 @@
  * type, radius and shadow. This file adopts it and derives the app's own semantic
  * variables from it.
  *
- * It used to be the reverse: a 234-line `@theme inline` bridge that mapped shadcn
- * token names onto hand-picked app hex values, so the app owned the palette and the
- * component library inherited it. That is gone. No bridge, no shadcn tokens, no
+ * It used to be the reverse: a 234-line `@theme inline` bridge that mapped a component
+ * library's token names onto hand-picked app hex values, so the app owned the palette and the
+ * component library inherited it. That is gone. No bridge, no borrowed tokens, no
  * hand-picked greys -- the design system decides, and the app follows.
  *
  * Two things the app still owns, because they are product features rather than
@@ -440,31 +440,6 @@ a:focus-visible:not([data-rac]),
   box-shadow:
     0 0 0 2px var(--bg),
     0 0 0 4px var(--ring);
-}
-
-/* Overlay row highlighting for the REMAINING shadcn/Radix/cmdk components. These
-   corrections exist because the shadcn defaults assume tokens this app does not have;
-   they are deleted along with the components in R-P10. */
-[data-slot='select-item']:focus-visible,
-[data-slot='dropdown-menu-item']:focus-visible,
-[data-slot='dropdown-menu-checkbox-item']:focus-visible,
-[data-slot='dropdown-menu-radio-item']:focus-visible,
-[data-slot='dropdown-menu-sub-trigger']:focus-visible {
-  box-shadow: none;
-}
-[data-slot='select-item']:focus,
-[data-slot='select-item'][data-highlighted],
-[data-slot='dropdown-menu-item']:focus,
-[data-slot='dropdown-menu-item'][data-highlighted],
-[data-slot='dropdown-menu-checkbox-item'][data-highlighted],
-[data-slot='dropdown-menu-radio-item'][data-highlighted],
-[data-slot='dropdown-menu-sub-trigger'][data-highlighted],
-[data-slot='dropdown-menu-sub-trigger'][data-state='open'],
-[cmdk-item][data-selected='true'] {
-  outline: none;
-  box-shadow: none;
-  background: var(--accent-soft);
-  color: var(--fg);
 }
 
 ::-webkit-scrollbar {

@@ -67,6 +67,19 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
   `typecheck:inertia` script, and no workflow ran npm. `tests.yml` gains a `Frontend` job
   that installs, typechecks and runs vitest on every pull request.
 
+### Removed
+
+- **shadcn remnants removed.** shadcn was dropped for Untitled UI. What was left of it:
+  - a CSS block styling Radix and cmdk elements (`data-slot`, `cmdk-item`) that no component
+    renders any more; its own comment had marked it for deletion;
+  - comments describing current code as shadcn.
+  The CSS block is gone and the comments are reworded. `noShadcn.test.ts` fails if shadcn,
+  Radix, cmdk or `class-variance-authority` reappear in the sources or `package.json`.
+- `ichava.scss` no longer labels its base tokens "shadcn-vue". The token blocks stay, because
+  the `.theme-*` helpers still read them. The `.gitignore` comment naming the removed
+  shadcn-vue installer is updated. The compiled `inertia-app.css` still carries the dead
+  rules, which are harmless, until the next routine rebuild.
+
 ## [0.4.1] - 2026-09-26
 
 ### Changed

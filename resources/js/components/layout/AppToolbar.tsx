@@ -179,7 +179,7 @@ export function AppToolbar() {
        *
        * No `label` prop either: that renders a field label ABOVE the trigger, which in a
        * single-row toolbar pushed this control out of alignment with its neighbours. The
-       * old shadcn markup used that string as a group header inside the popover, which
+       * previous markup used that string as a group header inside the popover, which
        * the vendored Select has no equivalent for; see U10.
        */}
       {features.treatments && (
