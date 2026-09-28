@@ -9,7 +9,6 @@ import {
 } from '@/hooks/useInertiaCatalog';
 import { useFilterSync, type AppliedFilters } from '@/hooks/useFilterSync';
 import type { ServerIcon, ServerPackage } from '@/core/propsToCatalog';
-import type { CategoryGroup } from '@/core/IconRepository';
 import type { IconId } from '@/core/model';
 import type { SharedProps } from '@/types';
 
@@ -17,7 +16,7 @@ interface BrowserIndexProps extends SharedProps {
   icons: ServerIcon[];
   pagination: ServerPagination;
   appliedFilters: AppliedFilters;
-  tree: CategoryGroup[];
+  tree: unknown;
   packages: ServerPackage[];
   favorites: IconId[];
   collections: ServerCollection[];

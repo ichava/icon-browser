@@ -24,10 +24,13 @@ return [
     |--------------------------------------------------------------------------
     | Enable Vite's hot-module-reload dev server during local development.
     | The `ichava/icon-browser::app` root template loads the Inertia entry from this
-    | server when both this flag and `app.debug` are true; production
-    | always uses the published `vendor/ichava` bundle.
+    | server only when this flag is true AND `app.debug` is true AND the dev
+    | server is actually reachable; otherwise the template falls back to the
+    | published `vendor/ichava` bundle. Off by default so a fresh install with
+    | APP_DEBUG=true never renders a blank page pointing at a dev server that
+    | is not running. Opt in with ICHAVA_VITE_DEV=true + `npm run dev`.
     */
-    'vite_dev_mode' => env('ICHAVA_VITE_DEV', true),
+    'vite_dev_mode' => env('ICHAVA_VITE_DEV', false),
 
     'vite' => [
         'host' => env('ICHAVA_VITE_HOST', 'localhost'),

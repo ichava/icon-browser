@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { normalizeRawIcon, propsToCatalog, toIconPackage } from './propsToCatalog';
+import { normalizeRawIcon, propsToCatalog, toCategoryGroups, toIconPackage } from './propsToCatalog';
 import type { ServerIcon, ServerPackage } from './propsToCatalog';
 
 const serverIcon = (overrides: Partial<ServerIcon> = {}): ServerIcon => ({
@@ -74,5 +74,52 @@ describe('propsToCatalog', () => {
       1,
     );
     expect(catalog.icons[0]?.ownColor).toBe(true);
+  });
+});
+
+describe('toCategoryGroups', () => {
+  it('maps the PHP buildIconTree shape onto CategoryGroup', () => {
+    const groups = toCategoryGroups([
+      {
+        id: 'ichava/tabler-icons',
+        type: 'package',
+        name: 'ichava/tabler-icons',
+        title: 'Tabler',
+        icon_count: 60,
+        children: [
+          { id: 'ichava/tabler-icons::general', type: 'folder', name: 'general', label: 'General', icon_count: 40, children: [] },
+          {
+            id: 'ichava/tabler-icons::shapes',
+            type: 'folder',
+            name: 'shapes',
+            label: 'Shapes',
+            icon_count: 20,
+            children: [{ id: 'x', type: 'folder', name: 'round', label: 'Round', icon_count: 5, children: [] }],
+          },
+        ],
+      },
+    ]);
+    expect(groups).toEqual([
+      {
+        pack: 'ichava/tabler-icons',
+        label: 'Tabler',
+        count: 60,
+        cats: [
+          { name: 'general', count: 40 },
+          { name: 'shapes', count: 20, sub: [{ slug: 'round', name: 'Round', count: 5 }] },
+        ],
+      },
+    ]);
+  });
+
+  it('passes the client CategoryGroup shape through', () => {
+    const groups = toCategoryGroups([{ pack: 'x/y', label: 'Y', count: 1, cats: [{ name: 'c', count: 2 }] }]);
+    expect(groups).toEqual([{ pack: 'x/y', label: 'Y', count: 1, cats: [{ name: 'c', count: 2 }] }]);
+  });
+
+  it('never throws on garbage', () => {
+    expect(toCategoryGroups(null)).toEqual([]);
+    expect(toCategoryGroups([{ nope: true }])).toEqual([]);
+    expect(toCategoryGroups([{ id: 'x/y', title: 'Y' }])).toEqual([{ pack: 'x/y', label: 'Y', count: 0, cats: [] }]);
   });
 });

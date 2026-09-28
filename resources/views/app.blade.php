@@ -9,11 +9,23 @@
 
     @php
         use Simtabi\Laranail\Ichava\Support\Helpers;
-        $viteDev = config('ichava.icon-browser.vite_dev_mode', true) && config('app.debug');
         $viteHost = config('ichava.icon-browser.vite.host', 'localhost');
-        $vitePort = config('ichava.icon-browser.vite.port', 5174);
+        $vitePort = (int) config('ichava.icon-browser.vite.port', 5174);
         $viteBase = "http://{$viteHost}:{$vitePort}";
         $viteClient = "{$viteBase}/@vite/client";
+        $viteDev = (bool) config('ichava.icon-browser.vite_dev_mode', false) && (bool) config('app.debug');
+        if ($viteDev) {
+            try {
+                $fp = @fsockopen($viteHost, $vitePort, $errno, $errstr, 0.2);
+                if (is_resource($fp)) {
+                    fclose($fp);
+                } else {
+                    $viteDev = false;
+                }
+            } catch (\Throwable $e) {
+                $viteDev = false;
+            }
+        }
     @endphp
 
     @if($viteDev)

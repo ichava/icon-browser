@@ -58,6 +58,37 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
   went, so it now points at `/security/policy` directly. `composer.json` and the
   issue-template link already did.
 
+### Fixed
+
+- **The category tree no longer blanks `/ichava/icons`.** The Inertia `tree` prop
+  is `{id, title, icon_count, children}` from core's `buildIconTree()`, but the
+  client tree is `{pack, label, count, cats}` and `CategoryTree` read
+  `g.cats.filter` off the raw prop -- `undefined.filter`, and the page threw.
+  `toCategoryGroups()` now normalises either shape (and garbage, to `[]`, so
+  future backend drift cannot blank the page again) before it reaches the store.
+
+- **Icons render again with the REST API off.** The API is now opt-in, so
+  `svg_url` is null and `SvgFidelity` fell back to `assetUrl('')`, which is
+  `/` -- the mask fetched the page itself and tiles came out blank. It paints
+  from a data URI built out of the `svg_content` the Inertia props already
+  carry, and returns `''` rather than `/` when there is neither, so an icon
+  missing both assets renders nothing instead of recursing. `assetUrl()` also
+  no longer prefixes an empty string with the base path.
+
+- **A fresh install with `APP_DEBUG=true` no longer renders a blank page.**
+  `vite_dev_mode` defaulted to true, and the root template loaded the Inertia
+  entry from `localhost:5174` whether or not a dev server was listening --
+  point the browser at a port that answers nothing. The flag is now off by
+  default (`ICHAVA_VITE_DEV=true` opts in), and the template additionally probes
+  the host and port for 200ms before committing to the dev server, falling back
+  to the published bundle otherwise. The port is cast to `int`, so a string env
+  value no longer produces `localhost:5174` with a trailing notice.
+
+- **`HandleInertiaRequests` honours a configured root view.** It hardcoded the
+  parent `rootView`, ignoring `ichava.icon-browser.inertia.root_view`, so a host
+  that set the key got their template silently ignored. It now returns the
+  configured view when set and falls back to the parent's otherwise.
+
 ## [0.4.0] - 2026-09-22
 
 ### Added

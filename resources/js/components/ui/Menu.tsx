@@ -53,7 +53,7 @@ export function Menu({
             <AriaMenuItem
               key={item.id}
               onAction={item.onAction}
-              className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm outline-hidden select-none data-focused:bg-secondary"
+              className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm outline-hidden select-none data-focused:bg-bg-secondary"
               style={{ color: item.danger ? 'var(--danger)' : 'var(--fg)' }}
             >
               {item.label}

@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'react';
-import { propsToCatalog, type ServerIcon, type ServerPackage } from '@/core/propsToCatalog';
-import type { Catalog, CategoryGroup } from '@/core/IconRepository';
+import { propsToCatalog, toCategoryGroups, type ServerIcon, type ServerPackage } from '@/core/propsToCatalog';
+import type { Catalog } from '@/core/IconRepository';
 import type { IconId } from '@/core/model';
 import { useStore, type Collection, type HistoryEntry } from '@/store';
 
@@ -41,7 +41,7 @@ export function useInertiaCatalog(opts: {
   packages: ServerPackage[];
   total: number;
   pagination?: ServerPagination | null;
-  tree?: CategoryGroup[] | null;
+  tree?: unknown;
   favorites?: IconId[] | null;
   collections?: ServerCollection[] | null;
   history?: ServerHistoryEntry[] | null;
@@ -69,7 +69,7 @@ export function useInertiaCatalog(opts: {
       });
     }
 
-    if (opts.tree) set({ serverTree: opts.tree });
+    if (opts.tree) set({ serverTree: toCategoryGroups(opts.tree) });
     if (opts.favorites) set({ favorites: opts.favorites.map(Number) });
 
     if (opts.collections) {

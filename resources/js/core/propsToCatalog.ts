@@ -1,5 +1,5 @@
 import { toIcon, type IconPackage, type RawIcon } from '@/core/model';
-import type { Catalog } from '@/core/IconRepository';
+import type { Catalog, CategoryGroup } from '@/core/IconRepository';
 
 /**
  * The props → catalog bridge (Phase 3).
@@ -52,4 +52,91 @@ export function propsToCatalog(icons: ServerIcon[], packages: ServerPackage[], t
     packages: packages.map(toIconPackage),
     icons: icons.map((raw) => toIcon(normalizeRawIcon(raw))),
   };
+}
+
+/**
+ * Normalize the Inertia `tree` prop into `CategoryGroup[]`.
+ *
+ * The PHP `IconBrowserService::buildIconTree()` serves `{id, title,
+ * icon_count, children: [{name, label, icon_count, children}]}` while the
+ * client tree (`IconRepository::categoryTree()`) is `{pack, label, count,
+ * cats: [{name, count, sub}]}`. `useInertiaCatalog` used to store the raw
+ * prop, so `CategoryTree` crashed on `g.cats.filter` (`undefined.filter`).
+ * Accept both shapes plus garbage (non-array → []) so a backend drift can
+ * never blank `/ichava/icons` again.
+ */
+export function toCategoryGroups(input: unknown): CategoryGroup[] {
+  if (!Array.isArray(input)) return [];
+  return input.flatMap((raw) => {
+    if (!raw || typeof raw !== 'object') return [];
+    const g = raw as Record<string, unknown>;
+    if (Array.isArray(g.cats)) {
+      const cats = (g.cats as unknown[]).flatMap((c) => {
+        if (!c || typeof c !== 'object') return [];
+        const node = c as Record<string, unknown>;
+        if (typeof node.name !== 'string') return [];
+        const sub = Array.isArray(node.sub)
+          ? (node.sub as unknown[]).flatMap((s) => {
+              if (!s || typeof s !== 'object') return [];
+              const leaf = s as Record<string, unknown>;
+              if (typeof leaf.slug !== 'string') return [];
+              return [
+                {
+                  slug: leaf.slug,
+                  name: typeof leaf.name === 'string' ? leaf.name : leaf.slug,
+                  count: typeof leaf.count === 'number' ? leaf.count : 0,
+                },
+              ];
+            })
+          : undefined;
+        return [{ name: node.name, count: typeof node.count === 'number' ? node.count : 0, ...(sub ? { sub } : {}) }];
+      });
+      const pack = typeof g.pack === 'string' ? g.pack : typeof g.id === 'string' ? g.id : null;
+      if (!pack) return [];
+      return [
+        {
+          pack,
+          label: typeof g.label === 'string' ? g.label : typeof g.title === 'string' ? g.title : pack,
+          count: typeof g.count === 'number' ? g.count : cats.length,
+          cats,
+        },
+      ];
+    }
+    const children = Array.isArray(g.children) ? (g.children as unknown[]) : [];
+    const pack = typeof g.id === 'string' ? g.id : typeof g.pack === 'string' ? g.pack : null;
+    if (!pack) return [];
+    const cats = children.flatMap((c) => {
+      if (!c || typeof c !== 'object') return [];
+      const node = c as Record<string, unknown>;
+      if (typeof node.name !== 'string') return [];
+      const grandchildren = Array.isArray(node.children) ? (node.children as unknown[]) : [];
+      const sub = grandchildren.flatMap((s) => {
+        if (!s || typeof s !== 'object') return [];
+        const leaf = s as Record<string, unknown>;
+        if (typeof leaf.name !== 'string') return [];
+        return [
+          {
+            slug: leaf.name,
+            name: typeof leaf.label === 'string' ? leaf.label : leaf.name,
+            count: typeof leaf.icon_count === 'number' ? leaf.icon_count : 0,
+          },
+        ];
+      });
+      return [
+        {
+          name: node.name,
+          count: typeof node.icon_count === 'number' ? node.icon_count : 0,
+          ...(sub.length ? { sub } : {}),
+        },
+      ];
+    });
+    return [
+      {
+        pack,
+        label: typeof g.title === 'string' ? g.title : typeof g.label === 'string' ? g.label : typeof g.name === 'string' ? g.name : pack,
+        count: typeof g.icon_count === 'number' ? g.icon_count : cats.length,
+        cats,
+      },
+    ];
+  });
 }

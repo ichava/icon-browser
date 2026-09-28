@@ -10,7 +10,7 @@ import { cx, sortCx } from "@/lib/utils/cx";
 
 const styles = sortCx({
     default: "hidden",
-    bottom: "absolute top-2 left-1/2 -translate-x-1/2 translate-y-full text-md font-medium text-primary",
+    bottom: "absolute top-2 left-1/2 -translate-x-1/2 translate-y-full text-md font-medium text-text-primary",
     "top-floating":
         "absolute -top-2 left-1/2 -translate-x-1/2 -translate-y-full rounded-lg bg-primary px-2 py-1.5 text-xs font-semibold text-secondary shadow-lg ring-1 ring-secondary_alt",
 });
@@ -37,7 +37,7 @@ export const Slider = ({ labelPosition = "default", minValue = 0, maxValue = 100
 
                     return (
                         <>
-                            <span className="absolute top-1/2 h-2 w-full -translate-y-1/2 rounded-full bg-quaternary" />
+                            <span className="absolute top-1/2 h-2 w-full -translate-y-1/2 rounded-full bg-bg-quaternary" />
                             <span
                                 className="absolute top-1/2 h-2 w-full -translate-y-1/2 rounded-full bg-brand-solid"
                                 style={{

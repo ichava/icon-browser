@@ -62,7 +62,7 @@ function VariantBand({ counts }: { counts: Map<string, number> }) {
              * decoration, so it takes the tertiary grey; `--faint-fg` stays for text on
              * `--bg` only. `contrast.spec.ts` fails if it lands on a darker surface again.
              */}
-            {count !== null && <span className={`font-mono text-[10px] ${active ? 'text-primary' : 'text-[var(--muted-fg)]'}`}>{count}</span>}
+            {count !== null && <span className={`font-mono text-[10px] ${active ? 'text-text-primary' : 'text-[var(--muted-fg)]'}`}>{count}</span>}
           </button>
         );
       })}
@@ -84,7 +84,7 @@ export function CategoryTree() {
 
   const allGroups = useMemo(() => tree.map((g) => g.pack), [tree]);
   const allCatKeys = useMemo(
-    () => tree.flatMap((g) => g.cats.filter((c) => c.sub?.length).map((c) => `${g.pack}/${c.name}`)),
+    () => tree.flatMap((g) => (g.cats ?? []).filter((c) => c.sub?.length).map((c) => `${g.pack}/${c.name}`)),
     [tree],
   );
 
@@ -120,7 +120,7 @@ export function CategoryTree() {
         partial: false,
         toggle: () => {},
         icon: Package,
-        children: grp.cats.map((cat) => {
+        children: (grp.cats ?? []).map((cat) => {
           const hasSubs = !!cat.sub?.length;
           const whole = filters.categories.includes(cat.name);
           const someSub = hasSubs && cat.sub!.some((sc) => filters.subs.includes(`${cat.name}/${sc.slug}`));
@@ -241,7 +241,7 @@ export function CategoryTree() {
                     type="color"
                     color="gray"
                     size="sm"
-                    className={`ms-auto h-4 min-w-4 justify-center rounded px-1 font-mono text-[10px] ${node.selected || node.partial ? 'text-primary' : 'text-[var(--muted-fg)]'}`}
+                    className={`ms-auto h-4 min-w-4 justify-center rounded px-1 font-mono text-[10px] ${node.selected || node.partial ? 'text-text-primary' : 'text-[var(--muted-fg)]'}`}
                   >
                     {node.count}
                   </Badge>
@@ -270,7 +270,7 @@ export function CategoryTree() {
                           type="color"
                           color="gray"
                           size="sm"
-                          className={`ms-auto h-4 min-w-4 justify-center rounded px-1 font-mono text-[10px] ${child.selected || child.partial ? 'text-primary' : 'text-[var(--muted-fg)]'}`}
+                          className={`ms-auto h-4 min-w-4 justify-center rounded px-1 font-mono text-[10px] ${child.selected || child.partial ? 'text-text-primary' : 'text-[var(--muted-fg)]'}`}
                         >
                           {child.count}
                         </Badge>
@@ -290,7 +290,7 @@ export function CategoryTree() {
                                 type="color"
                                 color="gray"
                                 size="sm"
-                                className={`ms-auto h-4 min-w-4 justify-center rounded px-1 font-mono text-[10px] ${grand.selected ? 'text-primary' : 'text-[var(--muted-fg)]'}`}
+                                className={`ms-auto h-4 min-w-4 justify-center rounded px-1 font-mono text-[10px] ${grand.selected ? 'text-text-primary' : 'text-[var(--muted-fg)]'}`}
                               >
                                 {grand.count}
                               </Badge>

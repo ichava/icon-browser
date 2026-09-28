@@ -4,7 +4,7 @@ import { toIcon, svgHasOwnColors } from './model';
 import { sanitizeSvg } from './sanitizeSvg';
 import { ExportService } from './ExportService';
 import { sliderToSpeed, speedLabel } from './MotionEngine';
-import { fidelity } from './SvgFidelity';
+import { assetUrl, fidelity, svgDataUrl } from './SvgFidelity';
 import { mkIcon } from '@/test/fixtures';
 
 describe('model', () => {
@@ -112,5 +112,27 @@ describe('SvgFidelity', () => {
     expect(fidelity.resolve(mkIcon({ id: 2, name: 'flag', ownColor: true }), null).kind).toBe('image');
     const style = fidelity.toStyle({ kind: 'mask', url: '/x.svg', color: 'red' }, 24);
     expect(style.maskImage).toContain('/x.svg');
+  });
+
+  it('falls back to a data URI when the icon carries content but no URL (Inertia pages)', () => {
+    const svg = '<svg viewBox="0 0 24 24"><path d="M0 0h24v24H0z"/></svg>';
+    const icon = { ...mkIcon({ id: 3, name: 'a-b', svgContent: svg }), svgUrl: null };
+    const s = fidelity.resolve(icon, 'currentColor');
+    expect(s.kind).toBe('mask');
+    expect(s.url.startsWith('data:image/svg+xml')).toBe(true);
+    expect(s.url).toContain(encodeURIComponent('<path'));
+    const style = fidelity.toStyle(s, 48);
+    expect(style.maskImage).toContain('data:image/svg+xml');
+  });
+
+  it('never resolves to the site root', () => {
+    expect(assetUrl('')).toBe('');
+    const icon = { ...mkIcon({ id: 4, name: 'ghost' }), svgUrl: null, svgContent: null };
+    const s = fidelity.resolve(icon, null);
+    expect(s.url).toBe('');
+  });
+
+  it('encodes data URIs safely', () => {
+    expect(svgDataUrl('<svg>#</svg>')).toContain('%23');
   });
 });

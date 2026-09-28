@@ -51,4 +51,11 @@ final class HandleInertiaRequests extends Middleware
             ],
         ]);
     }
+
+    public function rootView(Request $request): string
+    {
+        $configured = config('ichava.icon-browser.inertia.root_view');
+
+        return is_string($configured) && $configured !== '' ? $configured : $this->rootView;
+    }
 }

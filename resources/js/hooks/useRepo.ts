@@ -44,7 +44,7 @@ export function useRepo() {
     return all
       .map((g) => ({
         ...g,
-        cats: g.cats
+        cats: (g.cats ?? [])
           .map((c) => {
             const catHit = c.name.toLowerCase().includes(q);
             const subHit = c.sub?.filter((sc) => sc.name.toLowerCase().includes(q));

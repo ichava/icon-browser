@@ -1,6 +1,7 @@
 import { createRoot } from 'react-dom/client';
 import { createInertiaApp } from '@inertiajs/react';
 import '../assets/styles/ichava.scss';
+import '@/styles/theme.css';
 
 void createInertiaApp({
     title: (title) => (title ? `${title} - Ichava` : 'Ichava'),

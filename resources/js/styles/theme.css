@@ -101,6 +101,67 @@
 @custom-variant label (& [data-label]);
 @custom-variant focus-input-within (&:has(input:focus));
 
+/*
+ * Bare-name bridge: the component class-name contract.
+ *
+ * Components write Untitled UI shorthands -- `bg-primary`, `text-secondary`,
+ * `ring-brand`, `bg-primary_hover` -- but Tailwind resolves those against
+ * `--color-{name}`, and the design system only defines the infixed tokens
+ * (`--color-bg-primary`, `--color-text-secondary`, ...). Without this block
+ * those classes compile to no rule at all.
+ *
+ * Every value below is a `var()` reference, never a literal: the indirection
+ * is what keeps utilities theme-aware, because Untitled UI's own `.dark-mode`
+ * block re-points the targets. (An `@theme inline` bridge bakes light values
+ * at build time; that is exactly the dark-controls-in-light-mode regression
+ * this replaces.)
+ *
+ * Roles that share a name cannot share a key -- `bg-primary` is a surface
+ * while `text-primary` is ink -- so the key takes the majority meaning and
+ * the minority call sites use the full token path (`text-text-primary`,
+ * `ring-border-primary`, `bg-bg-tertiary`, ...), matching the existing
+ * `text-fg-quaternary` convention.
+ */
+@theme {
+  --color-primary: var(--color-bg-primary);
+  --color-primary_hover: var(--color-bg-primary_hover);
+  --color-primary_alt: var(--color-bg-primary_alt);
+  --color-primary-solid: var(--color-bg-primary-solid);
+
+  --color-secondary: var(--color-text-secondary);
+  --color-secondary_hover: var(--color-text-secondary_hover);
+  --color-secondary-solid: var(--color-bg-secondary-solid);
+  --color-secondary_alt: var(--color-border-secondary_alt);
+
+  --color-tertiary: var(--color-text-tertiary);
+  --color-tertiary_hover: var(--color-text-tertiary_hover);
+  --color-quaternary: var(--color-text-quaternary);
+
+  --color-foreground: var(--color-text-primary);
+
+  --color-brand: var(--color-border-brand);
+  --color-brand-secondary: var(--color-text-brand-secondary);
+  --color-brand-secondary_hover: var(--color-text-brand-secondary_hover);
+  --color-brand-tertiary: var(--color-text-brand-tertiary);
+  --color-brand-solid: var(--color-bg-brand-solid);
+  --color-brand-solid_hover: var(--color-bg-brand-solid_hover);
+
+  --color-error: var(--color-border-error);
+  --color-error-primary: var(--color-text-error-primary);
+  --color-error-primary_hover: var(--color-text-error-primary_hover);
+  --color-error-solid: var(--color-bg-error-solid);
+  --color-error-solid_hover: var(--color-bg-error-solid_hover);
+  --color-error_subtle: var(--color-border-error_subtle);
+
+  --color-warning-secondary: var(--color-bg-warning-secondary);
+  --color-warning-solid: var(--color-bg-warning-solid);
+
+  --color-success-secondary: var(--color-bg-success-secondary);
+  --color-success-solid: var(--color-bg-success-solid);
+
+  --shadow-elevated: var(--shadow-lg);
+}
+
 @utility scrollbar-hide {
   &::-webkit-scrollbar {
     display: none;

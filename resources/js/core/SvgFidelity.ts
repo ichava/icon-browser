@@ -4,9 +4,20 @@ import type { RenderStrategy } from './types';
 
 /** Resolve the public URL for an icon's asset (static mode: under public/). */
 export function assetUrl(file: string): string {
+  if (!file) return '';
   if (/^(https?:)?\//.test(file)) return file; // already absolute / rooted
   const base = import.meta.env.BASE_URL || '/';
   return `${base.replace(/\/$/, '')}/${file.replace(/^\//, '')}`;
+}
+
+/**
+ * Encode inline SVG as a data URI for mask/image use. Inertia pages carry
+ * `svg_content` but no `svg_url` (the REST endpoint is opt-in), so without
+ * this the mask resolves to an empty `url("/")` and tiles render blank.
+ * Image-context SVG cannot run scripts; encoding (not sanitizing) is enough.
+ */
+export function svgDataUrl(svg: string): string {
+  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
 }
 
 /**
@@ -16,9 +27,16 @@ export function assetUrl(file: string): string {
  * into the icon data. Stateless, pure.
  */
 export class SvgFidelity {
-  /** The URL to paint from: prefer the API svg endpoint, else the static asset. */
+  /**
+   * The URL to paint from: the API/static asset when the icon has one, else
+   * a data URI built from the inline content Inertia pages already carry.
+   * Never '/': an icon with neither renders nothing instead of fetching the
+   * page itself as a mask.
+   */
   private url(icon: Icon): string {
-    return assetUrl(icon.svgUrl ?? '');
+    if (icon.svgUrl) return assetUrl(icon.svgUrl);
+    if (icon.svgContent) return svgDataUrl(icon.svgContent);
+    return '';
   }
 
   resolve(icon: Icon, color: string | null): RenderStrategy {

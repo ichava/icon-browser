@@ -47,7 +47,7 @@ const ComboBoxValue = ({ size, shortcut, placeholder, shortcutClassName, icon: I
             {...otherProps}
             className={({ isFocusWithin, isDisabled }) =>
                 cx(
-                    "relative flex w-full items-center gap-2 rounded-lg bg-primary shadow-xs ring-1 ring-primary outline-hidden transition-shadow duration-100 ease-linear ring-inset",
+                    "relative flex w-full items-center gap-2 rounded-lg bg-primary shadow-xs ring-1 ring-border-primary outline-hidden transition-shadow duration-100 ease-linear ring-inset",
                     isDisabled && "cursor-not-allowed opacity-50",
                     isFocusWithin && "ring-2 ring-brand",
 
@@ -69,7 +69,7 @@ const ComboBoxValue = ({ size, shortcut, placeholder, shortcutClassName, icon: I
             <div className="relative flex w-full items-center">
                 {inputValue && (
                     <span className={cx("absolute top-1/2 z-0 inline-flex w-full -translate-y-1/2 truncate", sizes[size].textContainer)} aria-hidden="true">
-                        <p className={cx("font-medium text-primary", sizes[size].text)}>{first}</p>
+                        <p className={cx("font-medium text-text-primary", sizes[size].text)}>{first}</p>
                         {last && <p className={cx("-ml-0.75 text-tertiary", sizes[size].text)}>{last}</p>}
                     </span>
                 )}
@@ -92,7 +92,7 @@ const ComboBoxValue = ({ size, shortcut, placeholder, shortcutClassName, icon: I
                     )}
                 >
                     <span
-                        className="pointer-events-none rounded px-1 py-px text-xs font-medium text-quaternary ring-1 ring-secondary select-none ring-inset"
+                        className="pointer-events-none rounded px-1 py-px text-xs font-medium text-quaternary ring-1 ring-border-secondary select-none ring-inset"
                         aria-hidden="true"
                     >
                         ⌘K
