@@ -4,6 +4,44 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
 
 ## [Unreleased]
 
+### Added
+
+- **Inertia.js frontend serving the React 19 UI, beside the untouched JSON API.**
+  `GET /{prefix}/icons` renders `Browser/Index` with the filtered listing from core's
+  `IconBrowserService`; shared props (`auth`, `flash`, `preferences`, `ichava`) flow
+  from the `HandleInertiaRequests` middleware through the `ichava.inertia` middleware
+  group. Requires `inertiajs/inertia-laravel: ^3.3` and `@inertiajs/react: ^3.0`. Routes
+  load only when `ichava.icon-browser.inertia.enabled` is truthy (on by default,
+  `ICHAVA_INERTIA_ENABLED`).
+- **Page controllers, one per resource, mirroring the JSON API.** Browser
+  listing/detail/stats plus package, favorite, collection, history,
+  command-history, settings and cache pages; mutations redirect back with flash
+  data. Destructive cache routes keep the fail-closed `ichava.cache-admin` gate.
+- **Canonical URLs serve Inertia pages.** The legacy Vue mount points could not stay
+  mounted beside their replacements, so `routes/web.php` keeps only the `/`
+  redirect; the Vue surface remains on disk, unreachable, until it is removed.
+- **React component library lives under `resources/js/`.** Engine, components, hooks,
+  store and tests moved in from `@ichava/react-browser` (imports via `@js`), with the
+  REST transport deleted in favor of Inertia props. Requires `zustand`,
+  `@tanstack/react-virtual`, `react-aria`, `@ichava/motion` and the Untitled UI packages.
+- **Two-way filter sync and server mutations.** Listing state syncs with the server
+  query string; all library writes (favorites, collections, history, settings,
+  cache) go through the server with flash and validation feedback, and settings is
+  a real form.
+- **Test coverage.** `assertInertia` tests per controller; the moved JS tests run in
+  this package's vitest with the `@testing-library` stack; the harness uses file
+  sessions so session-backed flows persist across requests in a test.
+- **Vue SPA and parallel-run React removed.** The Vue single-page app, the
+  standalone React entry with its `?ui=react` flag, the legacy Blade views and
+  controllers, and the checked-in Vue bundles are gone; the JSON API is untouched.
+  The npm tree drops the Vue ecosystem and resolves a single `@` alias to
+  `resources/js/`.
+- **REST API off by default, still shipped.** The JSON routes mount only when
+  `ichava.icon-browser.api.enabled` is truthy (`ICHAVA_API_ENABLED`); hosts with
+  programmatic consumers opt in, everyone else serves Inertia pages alone.
+- **Docs describe the React browser.** README and guides no longer reference Vue
+  or the shadcn installer.
+
 ### Changed
 
 - **`inject-scripts` speaks through translations and the shared status vocabulary.** Its four
@@ -35,6 +73,37 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
   nothing else. Left alone the link would have become a 404 the moment the file
   went, so it now points at `/security/policy` directly. `composer.json` and the
   issue-template link already did.
+
+### Fixed
+
+- **The category tree no longer blanks `/ichava/icons`.** The Inertia `tree` prop
+  is `{id, title, icon_count, children}` from core's `buildIconTree()`, but the
+  client tree is `{pack, label, count, cats}` and `CategoryTree` read
+  `g.cats.filter` off the raw prop -- `undefined.filter`, and the page threw.
+  `toCategoryGroups()` now normalises either shape (and garbage, to `[]`, so
+  future backend drift cannot blank the page again) before it reaches the store.
+
+- **Icons render again with the REST API off.** The API is now opt-in, so
+  `svg_url` is null and `SvgFidelity` fell back to `assetUrl('')`, which is
+  `/` -- the mask fetched the page itself and tiles came out blank. It paints
+  from a data URI built out of the `svg_content` the Inertia props already
+  carry, and returns `''` rather than `/` when there is neither, so an icon
+  missing both assets renders nothing instead of recursing. `assetUrl()` also
+  no longer prefixes an empty string with the base path.
+
+- **A fresh install with `APP_DEBUG=true` no longer renders a blank page.**
+  `vite_dev_mode` defaulted to true, and the root template loaded the Inertia
+  entry from `localhost:5174` whether or not a dev server was listening --
+  point the browser at a port that answers nothing. The flag is now off by
+  default (`ICHAVA_VITE_DEV=true` opts in), and the template additionally probes
+  the host and port for 200ms before committing to the dev server, falling back
+  to the published bundle otherwise. The port is cast to `int`, so a string env
+  value no longer produces `localhost:5174` with a trailing notice.
+
+- **`HandleInertiaRequests` honours a configured root view.** It hardcoded the
+  parent `rootView`, ignoring `ichava.icon-browser.inertia.root_view`, so a host
+  that set the key got their template silently ignored. It now returns the
+  configured view when set and falls back to the parent's otherwise.
 
 ## [0.4.0] - 2026-09-22
 

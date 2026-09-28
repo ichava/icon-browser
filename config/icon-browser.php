@@ -7,27 +7,35 @@ use Simtabi\Laranail\Ichava\Constants\IchavaConstants;
 return [
     /*
     |--------------------------------------------------------------------------
-    | React frontend (R-P16, parallel run)
+    | Inertia.js frontend
     |--------------------------------------------------------------------------
-    | Server-side kill switch for the React 19 rebuild, mounted behind BOTH this
-    | flag and the `?ui=react` query string -- neither alone is enough, so the
-    | URL parameter can never turn the feature on for a host that has not opted
-    | in, and this flag alone (with the query param absent) never changes what
-    | any existing user sees. Off by default: Vue is the reference until
-    | cutover (see PLAN.md R-P17, gated on W1 being complete -- it now is).
-    | Flip ICHAVA_REACT_UI=false at any time to fall back to Vue with no
-    | deploy.
+    | The React 19 UI is served through Inertia.js page components. The
+    | `enabled` flag gates the Inertia routes; when off, only the JSON API
+    | remains mounted. On by default.
     */
-    'react_ui_enabled' => env('ICHAVA_REACT_UI', false),
+    'inertia' => [
+        'enabled'   => env('ICHAVA_INERTIA_ENABLED', true),
+        'root_view' => env('ICHAVA_INERTIA_ROOT_VIEW', 'ichava/icon-browser::app'),
+    ],
 
     /*
     |--------------------------------------------------------------------------
     | Vite dev mode (HMR)
     |--------------------------------------------------------------------------
     | Enable Vite's hot-module-reload dev server during local development.
-    | Auto-disabled in production regardless of this value.
+    | The `ichava/icon-browser::app` root template loads the Inertia entry from this
+    | server only when this flag is true AND `app.debug` is true AND the dev
+    | server is actually reachable; otherwise the template falls back to the
+    | published `vendor/ichava` bundle. Off by default so a fresh install with
+    | APP_DEBUG=true never renders a blank page pointing at a dev server that
+    | is not running. Opt in with ICHAVA_VITE_DEV=true + `npm run dev`.
     */
-    'vite_dev_mode' => env('ICHAVA_VITE_DEV', true),
+    'vite_dev_mode' => env('ICHAVA_VITE_DEV', false),
+
+    'vite' => [
+        'host' => env('ICHAVA_VITE_HOST', 'localhost'),
+        'port' => (int) env('ICHAVA_VITE_PORT', 5174),
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -68,9 +76,13 @@ return [
     |--------------------------------------------------------------------------
     | API
     |--------------------------------------------------------------------------
-    | JSON-API behaviour and CORS policy.
+    | JSON-API behaviour and CORS policy. The REST routes stay mounted only
+    | when `enabled` is truthy -- off by default, since the Inertia pages
+    | are the reference frontend. Hosts with programmatic consumers opt in
+    | with ICHAVA_API_ENABLED=true.
     */
     'api' => [
+        'enabled'      => env('ICHAVA_API_ENABLED', false),
         'pretty_print' => env('ICHAVA_API_PRETTY_PRINT', true),
 
         'cors' => [
