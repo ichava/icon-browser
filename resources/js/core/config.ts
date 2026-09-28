@@ -217,7 +217,7 @@ export const CONFIG_DEFAULTS: AppConfig = {
     ],
     links: [
       { label: 'simtabi.com', href: 'https://simtabi.com' },
-      { label: 'Docs', href: 'https://opensource.simtabi.com/documentation/ichava/browser/' },
+      { label: 'Docs', href: 'https://opensource.simtabi.com/documentation/ichava/icon-browser/' },
       { label: 'Icon packs', href: 'https://opensource.simtabi.com/products/ichava/browser' },
       { label: 'GitHub', href: 'https://github.com/ichava/browser' },
     ],

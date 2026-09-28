@@ -14,7 +14,7 @@ import { useAppStore } from '@/hooks/useStoreApi';
 export function HelpMenu() {
   const openLayer = useAppStore((s) => s.openLayer);
   const startTour = useAppStore((s) => s.startTour);
-  const docsUrl = useAppStore((s) => s.config?.about.links.find((l) => l.label.toLowerCase() === 'docs')?.href ?? 'https://opensource.simtabi.com/documentation/ichava/browser/');
+  const docsUrl = useAppStore((s) => s.config?.about.links.find((l) => l.label.toLowerCase() === 'docs')?.href ?? 'https://opensource.simtabi.com/documentation/ichava/icon-browser/');
   const mod = modKey();
   const t = useT();
 
