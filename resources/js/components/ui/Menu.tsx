@@ -8,7 +8,7 @@ import {
 } from 'react-aria-components';
 
 /**
- * Menu — an action menu on react-aria, replacing the shadcn/Radix `DropdownMenu`.
+ * Menu — an action menu on react-aria, replacing the earlier `DropdownMenu`.
  *
  * A menu rather than a popover full of buttons, because the semantics differ and screen
  * readers act on them: `role="menu"` announces an item count, Home/End jump, and

@@ -227,7 +227,7 @@ function SidebarSearch() {
     <div className="pt-2.5 px-2.5 pb-1.5 flex gap-[5px]">
       {/*
        * Untitled UI's Select is data-driven: `items` plus a render callback, rather than
-       * shadcn's Trigger/Content/Value element tree. The per-scope match count moves from
+       * a Trigger/Content/Value element tree. The per-scope match count moves from
        * a hand-styled span into `supportingText`, which the design system also folds into
        * the item's `textValue` -- so typeahead now matches the count as well, and screen
        * readers announce it as part of the option instead of as loose text.

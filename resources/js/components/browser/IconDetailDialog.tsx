@@ -233,7 +233,7 @@ export function IconDetailDialog() {
               {/*
                * The design system's searchable select, not a hand-built one.
                *
-               * This was a custom `Popover` anchoring a cmdk `Command`, which nested a
+               * This was a custom `Popover` anchoring a command-palette list, which nested a
                * scroll container (CommandList) inside another scroll container (the
                * popover panel). Nested scrollers are why the list would not scroll: the
                * wheel event goes to whichever one the pointer is over, and the inner one
@@ -261,7 +261,7 @@ export function IconDetailDialog() {
               >
                 {(item) => <Select.Item {...item} />}
               </Select.ComboBox>
-              {/* Easing — shadcn Select */}
+              {/* Easing */}
               {/*
                * `isDisabled`, not `disabled` -- react-aria's own prop. Passing `disabled`
                * would land in `...rest` on the wrapper and do nothing, leaving the control

@@ -4,7 +4,7 @@
  * ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  *
  * Tailwind CSS v4 with v4 prototype theme variables.
- * Combines shadcn-vue design tokens with custom Ichava theming.
+ * Combines the base design tokens with custom Ichava theming.
  *
  * @version 3.0.0
  */
@@ -94,7 +94,7 @@
   --scrollbar-thumb: #cbd5e1;
   --scrollbar-thumb-hover: #94a3b8;
 
-  /* shadcn-vue Design Tokens (HSL format) */
+  /* Base design tokens (HSL format) */
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -158,7 +158,7 @@
   --scrollbar-thumb: #1e2235;
   --scrollbar-thumb-hover: #2d3348;
 
-  /* shadcn-vue Design Tokens (Dark) */
+  /* Base design tokens (dark) */
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
@@ -380,15 +380,15 @@ body {
 
 /*---break---
  *
- * NOTE: the shadcn `@theme inline` bridge that used to live here is gone on
+ * NOTE: the `@theme inline` bridge that used to live here is gone on
  * purpose. It mapped `bg-primary`, `text-secondary`, `ring-primary`... onto the
- * shadcn page tokens (`--primary` et al), which only invert under `.dark` --
+ * base page tokens (`--primary` et al), which only invert under `.dark` --
  * a class the React app never sets (it toggles `.dark-mode`). So in light mode
  * every input, select, button and popover rendered near-black surfaces with
  * near-black text. The bare-name contract now lives in `theme.css`, mapped
  * onto Untitled UI tokens that follow `.dark-mode`.
  *
- * The shadcn `:root` / `.dark` token blocks below stay: the `.theme-*` helper
+ * The base `:root` / `.dark` token blocks below stay: the `.theme-*` helper
  * classes in this file still read them, and they are inert otherwise.
  * The `@layer base` block moved to `theme.css` with the rest of base.
  */
