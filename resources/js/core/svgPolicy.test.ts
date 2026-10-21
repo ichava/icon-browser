@@ -10,7 +10,7 @@ import { sanitizeSvg } from './sanitizeSvg';
  * Pinned by digest rather than compared against core, because this package has
  * no dependency on `ichava/core` and cannot reach it. The digest catches an
  * accidental local edit; it cannot see that core has moved on. That second job
- * belongs to `maintainer-toolkit/.scripts/sync-svg-policy.mjs`, which is the one
+ * belongs to `icon-sets-sync/.scripts/sync-svg-policy.mjs`, which is the one
  * place every checkout is visible at once.
  *
  * When the canonical policy changes: run the sync script with `--write`, then
