@@ -70,6 +70,20 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
 - **CI never ran the frontend tests.** The Inertia UI arrived with 22 vitest files and a
   `typecheck:inertia` script, and no workflow ran npm. `tests.yml` gains a `Frontend` job
   that installs, typechecks and runs vitest on every pull request.
+- **The Geist fonts 404'd on every host.** `theme.css` asked for `/fonts/Geist-Variable.woff2`
+  and `/fonts/GeistMono-Variable.woff2`, a directory no host has, and the package shipped no
+  fonts, so the UI always rendered in a fallback face. Both variable `woff2` files (Geist 1.7.2,
+  SIL Open Font License 1.1, licence text alongside) now ship in `public/assets/fonts/` and
+  publish with `--tag=ichava-assets`; the `@font-face` URLs are relative to the built
+  stylesheet, so they resolve under any publish prefix. `FontAssetsTest` resolves every font
+  URL in the committed CSS against the files on disk and checks the source agrees.
+- **The welcome tour blocked the cookie-consent buttons.** Both opened on first run and the
+  tour's modal overlay took the clicks meant for the banner. `OnboardingLayer` now shows the
+  consent banner first and the tour only after a choice is recorded.
+  > The committed `inertia-app.js` still carries the old behaviour: a production build of
+  > unchanged `main` no longer reproduces it (dependency drift), so it was not rebuilt here.
+  > The next routine `npm run build:prod` picks the fix up. The font URLs were patched in the
+  > committed `inertia-app.css` directly.
 
 ### Removed
 
