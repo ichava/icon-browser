@@ -5,7 +5,7 @@ import policy from './svg-policy.json';
  *
  * `svg-policy.json` is a byte-identical copy of
  * `core/resources/security/svg-policy.json`, kept in sync by
- * `maintainer-toolkit/.scripts/sync-svg-policy.mjs` and pinned by digest in
+ * `icon-sets-sync/.scripts/sync-svg-policy.mjs` and pinned by digest in
  * `svgPolicy.test.ts`. It is vendored rather than imported because this package
  * has no Composer dependency on `ichava/core` and cannot reach it at build time.
  *

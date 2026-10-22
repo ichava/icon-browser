@@ -18,7 +18,7 @@ import { allowedAttributeNames, fragmentPattern, styleValueIsSafe, svgPolicy } f
  *
  * There is nothing to widen in this file. To change what survives, edit
  * `core/resources/security/svg-policy.json`, run
- * `maintainer-toolkit/.scripts/sync-svg-policy.mjs --write`, and update the pinned digest
+ * `icon-sets-sync/.scripts/sync-svg-policy.mjs --write`, and update the pinned digest
  * in `svgPolicy.test.ts`. A local edit here is drift, and the digest test will say so.
  */
 
