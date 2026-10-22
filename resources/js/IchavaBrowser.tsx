@@ -19,8 +19,7 @@ import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { TooltipProvider } from '@/components/ui/Tooltip';
 import { AuthModal } from '@/components/auth/AuthModal';
 import { ProfileModal } from '@/components/auth/ProfileModal';
-import { TourModal } from '@/components/tour/TourModal';
-import { ConsentBanner } from '@/components/consent/ConsentBanner';
+import { OnboardingLayer } from '@/components/onboarding/OnboardingLayer';
 import { InviteModal } from '@/components/team/InviteModal';
 import { ManageAccessModal } from '@/components/team/ManageAccessModal';
 import { SharedCollectionsModal } from '@/components/team/SharedCollectionsModal';
@@ -114,8 +113,6 @@ function IchavaBrowserInner({
   const authed = useAppStore((s) => s.auth.status === 'authed');
   const loading = useAppStore((s) => s.loading);
   const reduceMotion = useAppStore((s) => s.reduceMotion);
-  const tourActive = useAppStore((s) => s.tour.active);
-  const consent = useAppStore((s) => s.consent);
   const inviteOpen = useAppStore((s) => s.inviteOpen);
   const accessId = useAppStore((s) => s.accessCollectionId);
   const sharedOpen = useAppStore((s) => s.sharedOpen);
@@ -138,7 +135,8 @@ function IchavaBrowserInner({
     // public/data/app-config.json; a host embedding the browser omits it and
     // sees no invented activity. This is the single call site by design.
     if (config?.features?.demo) storeApi.getState().seedDemoNotifications();
-    // First-run onboarding: show the tour once (until skipped/finished).
+    // First-run onboarding: start the tour once (until skipped/finished). It is shown
+    // only after the consent choice -- see OnboardingLayer.
     if (!storeApi.getState().tourSeen) storeApi.getState().startTour();
     // Dev-only console handle; never attached in production (env gate).
     if (isDevToolsAvailable(config)) {
@@ -421,8 +419,7 @@ function IchavaBrowserInner({
       {inviteOpen && <InviteModal />}
       {accessId && <ManageAccessModal />}
       {sharedOpen && <SharedCollectionsModal />}
-      {tourActive && <TourModal />}
-      {consent === null && <ConsentBanner />}
+      <OnboardingLayer />
       {devtoolsAvailable && devtoolsOpen && <DevToolsPanel />}
       <ContextMenu />
       <AuthModal />
