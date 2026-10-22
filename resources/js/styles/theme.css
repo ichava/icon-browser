@@ -74,9 +74,19 @@
  * below; a variable woff2 is still a woff2. Narrowing this would break in whichever engine
  * did not recognise the hint, and would surface as a fallback face in a screenshot.
  */
+/*
+ * The URLs are RELATIVE TO THE BUILT STYLESHEET, not to this file: they resolve from
+ * `public/assets/css/inertia-app.css` to `public/assets/fonts/`, which ships in this
+ * package and is published with the rest of `public/` (`--tag=ichava-assets`) to
+ * `public/vendor/ichava/assets/fonts/`. A root-absolute `/fonts/...` named a directory
+ * no host has, so every host 404'd both files and rendered a fallback face (I1). Vite
+ * cannot resolve these from `resources/js/styles/` and says so at build time ("will remain
+ * unchanged to be resolved at runtime"); that is the intended outcome, not a warning to
+ * fix. `FontAssetsTest` pins the built CSS, this file and the files on disk together.
+ */
 @font-face {
   font-family: 'Geist';
-  src: url('/fonts/Geist-Variable.woff2') format('woff2');
+  src: url('../fonts/Geist-Variable.woff2') format('woff2');
   font-weight: 100 900;
   font-style: normal;
   font-display: swap;
@@ -84,7 +94,7 @@
 
 @font-face {
   font-family: 'Geist Mono';
-  src: url('/fonts/GeistMono-Variable.woff2') format('woff2');
+  src: url('../fonts/GeistMono-Variable.woff2') format('woff2');
   font-weight: 100 900;
   font-style: normal;
   font-display: swap;
