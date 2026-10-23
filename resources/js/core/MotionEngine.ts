@@ -1,9 +1,9 @@
 // MotionEngine -- a DATA-DRIVEN preset generator (R5: playback delegates to
-// @ichava/motion). ~34 families x 6 variants (+ None + JSON.Custom) ~= 205
+// @ichava/js-motion). ~34 families x 6 variants (+ None + JSON.Custom) ~= 205
 // presets -- the reference set. Families/variants/easings are the DATA;
-// @ichava/motion is now the LOGIC that plays them. Extensible via register*().
+// @ichava/js-motion is now the LOGIC that plays them. Extensible via register*().
 
-import IchavaMotion from '@ichava/motion';
+import IchavaMotion from '@ichava/js-motion';
 
 export type Direction = 'normal' | 'reverse' | 'alternate';
 
@@ -232,26 +232,26 @@ export interface PlayOptions {
 }
 
 /**
- * WAAPI execution delegates to `@ichava/motion` (R5) instead of reimplementing it a
+ * WAAPI execution delegates to `@ichava/js-motion` (R5) instead of reimplementing it a
  * second time. This file keeps the DATA layer -- the typed `MotionPreset`s, the
  * `MOTION_PRESETS`/`ILLUSTRATION_PRESETS` picker lists, easings, register*() -- because
- * `@ichava/motion` has no concept of "masked vs inline-SVG icon" (`domOnly`) or of a
+ * `@ichava/js-motion` has no concept of "masked vs inline-SVG icon" (`domOnly`) or of a
  * typed preset catalog for a UI dropdown. Only the part that was a second copy of the
  * same keyframe-generation-and-play logic moves.
  *
  * Delegating by PRESET ID, not by passing the computed spec, is deliberate: only
- * `@ichava/motion`'s id-based `play()` routes `perChild`/`draw` families to its
+ * `@ichava/js-motion`'s id-based `play()` routes `perChild`/`draw` families to its
  * per-child-staggered players (`playSpec()` animates one element only). This is safe
  * for every id `buildPresets()` generates from the built-in `MOTION_FAMILIES`/
  * `ILLUSTRATION_FAMILIES` below, because that generation is deliberately mirrored
- * 1:1 with `@ichava/motion`'s own (proven in MotionEngine.parity.test.ts, which
+ * 1:1 with `@ichava/js-motion`'s own (proven in MotionEngine.parity.test.ts, which
  * fails if either package's keyframe math drifts from the other's). It is NOT
  * guaranteed for a draw/perChild family added later via `registerFamily()` --
  * nothing currently calls that API, but a caller who does and registers one
  * would see `IchavaMotion.play()` silently no-op (return null, not throw) for
  * an id its own registry has never heard of.
  *
- * The one id that is NOT in `@ichava/motion`'s registry is `'json'` -- the "JSON ·
+ * The one id that is NOT in `@ichava/js-motion`'s registry is `'json'` -- the "JSON ·
  * Custom" sentinel, whose `keyframes` come from what the user pasted into the detail
  * dialog rather than from either package's generator. It is never `perChild`/`draw`
  * (see the NONE/JSON_CUSTOM constants above), so it never reaches the id-based branch;

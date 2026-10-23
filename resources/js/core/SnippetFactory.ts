@@ -99,7 +99,7 @@ export class SnippetFactory {
     }
   }
 
-  /** Emit the selected motion preset as an @ichava/motion JSON definition. */
+  /** Emit the selected motion preset as an @ichava/js-motion JSON definition. */
   private motion(_icon: Icon, o: SnippetOptions): string {
     const m = o.motion;
     if (!m || m.id === 'none') {
