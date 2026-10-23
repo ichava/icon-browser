@@ -6,7 +6,7 @@
 
 > The HTTP layer for the Ichava Laravel icon ecosystem — REST API, React 19 + Inertia.js browser pages and middleware, installed on top of `ichava/core` when you want a visual icon browser or programmatic REST access.
 
-This package is not published to Packagist, so there is no registry-version badge to show. Targets PHP `^8.4.1 || ^8.5` on Laravel `^13`, against `ichava/core` `^0.2.8 || ^0.3.1`.
+This package is not published to Packagist, so there is no registry-version badge to show. Targets PHP `^8.4.1 || ^8.5` on Laravel `^13`, against `ichava/core` `^0.1`.
 
 ## Install
 

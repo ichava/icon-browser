@@ -9,8 +9,8 @@
 `.github/workflows/release.yml` runs on `push` to tags only. A merge to `main` runs the gates; a tag publishes. So releasing is two steps — land the change through a pull request, then tag the resulting commit.
 
 ```bash
-git tag v0.2.9
-git push origin v0.2.9
+git tag vX.Y.Z
+git push origin vX.Y.Z
 ```
 
 ## The changelog is the release body
@@ -21,12 +21,12 @@ A `Changelog order` CI job fails a pull request when `[Unreleased]` is not first
 
 ## Browser tracks core, and the constraint is the release decision
 
-`composer.json` requires `ichava/core` `^0.2.8 || ^0.3.1`. Because a caret pins the **minor** below `1.0`, that two-arm constraint is doing real work: it admits both the 0.2 and 0.3 series rather than forcing consumers off one of them.
+`composer.json` requires `ichava/core` `^0.1`. Because a caret pins the **minor** below `1.0`, a new core minor reaches browser only once the constraint is widened to admit it (`^0.1 || ^0.2`).
 
 Two rules follow, and they pull in opposite directions:
 
-- **Widen** when a new core minor is compatible and the consumer never used what changed. Raising to `^0.3` alone would force a core upgrade on anyone deliberately staying on 0.2.x, for no reason.
-- **Raise the floor** when core ships a security fix in code browser runs. `^0.2.8` still resolves `0.2.8`, so a lockfile or an older resolution stays on the vulnerable release indefinitely.
+- **Widen** when a new core minor is compatible and the consumer never used what changed. Raising to `^0.2` alone would force a core upgrade on anyone deliberately staying on 0.1.x, for no reason.
+- **Raise the floor** when core ships a security fix in code browser runs. `^0.1` still resolves `0.1.0`, so a lockfile or an older resolution stays on the vulnerable release indefinitely.
 
 Check what actually changed before doing either:
 
@@ -43,6 +43,14 @@ The SPA is published as pre-built Vite output through `vendor:publish --tag=icha
 > `vite.config.js` imports a shared configurator from outside this repository, so a frontend build only works inside the host workspace. A release cut elsewhere cannot rebuild the assets.
 
 There is no `version` field in `composer.json` — the version comes from the git tag. No lock file is committed.
+
+## The 0.1.0 re-base
+
+Versioning was re-based on 2026-10-23, with every other ichava package. The tags `v0.1.0` to
+`v0.4.1` (2026-08-31 to 2026-09-26) and their GitHub releases were removed, and `main` was tagged `v0.1.0`. Every
+commit those tags pointed at is on `main`, so no code was lost; their notes are kept in
+`CHANGELOG.md` under *Archived pre-reset history*. Version numbers in older changelog entries and
+issues refer to that earlier series.
 
 ## See also
 
