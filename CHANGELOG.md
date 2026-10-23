@@ -4,8 +4,13 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-10-23
+
+Versioning re-based to 0.1.0. This release contains everything previously tagged v0.1.0 through v0.4.1 (2026-08-31 to 2026-09-26) plus the changes below, and requires `ichava/core` `^0.1`, the re-based core. Those tags and their GitHub releases were removed; every commit they pointed at is on `main`, and their sections are kept under *Archived pre-reset history*.
+
 ### Changed
 
+- **The motion engine is `@ichava/js-motion` at `v0.1.0`.** `package.json` depended on `@ichava/motion` at js-motion's pre-reset `#v0.1.1`, a tag the re-base removes. It now names the package by its new name at the re-based `#v0.1.0`, and the three source files that import or mention it follow. js-motion's `src/` is identical between the two tags and its `dist/` differs only in comment lines, so the checked-in `inertia-app.js` is unaffected and is not rebuilt here.
 - **References follow the repository renames.** `ichava/maintainer-toolkit` is now `ichava/icon-sets-sync`, `ichava/motion` is `ichava/js-motion` and `ichava/react-browser` is `ichava/react-icon-browser`. GitHub redirects the old names, but redirects are not permanent.
 
 ### Added
@@ -98,9 +103,14 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
   shadcn-vue installer is updated. The compiled `inertia-app.css` still carries the dead
   rules, which are harmless, until the next routine rebuild.
 
-## [0.4.1] - 2026-09-26
+## [Archived pre-reset history]
 
-### Changed
+> Versioning was re-based to 0.1.0 on 2026-10-23. The tags and GitHub releases below were removed;
+> every commit they pointed at is on `main`. Sections reproduced verbatim, one heading level down.
+
+### [0.4.1] - 2026-09-26
+
+#### Changed
 
 - **`SECURITY.md` removed; the organization policy serves this repository now.**
   The file was byte-identical across six ichava repositories and held nothing
@@ -116,7 +126,7 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
   went, so it now points at `/security/policy` directly. `composer.json` and the
   issue-template link already did.
 
-### Fixed
+#### Fixed
 
 - **The category tree no longer blanks `/ichava/icons`.** The Inertia `tree` prop
   is `{id, title, icon_count, children}` from core's `buildIconTree()`, but the
@@ -147,16 +157,16 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
   that set the key got their template silently ignored. It now returns the
   configured view when set and falls back to the parent's otherwise.
 
-## [0.4.0] - 2026-09-22
+### [0.4.0] - 2026-09-22
 
-### Added
+#### Added
 
 - **`ConfigKeyResolutionTest` asserts the shipped config actually merges at
   `ichava.icon-browser`**, and that the doubled key V39 produces does not exist. Nothing
   asserted this before, which is why V39 shipped: a test calling `config()->set()` writes the
   key it then reads, so only the shipped *file* resolving proves the merge.
 
-### Changed
+#### Changed
 
 - **Renamed: `ichava/browser` is now `ichava/icon-browser`.** The repository, the composer
   package, the npm package and the PHP namespace all move together, so `local dir = GitHub
@@ -211,7 +221,7 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
   `SECURITY.md` were already stated inline and are unchanged; the Code of Conduct now cites the
   Contributor Covenant directly. Historical mentions in this changelog are left as written.
 
-### Fixed
+#### Fixed
 
 - **Per-route rate limits were silently ignored.** `Helpers::getRateLimit()` read its master
   switch from the correct key but the actual limit from `config("ichava-browser.rate_limiting.
@@ -219,9 +229,9 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
   the hardcoded `$default` and the configured `rate_limiting` block did nothing. Found by the
   rename sweep rather than by a test, because the fallback made the wrong value look right.
 
-## [0.3.0] - 2026-09-21
+### [0.3.0] - 2026-09-21
 
-### Changed
+#### Changed
 
 - **`ichava/core` `^0.4` is accepted.** The constraint read
   `^0.2.8 || ^0.3.1`, and a caret on a `0.x` version pins the *minor*, so
@@ -267,9 +277,9 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
   constraint would not have matched the branch it points at. Tagged installs
   were never affected, which is why nothing surfaced it.
 
-## [0.2.8] - 2026-09-21
+### [0.2.8] - 2026-09-21
 
-### Fixed
+#### Fixed
 
 - **Package titles and descriptions were read under a key nothing ever wrote.**
   Seven call sites read `$packageData['browser_metadata'][...]`. `IconRegistry`
@@ -310,7 +320,7 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
   sources moved to the `icon-sets-` names on 2026-09-21. Rebuilt rather than edited; the
   `ichava-react.css` beside it was stale for the same reason and moved with it.
 
-### Security
+#### Security
 
 - **The package endpoint no longer risks publishing filesystem paths.** One of
   those reads passed the whole array through as
@@ -328,9 +338,9 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
   > existed, so the response was always empty. It would have become one in this
   > change.
 
-## [0.2.7] - 2026-09-21
+### [0.2.7] - 2026-09-21
 
-### Changed
+#### Changed
 
 - **`ichava/core` floor raised to `^0.2.8 || ^0.3.1`.** The `labels` payload
   below arrives from core and was written to degrade to an absent key, so this
@@ -342,7 +352,7 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
   would cut off the 0.2 line for no benefit; raising the floor of the 0.3 arm
   excludes the releases without `labels` and nothing else.
 
-### Added
+#### Added
 
 - **Localised taxonomy labels in the package payloads.** `labels` carries a
   pack's `variants` / `categories` / `sets` display names, which `config.json`
@@ -353,9 +363,9 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
   simply absent. The composer floor is unchanged for that reason -- it moves
   when core next tags a release carrying the overlay.
 
-## [0.2.6] - 2026-09-21
+### [0.2.6] - 2026-09-21
 
-### Added
+#### Added
 
 - **`actionlint` runs on every pull request.** Nothing validated the workflow files at all:
   `release.yml` triggers only on `push: tags`, so a broken workflow was first observed as a
@@ -370,7 +380,7 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
   key, and an `if:` referencing a property that does not exist are all caught, while
   `yaml.safe_load` still parses the first of them without complaint.
 
-### Fixed
+#### Fixed
 
 - **A failed SBOM download no longer takes the whole release down.** `release.yml` generates the
   SBOM before it publishes, and the Syft installer fetches its checksums from GitHub's
@@ -391,7 +401,7 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
   default, but the point of this change is that a missing SBOM must not fail the publish, so it
   should not rest on a default a future reader has to know.
 
-### Security
+#### Security
 
 - **Floor raised to `ichava/core: ^0.2.8`.** Core `0.2.8` fixes two issues a pack inherits
   through the engine: `%` and `_` in a search query acted as `LIKE` wildcards, widening results
@@ -402,9 +412,9 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
   The `|| ^0.3` arm is unchanged — core `0.3.0` moved the scaffolder out but left the engine,
   registry, seeder and SVG pipeline untouched, so an installed pack is unaffected by it.
 
-## [0.2.5] - 2026-09-21
+### [0.2.5] - 2026-09-21
 
-### Changed
+#### Changed
 
 - **`ichava/core` widened to `^0.2.5 || ^0.3`.** Core `0.3.0` removes the icon-package
   scaffolder and its stub tree, which moved to `ichava/icon-package-scaffolder`. This package
@@ -416,9 +426,9 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
   forced a core upgrade on anyone deliberately staying on 0.2.x, for the same non-reason.
   Both series genuinely work, so the constraint says so.
 
-## [0.2.4] - 2026-09-21
+### [0.2.4] - 2026-09-21
 
-### Security
+#### Security
 
 - **Floor raised to `ichava/core: ^0.2.5`.** Core `0.2.5` closes an address-notation gap in the
   pack update-check guard: `isPublicIp()` judged addresses by how they were written, so
@@ -430,9 +440,9 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
   stacks will not route it. The floor moves anyway, because a constraint that can resolve to a
   release with a known gap is the thing this rule exists to prevent.
 
-## [0.2.3] - 2026-09-21
+### [0.2.3] - 2026-09-21
 
-### Security
+#### Security
 
 - **Floor raised to `ichava/core: ^0.2.4`.** Core `0.2.4` carries seven security fixes — post-
   sanitizer attribute gating, icon-path containment, off-document paint URLs, sanitizer policy
@@ -440,18 +450,18 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
   restriction. `^0.2.3` still permitted resolving to `0.2.3`, which has all seven. Raising a
   floor to exclude a known-broken release is not a pin; the constraint stays a range.
 
-## [0.2.2] - 2026-09-16
+### [0.2.2] - 2026-09-16
 
-### Changed
+#### Changed
 
 - **Requires `ichava/core: ^0.2.3`.** `0.2.2` decided readiness against columns the schema has
   never had, so `ichava::ichava-core.info status` reported `UNINITIALIZED` on a fully seeded
   database and both auto-seed listeners, which gate on the same check, never fired. The floor is
   raised rather than the range widened; it still tracks every `0.2.x` from `0.2.3` on.
 
-## [0.2.1] - 2026-09-16
+### [0.2.1] - 2026-09-16
 
-### Changed
+#### Changed
 
 - **Requires `ichava/core: ^0.2.2`.** The floor is raised rather than the range widened: `0.2.0`
   invoked six of its own Artisan commands by names it had just retired, and `0.2.1` still passed
@@ -459,10 +469,10 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
   no tables. `^0.2` admitted both. Raising a floor to exclude a known-broken release is not a
   pin — the range still tracks every `0.2.x` from `0.2.2` on.
 
-## [0.2.0] - 2026-09-16
+### [0.2.0] - 2026-09-16
 
 
-### Breaking
+#### Breaking
 
 - **Requires `ichava/core: ^0.2`.** Core `0.2.0` moved its config key to `ichava.ichava-core.*`
   and renamed every Artisan command with no bare aliases, so a host application upgrading this
@@ -473,14 +483,14 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
   retained as an alias: an alias that reintroduces the bare name hands back the same collision.
 
 
-### Fixed
+#### Fixed
 
 - Four `config('ichava.core.*')` reads left orphaned by core's config rename — CORS, request
   logging, auth debug and the route prefix were silently returning defaults.
 - Icon components called non-existent `::getName()`; now use `::getPackageName()`.
 - Facade imports (`DB`) made explicit in both controllers.
 
-### Changed
+#### Changed
 
 - Third-party GitHub Actions pinned to the commit SHA of their latest release; `actions/*` keep
   floating on a major tag. A tag is mutable, so `@v4` is a promise the action's owner can
@@ -491,7 +501,7 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
 - Hardened CI workflows: concurrency groups, job timeouts, problem matchers, docs-only skip paths, test coverage, and tidy composer scripts.
 - Aligned Pest to `^4.6 || ^5.0` and CI branch triggers on `main` only.
 
-### Added
+#### Added
 
 - `release.yml` — a `v*.*.*` tag now publishes a release whose body is that version's CHANGELOG
   section, and fails closed when the tagged version has no section.
@@ -499,9 +509,9 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
   service containers alongside the SQLite lane. These API tests refresh real tables and query
   through core's models, so SQLite alone proved nothing about the other three.
 
-## [0.1.1] - 2026-09-02
+### [0.1.1] - 2026-09-02
 
-### Fixed
+#### Fixed
 
 - **`IchavaApiSecurity` no longer overwrites headers a route set deliberately.** It ran after
   the controller and unconditionally `set()` every header, so the SVG endpoint's `immutable`
@@ -521,7 +531,7 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
   unavailable, emitting unsanitised markup exactly when it could not sanitise. It now returns
   an empty string.
 
-### Changed
+#### Changed
 
 - **Client SVG sanitisation derives from the shared policy.** The allow-lists were literals
   in `sanitizeSvg.ts`, which is how this runtime and the server drifted apart: `W1-6` widened
@@ -539,7 +549,7 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
   working and receive current bytes -- they simply do not get a year of immutability on a URL
   that cannot express which year. Requires `ichava/core` 0.1.1 for `Icon::render_version`.
 
-## [0.1.0] - 2026-08-31
+### [0.1.0] - 2026-08-31
 
 First open-source release. The entire HTTP layer of the Ichava icon ecosystem: REST API, web
 routes, middleware, Blade views and the Vue + Vite browser SPA. `ichava/core` ships no HTTP
@@ -548,7 +558,7 @@ surface, so this package is what turns the headless engine into a browsable icon
 Earlier `v1.0.0` and `v2.0.0` tags existed on GitHub and were never published to Packagist. They
 are withdrawn: the ecosystem restarts from a single `0.1.0` across every package.
 
-### Added
+#### Added
 
 - REST API over the icon catalogue: listing, filtering, search, per-package detail, stats, raw SVG
   delivery, and `GET /api/icons/update-status`, which surfaces core's `IconPackUpdateChecker` for
@@ -561,7 +571,7 @@ are withdrawn: the ecosystem restarts from a single `0.1.0` across every package
 - A configurable security layer: CSP with `strict`/`nonce`/`hash` modes, HSTS, frame, referrer and
   permissions policies, CORS, and per-route rate limits.
 
-### Security
+#### Security
 
 - **Destructive cache endpoints require authorization and fail closed.** `POST
   ichava/api/cache/clear`, `POST ichava/api/cache/rebuild` and their web equivalents shipped with
@@ -584,7 +594,7 @@ are withdrawn: the ecosystem restarts from a single `0.1.0` across every package
 - Exception detail no longer reaches the rendered view. The full exception with trace still goes
   to the log.
 
-### Fixed
+#### Fixed
 
 - **The package config now loads at the key the source reads.** The file was
   `config/ichava-browser.php` while the package short name is `browser`, so it merged at
@@ -601,7 +611,7 @@ are withdrawn: the ecosystem restarts from a single `0.1.0` across every package
 - `dompurify` floor raised to `^3.4.14`; everything at or below `3.4.12` carries an XSS advisory
   where removing an `IN_PLACE` hook leaves a detached subtree executable.
 
-### Requirements
+#### Requirements
 
 - PHP `^8.4.1 || ^8.5`, `illuminate/support` `^13.0`, `ichava/core` `^0.1`.
 - Neither `ichava/*` nor `laranail/*` is published on Packagist, so the package declares VCS

@@ -26,7 +26,7 @@
         "laravel"
     ],
     "dependencies": {
-        "@ichava/motion": "git+https://github.com/ichava/js-motion.git#v0.1.1",
+        "@ichava/js-motion": "git+https://github.com/ichava/js-motion.git#v0.1.0",
         "@inertiajs/react": "^3.0",
         "@tanstack/react-virtual": "^3.14.8",
         "@untitledui/icons": "^0.0.22",
