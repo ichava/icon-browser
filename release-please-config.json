@@ -1,0 +1,22 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/v17.11.2/schemas/config.json",
+  "release-type": "php",
+  "bootstrap-sha": "d98191b46a7237a6465736fdab820b326217bd12",
+  "include-v-in-tag": true,
+  "include-component-in-tag": false,
+  "bump-minor-pre-major": true,
+  "bump-patch-for-minor-pre-major": true,
+  "skip-changelog": true,
+  "packages": {
+    ".": {
+      "package-name": "ichava/icon-browser",
+      "extra-files": [
+        {
+          "type": "json",
+          "path": "package.json",
+          "jsonpath": "$.version"
+        }
+      ]
+    }
+  }
+}

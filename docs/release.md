@@ -6,12 +6,27 @@
 
 ## The tag is the trigger
 
-`.github/workflows/release.yml` runs on `push` to tags only. A merge to `main` runs the gates; a tag publishes. So releasing is two steps — land the change through a pull request, then tag the resulting commit.
+`.github/workflows/release.yml` runs on `push` to `vX.Y.Z` tags. A merge runs the gates; a tag
+publishes. The tag is made by [release-please](https://github.com/googleapis/release-please), not by
+hand:
 
-```bash
-git tag vX.Y.Z
-git push origin vX.Y.Z
-```
+1. Every pull request that changes behaviour adds to the one `## [Unreleased]` section of
+   `CHANGELOG.md`, and uses a Conventional Commit subject.
+2. Run *Release Please* from the Actions tab (it also runs every Monday). It opens or refreshes one
+   release pull request that bumps `.release-please-manifest.json` and `package.json`, and closes `[Unreleased]` as
+   `## [X.Y.Z] - date` on that branch. It fails when `[Unreleased]` is empty.
+3. Merge the release pull request once CI is green. That run tags `vX.Y.Z` and creates the release;
+   the tag starts `release.yml`, which publishes the changelog section as the body.
+
+On 0.x a breaking change (`feat!:` or a `BREAKING CHANGE:` footer) bumps the minor and everything
+else bumps the patch. The minor moves in lockstep across the coupled ichava packages: when one of
+them needs `0.N.0`, every coupled repository gets a pull request carrying a `Release-As: 0.N.0`
+footer alongside its constraint change.
+Never edit the release pull request by hand: release-please rebuilds its branch and drops anything
+it did not write. Change the notes on `main` instead.
+
+If a tag ever starts nothing, run `release.yml` by hand against it:
+`gh workflow run release.yml --ref vX.Y.Z`. It refuses any ref that is not a release tag.
 
 ## The changelog is the release body
 
