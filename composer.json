@@ -76,6 +76,9 @@
             "providers": [
                 "Simtabi\\Laranail\\Ichava\\IconBrowser\\Providers\\IconBrowserServiceProvider"
             ]
+        },
+        "branch-alias": {
+            "dev-main": "0.1.x-dev"
         }
     },
     "scripts": {
