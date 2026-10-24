@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Simtabi\Laranail\Ichava\IconBrowser\Http\Middleware;
 
 use Inertia\Middleware;
+use OutOfBoundsException;
 use Illuminate\Http\Request;
+use Composer\InstalledVersions;
 use Simtabi\Laranail\Ichava\Services\IconPreferenceService;
 
 final class HandleInertiaRequests extends Middleware
@@ -34,6 +36,7 @@ final class HandleInertiaRequests extends Middleware
                 'prefix'       => config('ichava.core.prefix', 'ichava'),
                 'perPage'      => (int) config('ichava.icon-browser.browser.per_page', 24),
                 'defaultTheme' => config('ichava.icon-browser.browser.default_theme', 'light'),
+                'ui'           => $this->ui(),
                 'routes'       => [
                     'browser'     => route('ichava.inertia.browser'),
                     'stats'       => route('ichava.inertia.stats'),
@@ -57,5 +60,45 @@ final class HandleInertiaRequests extends Middleware
         $configured = config('ichava.icon-browser.inertia.root_view');
 
         return is_string($configured) && $configured !== '' ? $configured : $this->rootView;
+    }
+
+    /**
+     * What the browser shell shows about this package: its version, its licence and its
+     * links. Without it the vendored UI shows its own defaults (react-icon-browser's
+     * version, an MIT licence).
+     *
+     * @return array{version: string|null, license: string, docsUrl: string|null, links: list<array{label: string, href: string}>}
+     */
+    private function ui(): array
+    {
+        $links = [];
+        foreach ((array) config('ichava.icon-browser.ui.links', []) as $link) {
+            if (is_array($link) && is_string($link['label'] ?? null) && is_string($link['href'] ?? null)) {
+                $links[] = ['label' => $link['label'], 'href' => $link['href']];
+            }
+        }
+
+        $docs = config('ichava.icon-browser.ui.docs_url');
+
+        return [
+            'version' => $this->packageVersion(),
+            'license' => (string) config('ichava.icon-browser.ui.license', 'Proprietary'),
+            'docsUrl' => is_string($docs) && $docs !== '' ? $docs : null,
+            'links'   => $links,
+        ];
+    }
+
+    private function packageVersion(): ?string
+    {
+        try {
+            $version = InstalledVersions::getPrettyVersion('ichava/icon-browser');
+        } catch (OutOfBoundsException) {
+            return null;
+        }
+
+        // A dev-branch install reports `dev-main`; the footer reads "v<version>".
+        return is_string($version) && preg_match('/^v?\d+\.\d+\.\d+/', $version) === 1
+            ? ltrim($version, 'v')
+            : null;
     }
 }

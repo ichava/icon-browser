@@ -1,0 +1,20 @@
+/*
+ * The adapter's own stylesheet: what the pages around the browser need from the document.
+ *
+ * Before the port, the forked browser stylesheet declared its tokens on :root and set
+ * `font-family: var(--font-body)` (Geist) on body for every page. The library scopes its
+ * tokens to its own root ([data-ichava-theme]) and sets nothing on html or body, so the simple
+ * library pages (favourites, collections, history, packages, settings, stats), which render
+ * outside that root, would fall back to the system fonts. This keeps them on Geist and
+ * Geist Mono (`font-mono`), whose @font-face rules the library stylesheet declares. Inside the
+ * browser root the library's own scoped tokens still win.
+ */
+:root {
+    --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+body {
+    font-family: "Geist", -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}

@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef } from 'react';
-import { router } from '@inertiajs/react';
-import { useStore, type FilterState } from '@/store';
-import type { SortKey, SortOrder } from '@/core/types';
+import type { BrowserStoreHook, FilterState, ListParams } from '@/lib/browser';
+
+type SortKey = FilterState['sortBy'];
+type SortOrder = FilterState['sortOrder'];
 
 /** Validated query echo the server sends back (`appliedFilters` prop). */
 export interface AppliedFilters {
@@ -15,10 +16,17 @@ export interface AppliedFilters {
   per_page?: number;
 }
 
+/** The query `IconFilterRequest` accepts, as `router.get` sends it. */
+export type QueryParams = Record<string, string | number | string[] | undefined>;
+
 const SORT_KEYS: SortKey[] = ['name', 'package', 'category'];
 
+/** `IconFilterRequest`'s `per_page` bounds (`min:10`, `max:120`). */
+const PER_PAGE_MIN = 10;
+const PER_PAGE_MAX = 120;
+
 /** Server-valid subset of the store filters, mirroring `IconFilterRequest`. */
-export function toQueryParams(f: FilterState): Record<string, string | number | string[] | undefined> {
+export function toQueryParams(f: FilterState): QueryParams {
   const search = f.search.trim();
   return {
     search: search.length >= 2 ? search : undefined,
@@ -30,14 +38,32 @@ export function toQueryParams(f: FilterState): Record<string, string | number | 
     page: f.page,
     // Server caps per_page below what the client offers; clamp so the echo
     // matches what was sent instead of bouncing a validation error.
-    per_page: Math.min(f.perPage, 120),
+    per_page: Math.max(PER_PAGE_MIN, Math.min(f.perPage, PER_PAGE_MAX)),
+  };
+}
+
+/**
+ * The same query from the library's `ListParams`, which is what the browser hands its
+ * `IconCatalog`. Subcategories are not sent: `IconFilterRequest` has no `subs` field.
+ */
+export function listParamsToQuery(p: ListParams): QueryParams {
+  const search = (p.search ?? '').trim();
+  return {
+    search: search.length >= 2 ? search : undefined,
+    packages: p.packages?.length ? p.packages : undefined,
+    categories: p.categories?.length ? p.categories : undefined,
+    variants: p.variants?.length ? p.variants : undefined,
+    sort_by: p.sortBy ?? 'name',
+    sort_direction: p.sortDirection ?? 'asc',
+    page: p.page ?? 1,
+    per_page: Math.max(PER_PAGE_MIN, Math.min(p.perPage ?? 60, PER_PAGE_MAX)),
   };
 }
 
 /** Normalize a server echo into the same shape `toQueryParams` emits. */
-function echoKey(applied: AppliedFilters | null | undefined): string {
-  if (!applied) return '';
-  return JSON.stringify({
+export function echoToQuery(applied: AppliedFilters | null | undefined): QueryParams | null {
+  if (!applied || Object.keys(applied).length === 0) return null;
+  return {
     search: applied.search || undefined,
     packages: applied.packages?.length ? applied.packages : undefined,
     categories: applied.categories?.length ? applied.categories : undefined,
@@ -46,10 +72,15 @@ function echoKey(applied: AppliedFilters | null | undefined): string {
     sort_direction: applied.sort_direction,
     page: applied.page,
     per_page: applied.per_page,
-  });
+  };
 }
 
-function seedFilters(applied: AppliedFilters): Partial<FilterState> {
+/** One comparable string per query: the loop guard between the store and the server. */
+export function queryKey(query: QueryParams | null): string {
+  return query ? JSON.stringify(query) : '';
+}
+
+export function seedFilters(applied: AppliedFilters): Partial<FilterState> {
   const sortBy: SortKey = SORT_KEYS.includes(applied.sort_by as SortKey)
     ? (applied.sort_by as SortKey)
     : 'name';
@@ -65,54 +96,36 @@ function seedFilters(applied: AppliedFilters): Partial<FilterState> {
   };
 }
 
+/** Write the server echo into a store's filters. */
+export function applySeed(store: BrowserStoreHook, applied: AppliedFilters | null | undefined): void {
+  if (!applied || Object.keys(applied).length === 0) return;
+  const seed = seedFilters(applied);
+  store.setState((s) => ({ filters: { ...s.filters, ...seed } }));
+}
+
 /**
- * Two-way filter sync between the store and the server query string.
+ * Keep the store's filters on what the server says it applied.
  *
- * - Mount: seed store filters from the server echo (deep links, back button).
- * - Echo: when the server normalizes differently than sent, adopt the echo.
- * - Change: user edits navigate via `router.get`, limited to the listing
- *   props so tree/stats/packages are not refetched per keystroke.
+ * - Mount: the page seeds the store from the echo before it renders (deep links, the back
+ *   button), so this hook only records it.
+ * - Echo: when a visit comes back normalized differently than sent, adopt the echo.
  *
- * The `lastSent` ref is the loop guard: navigation only fires when the store
- * differs from the last query the server confirmed.
+ * Navigation is no longer done here. The browser asks its `IconCatalog` for each page, and
+ * `InertiaCatalog.listIcons` is the visit (`router.get` with the listing props), so the query
+ * string and the store meet in one place. Adopting an echo sets filters the catalog already
+ * holds the page for, so it answers without another visit: that is the loop guard.
  */
-export function useFilterSync(url: string, applied: AppliedFilters | null | undefined) {
-  const filters = useStore((s) => s.filters);
-  const lastSent = useRef<string | null>(null);
+export function useFilterSync(store: BrowserStoreHook, applied: AppliedFilters | null | undefined) {
+  const key = queryKey(echoToQuery(applied));
+  const last = useRef(key);
+  const seed = useMemo(() => applied, [key]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const seed = useMemo(() => (applied ? seedFilters(applied) : null), [JSON.stringify(applied)]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Mount: adopt the server echo once.
   useEffect(() => {
-    if (seed) {
-      useStore.setState((s) => ({ filters: { ...s.filters, ...seed } }));
-      lastSent.current = echoKey(applied);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- mount only
-  }, []);
-
-  // Echo: adopt server normalization (runs on every visit payload).
-  useEffect(() => {
-    const key = echoKey(applied);
-    if (lastSent.current !== null && key !== lastSent.current) {
-      lastSent.current = key;
-      if (seed) useStore.setState((s) => ({ filters: { ...s.filters, ...seed } }));
-    }
-  }, [applied, seed]);
-
-  // Change: navigate when the store moves past the last confirmed query.
-  useEffect(() => {
-    if (lastSent.current === null) {
-      lastSent.current = JSON.stringify(toQueryParams(filters));
-      return;
-    }
-    const key = JSON.stringify(toQueryParams(filters));
-    if (key === lastSent.current) return;
-    lastSent.current = key;
-    router.get(url, toQueryParams(filters), {
-      preserveState: true,
-      replace: true,
-      only: ['icons', 'pagination', 'appliedFilters', 'favorites', 'collections', 'history', 'commandHistory'],
-    });
-  }, [filters, url]);
+    if (key === last.current) return;
+    last.current = key;
+    // Only a real normalization is adopted. When the server applied exactly what the store
+    // asked for, seeding would still overwrite what the query drops (a one-letter search).
+    if (key === queryKey(toQueryParams(store.getState().filters))) return;
+    applySeed(store, seed);
+  }, [key, seed, store]);
 }

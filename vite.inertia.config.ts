@@ -10,12 +10,20 @@
 //   npx vite build --config vite.inertia.config.ts            (development)
 //   npx vite build --config vite.inertia.config.ts --mode production
 //   npx vite --config vite.inertia.config.ts                  (dev server, :5174)
+//
+// The browser UI is @ichava/react-icon-browser, vendored as a built library under
+// resources/vendor/react-icon-browser and linked by npm as that package name. Its stylesheet
+// is prebuilt and its fonts sit beside it (`url(./fonts/...)`); they are emitted to
+// public/assets/fonts/, and `base: './'` keeps the stylesheet's URLs relative
+// (`../fonts/...`), so they resolve under whatever prefix the host publishes the assets to.
+// FontAssetsTest pins that.
 
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { fileURLToPath, URL } from 'node:url';
 
 export default defineConfig({
+    base: './',
     plugins: [react()],
     resolve: {
         alias: {
@@ -44,8 +52,11 @@ export default defineConfig({
             output: {
                 entryFileNames: 'assets/js/inertia-app.js',
                 chunkFileNames: 'assets/js/inertia-app-[name].js',
-                assetFileNames: (info) =>
-                    info.names?.some((n) => n.endsWith('.css')) ? 'assets/css/inertia-app.css' : 'assets/[name][extname]',
+                assetFileNames: (info) => {
+                    if (info.names?.some((n) => n.endsWith('.css'))) return 'assets/css/inertia-app.css';
+                    if (info.names?.some((n) => /\.(woff2?|ttf|otf)$/.test(n))) return 'assets/fonts/[name][extname]';
+                    return 'assets/[name][extname]';
+                },
             },
         },
     },

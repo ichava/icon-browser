@@ -13,6 +13,11 @@
 /* Tailwind CSS v4 - Import base styles */
 @use "tailwindcss";
 
+/* The vendored browser library ships its own prebuilt stylesheet, generated against its own
+   theme. Scanning its bundle here would regenerate its class names against this file's
+   default theme, a second and different definition of each. */
+@source not "../../vendor/react-icon-browser";
+
 @plugin "tailwindcss-animate";
 
 /* Custom Animations */
@@ -56,12 +61,26 @@
 
 /*---break---
  *
- * NOTE: no `@custom-variant dark` here. The React theme entry
- * (`resources/js/styles/theme.css`) owns the single `dark:` variant, keyed off
- * `.dark-mode` to match the `documentElement` toggle in `IchavaBrowser.tsx`.
- * A second definition would silently re-key every `dark:` utility (last one
- * wins) and split dark mode across two classes that are never in sync.
+ * The one `dark:` variant in this stylesheet, keyed off `.dark-mode` to match the
+ * `documentElement` toggle the browser makes when it owns the document. It used to
+ * live in the forked React theme entry (`resources/js/styles/theme.css`), which the
+ * port onto @ichava/react-icon-browser removed; without it here, `dark:` would fall
+ * back to the OS preference and the root template's `dark:bg-[#0a0d1a]` body would
+ * stop following the browser's own theme switch. The library's prebuilt stylesheet
+ * keys its dark mode off the same class, so the two stay in sync.
+ *
+ * Both conditions, as before: the built bundle carried this stylesheet's default
+ * (OS preference) `dark:` rules and the theme entry's `.dark-mode` ones side by side.
  */
+@custom-variant dark {
+  &:where(.dark-mode, .dark-mode *) {
+    @slot;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    @slot;
+  }
+}
 /* ============================================
    THEME VARIABLES
    ============================================ */

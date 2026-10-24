@@ -1,12 +1,10 @@
 import { useMemo, useState } from 'react';
 import { Link, router, usePage } from '@inertiajs/react';
-import { IconAsset } from '@/components/ui/IconAsset';
-import { Glyph } from '@/components/ui/Glyph';
+import { Heart } from '@untitledui/icons';
+import { IconImage } from '@/components/IconImage';
 import { FlashBanner } from '@/components/FlashBanner';
-import { useCopy } from '@/hooks/useClipboard';
 import { normalizeRawIcon } from '@/core/propsToCatalog';
-import { toIcon, type RawIcon } from '@/core/model';
-import { snippets, SNIPPET_TABS, type SnippetFormat } from '@/core/SnippetFactory';
+import { snippets, SNIPPET_TABS, toIcon, type RawIcon, type SnippetFormat } from '@/lib/browser';
 import type { SharedProps } from '@/types';
 
 interface BrowserShowProps extends SharedProps {
@@ -16,7 +14,6 @@ interface BrowserShowProps extends SharedProps {
 
 export default function BrowserShow() {
   const { props } = usePage<BrowserShowProps>();
-  const copy = useCopy();
   const [tab, setTab] = useState<SnippetFormat>('svg');
   const [copied, setCopied] = useState(false);
 
@@ -41,8 +38,14 @@ export default function BrowserShow() {
 
   const showBase = `/${props.ichava.prefix}/icons`;
 
+  // The forked UI's `useCopy` also raised a toast through the browser store. This page mounts
+  // no browser, and the button's own "Copied!" state was always the feedback here.
   const handleCopy = async () => {
-    await copy(snippet, 'Snippet copied');
+    try {
+      await navigator.clipboard.writeText(snippet);
+    } catch {
+      return;
+    }
     setCopied(true);
     window.setTimeout(() => setCopied(false), 1500);
   };
@@ -58,7 +61,7 @@ export default function BrowserShow() {
 
         <div className="mt-4 grid gap-6 md:grid-cols-[280px_1fr]">
           <div className="theme-bg-card rounded-xl border theme-border flex items-center justify-center p-10">
-            <IconAsset icon={icon} size={160} inline />
+            <IconImage icon={icon} size={160} label={icon.name} />
           </div>
 
           <div>
@@ -77,7 +80,7 @@ export default function BrowserShow() {
               }
               className="theme-bg-muted theme-text-secondary mt-3 flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium"
             >
-              <Glyph name="heart" size={13} color="currentColor" />
+              <Heart aria-hidden className="size-[13px]" />
               Toggle favorite
             </button>
 
@@ -128,7 +131,7 @@ export default function BrowserShow() {
                   href={`${showBase}/${rel.id}`}
                   className="theme-bg-card theme-bg-card-hover rounded-lg border theme-border flex flex-col items-center gap-1 p-3 theme-transition"
                 >
-                  <IconAsset icon={rel} size={32} />
+                  <IconImage icon={rel} size={32} />
                   <span className="theme-text-muted w-full truncate text-center text-[11px]">{rel.name}</span>
                 </Link>
               ))}

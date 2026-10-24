@@ -59,15 +59,40 @@ it('ships every font the built stylesheet references, at the path it references'
     }
 });
 
-it('declares the same font URLs in the source stylesheet as the committed bundle', function () use ($fontUrls, $root): void {
-    $source = $fontUrls((string) file_get_contents($root . '/resources/js/styles/theme.css'));
-    $built = $fontUrls((string) file_get_contents($root . '/public/assets/css/inertia-app.css'));
+it('ships the same fonts the browser library stylesheet declares', function () use ($fontUrls, $root): void {
+    // The source stylesheet is the vendored @ichava/react-icon-browser build since the port
+    // (it was resources/js/styles/theme.css). It names its fonts beside itself, `./fonts/...`;
+    // the bundle names them from assets/css, `../fonts/...`. Same files, so compare the files
+    // each URL resolves to rather than the URL text.
+    $libraryCss = $root . '/resources/vendor/react-icon-browser/styles.css';
+    $builtCss = $root . '/public/assets/css/inertia-app.css';
 
-    sort($source);
-    sort($built);
+    $resolve = static fn (string $css, string $url): string|false => realpath(dirname($css) . '/' . $url);
 
-    $this->assertNotEmpty($source, 'Expected font URLs in resources/js/styles/theme.css.');
-    $this->assertSame($source, $built, 'theme.css and the committed inertia-app.css disagree on font URLs.');
+    $source = $fontUrls((string) file_get_contents($libraryCss));
+    $built = $fontUrls((string) file_get_contents($builtCss));
+
+    $this->assertGreaterThanOrEqual(2, count($source), 'Expected at least two font URLs in the library stylesheet.');
+
+    $names = static fn (array $urls): array => array_values(array_map('basename', $urls));
+    $sourceNames = $names($source);
+    $builtNames = $names($built);
+    sort($sourceNames);
+    sort($builtNames);
+    $this->assertSame($sourceNames, $builtNames, 'The library stylesheet and the committed inertia-app.css disagree on which fonts they load.');
+
+    foreach ($source as $url) {
+        $from = $resolve($libraryCss, $url);
+        $this->assertNotFalse($from, "The library stylesheet's font {$url} is not in the vendored build.");
+
+        $shipped = $root . '/public/assets/fonts/' . basename($url);
+        $this->assertFileExists($shipped);
+        $this->assertSame(
+            hash_file('sha256', $from),
+            hash_file('sha256', $shipped),
+            'public/assets/fonts/' . basename($url) . ' differs from the vendored library\'s copy; rebuild the bundle.',
+        );
+    }
 });
 
 it('ships the SIL Open Font License next to the fonts', function () use ($root): void {
