@@ -1,10 +1,16 @@
 name: Tests
 
+# Private repository: Actions minutes are billed. Linux only, superseded runs cancelled,
+# drafts skipped (mark a pull request ready to run the suite), a timeout on every job, and
+# one weekly run on main as the post-merge check.
 on:
   pull_request:
     branches: [main]
+    types: [opened, synchronize, reopened, ready_for_review]
     paths-ignore:
       - '**.md'
+  schedule:
+    - cron: '0 6 * * 1'
   workflow_dispatch:
 
 concurrency:
@@ -13,8 +19,9 @@ concurrency:
 
 jobs:
   frontend:
-    name: Frontend (vitest + typecheck)
+    name: Frontend (vitest + typecheck + build)
     runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     timeout-minutes: 15
 
     # The Inertia UI (#49) shipped 22 vitest files and a typecheck script, and no
@@ -38,8 +45,14 @@ jobs:
       - name: Vitest
         run: npm run test:js
 
+      # The committed bundle is what hosts receive, so it must at least build from this tree.
+      # The vendored react-icon-browser build is checked against its manifest by Vitest above.
+      - name: Build the browser bundle
+        run: npm run build:prod
+
   test:
     runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     timeout-minutes: 15
 
     strategy:
@@ -104,6 +117,7 @@ jobs:
   # ---------------------------------------------------------------------------
   test-databases:
     runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     timeout-minutes: 20
 
     strategy:
