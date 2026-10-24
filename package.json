@@ -2,7 +2,7 @@
     "$schema": "https://json.schemastore.org/package.json",
     "name": "@ichava/icon-browser",
     "version": "0.1.0",
-    "description": "SVG Icon Management Package with React + Inertia.js Browser (Laravel Integrated)",
+    "description": "Inertia + React adapter for the Ichava icon browser (Laravel). The browser UI is the vendored @ichava/react-icon-browser library.",
     "private": true,
     "type": "module",
     "scripts": {
@@ -14,7 +14,8 @@
         "dev": "vite --config vite.inertia.config.ts",
         "test:js": "vitest run",
         "test:js:watch": "vitest",
-        "typecheck:inertia": "tsc -p tsconfig.inertia.json"
+        "typecheck:inertia": "tsc -p tsconfig.inertia.json",
+        "sync:react-icon-browser": "node .dev/tools/sync-react-icon-browser.mjs"
     },
     "keywords": [
         "icons",
@@ -26,27 +27,20 @@
         "laravel"
     ],
     "dependencies": {
-        "@ichava/js-motion": "git+https://github.com/ichava/js-motion.git#v0.1.0",
+        "@ichava/react-icon-browser": "file:resources/vendor/react-icon-browser",
         "@inertiajs/react": "^3.0",
-        "@tanstack/react-virtual": "^3.14.8",
-        "@untitledui/icons": "^0.0.22",
-        "clsx": "^2.1.1",
-        "dompurify": "^3.4.14",
-        "fflate": "^0.8.3",
-        "react": "^19.2.8",
-        "react-aria": "^3.50.0",
-        "react-aria-components": "^1.19.0",
-        "react-dom": "^19.2.8",
-        "tailwind-merge": "^3.4.0",
-        "tailwindcss-react-aria-components": "^2.2.0",
-        "zustand": "^5.0.14"
+        "@untitledui/icons": "^0.0.23",
+        "react": "^19.3.1",
+        "react-aria": "^3.53.1",
+        "react-aria-components": "^1.22.1",
+        "react-dom": "^19.3.1",
+        "zustand": "^5.0.15"
     },
     "devDependencies": {
         "@tailwindcss/postcss": "^4.1.17",
         "@testing-library/dom": "^10.4.1",
         "@testing-library/jest-dom": "^7.0.0",
         "@testing-library/react": "^16.3.2",
-        "@types/dompurify": "^3.0.5",
         "@types/node": "^24.10.1",
         "@types/react": "^19.2.17",
         "@types/react-dom": "^19.2.3",
@@ -61,5 +55,6 @@
         "typescript": "~5.9.3",
         "vite": "^7.2.4",
         "vitest": "^4.1.12"
-    }
+    },
+    "license": "UNLICENSED"
 }

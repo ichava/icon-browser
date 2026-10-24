@@ -1,8 +1,10 @@
 name: Code Quality
 
+# Private repository: drafts skipped, superseded runs cancelled, a timeout on every job.
 on:
   pull_request:
     branches: [main]
+    types: [opened, synchronize, reopened, ready_for_review]
     paths-ignore:
       - '**.md'
   workflow_dispatch:
@@ -14,6 +16,7 @@ concurrency:
 jobs:
   pint:
     runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     timeout-minutes: 15
     name: Laravel Pint
 
@@ -49,6 +52,7 @@ jobs:
 
   phpstan:
     runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     timeout-minutes: 15
     name: PHPStan
 
@@ -84,6 +88,7 @@ jobs:
 
   security:
     runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     timeout-minutes: 15
     name: Security Audit
 
@@ -120,6 +125,7 @@ jobs:
   actionlint:
     name: Workflow lint
     runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     timeout-minutes: 5
 
     # Nothing else reads these files until a tag is pushed. `release.yml` triggers

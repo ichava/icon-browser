@@ -3,7 +3,7 @@ import { Link, usePage } from '@inertiajs/react';
 import { IconGrid } from '@/components/IconGrid';
 import { FlashBanner } from '@/components/FlashBanner';
 import { normalizeRawIcon } from '@/core/propsToCatalog';
-import { toIcon, type RawIcon } from '@/core/model';
+import { toIcon, type RawIcon } from '@/lib/browser';
 import type { SharedProps } from '@/types';
 
 interface CollectionDetail {

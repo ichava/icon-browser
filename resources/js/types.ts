@@ -9,8 +9,22 @@ export interface FlashMessages {
     error?: string;
 }
 
+/**
+ * What the browser shell says about this package (`ichava.icon-browser.ui` in config). The
+ * library's own defaults describe react-icon-browser, so without these the settings footer
+ * and the About dialog would show its version and an MIT licence this package does not have.
+ */
+export interface IchavaUi {
+    version: string | null;
+    license: string;
+    docsUrl: string | null;
+    links: { label: string; href: string }[];
+}
+
 export interface IchavaShared {
     prefix: string;
+    /** Optional: a host that replaces `HandleInertiaRequests` may not send it. */
+    ui?: IchavaUi;
     perPage: number;
     defaultTheme: string;
     routes: {

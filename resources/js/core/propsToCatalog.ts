@@ -1,5 +1,4 @@
-import { toIcon, type IconPackage, type RawIcon } from '@/core/model';
-import type { Catalog, CategoryGroup } from '@/core/IconRepository';
+import { toIcon, type Catalog, type CategoryGroup, type IconPackage, type RawIcon } from '@/lib/browser';
 
 /**
  * The props → catalog bridge (Phase 3).
@@ -10,6 +9,11 @@ import type { Catalog, CategoryGroup } from '@/core/IconRepository';
  * That keeps one uniform contract into `IconRepository`: filtering, tree,
  * related-icons and snippets all run client-side over the loaded set,
  * exactly as the static mode always did, with no component rewrites.
+ *
+ * Since the port onto @ichava/react-icon-browser the browser page no longer builds a static
+ * catalog from these props: `InertiaCatalog` serves them through the library's `IconCatalog`
+ * port instead, using the normalisers below. `propsToCatalog` itself is kept for any page or
+ * host that still wants a static catalog of the icons it was handed.
  */
 
 /** Server icon rows: `RawIcon` except category/variant may arrive null. */
@@ -59,7 +63,7 @@ export function propsToCatalog(icons: ServerIcon[], packages: ServerPackage[], t
  *
  * The PHP `IconBrowserService::buildIconTree()` serves `{id, title,
  * icon_count, children: [{name, label, icon_count, children}]}` while the
- * client tree (`IconRepository::categoryTree()`) is `{pack, label, count,
+ * client tree (the library's `CategoryGroup`) is `{pack, label, count,
  * cats: [{name, count, sub}]}`. `useInertiaCatalog` used to store the raw
  * prop, so `CategoryTree` crashed on `g.cats.filter` (`undefined.filter`).
  * Accept both shapes plus garbage (non-array → []) so a backend drift can

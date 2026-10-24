@@ -1,6 +1,6 @@
 import { Link } from '@inertiajs/react';
-import { IconAsset } from '@/components/ui/IconAsset';
-import type { Icon } from '@/core/model';
+import { IconImage } from '@/components/IconImage';
+import type { Icon } from '@/lib/browser';
 
 /**
  * Simple read-only icon grid for library pages (favorites, collections,
@@ -20,7 +20,7 @@ export function IconGrid({ icons, showBase, emptyHint }: { icons: Icon[]; showBa
           href={`${showBase}/${icon.id}`}
           className="theme-bg-card theme-bg-card-hover rounded-lg border theme-border flex flex-col items-center gap-1 p-3 theme-transition"
         >
-          <IconAsset icon={icon} size={32} />
+          <IconImage icon={icon} size={32} />
           <span className="theme-text-muted w-full truncate text-center text-[11px]">{icon.name}</span>
         </Link>
       ))}

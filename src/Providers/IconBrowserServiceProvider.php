@@ -27,9 +27,10 @@ use Simtabi\Laranail\Ichava\IconBrowser\View\Components\IchavaTestIconComponent;
 /**
  * Visual icon browser for the Ichava ecosystem.
  *
- * Adds the Vue/Vite SPA + Blade views for browsing, searching, and
- * copying icons from installed icon packs. Optional package, install
- * only when you want the visual UI; the rest of the ecosystem (core,
+ * Adds the Inertia + React browser pages (the vendored @ichava/react-icon-browser
+ * UI), Blade views, middleware and the optional REST API for browsing, searching
+ * and copying icons from installed icon packs. A licensed, proprietary add-on:
+ * install it only when you want the visual UI; the rest of the ecosystem (core,
  * icon packs) functions headlessly without it.
  *
  * Boot order: this provider's `bootingPackage()` runs after core's
@@ -42,6 +43,17 @@ use Simtabi\Laranail\Ichava\IconBrowser\View\Components\IchavaTestIconComponent;
  */
 class IconBrowserServiceProvider extends PackageServiceProvider
 {
+    /** The publish tag for the built browser assets. */
+    public const ASSETS_TAG = 'ichava::icon-browser-assets';
+
+    /**
+     * The asset tag's previous, bare name. Publishes the same paths.
+     *
+     * @deprecated 0.1.x Use ASSETS_TAG (`ichava::icon-browser-assets`). The earliest
+     *             release that may stop registering it is 0.2.0.
+     */
+    public const DEPRECATED_ASSETS_TAG = 'ichava-assets';
+
     /**
      * Declare the browser package metadata, assets, and commands.
      */
@@ -96,14 +108,18 @@ class IconBrowserServiceProvider extends PackageServiceProvider
             SriAsset::class,
         );
 
-        // Publish the Vite-built browser SPA dist (CSS/JS) into the host's
+        // Publish the Vite-built browser bundle (CSS/JS/fonts) into the host's
         // public/vendor/ichava/ namespace. The asset HTTP path stays under
         // `vendor/ichava/...` regardless of the package name so existing
         // views and bookmarks keep working.
+        //
+        // The tag is `ichava::icon-browser-assets`, the vendor-scoped shape every
+        // other publish tag here takes. `ichava-assets` is the bare name it had
+        // before; it publishes the same paths and stays for one release.
         if ($this->app->runningInConsole()) {
             $this->publishes([
                 $this->package->basePath('public') => public_path('vendor/ichava'),
-            ], ['ichava-assets', 'laravel-assets']);
+            ], [self::ASSETS_TAG, self::DEPRECATED_ASSETS_TAG, 'laravel-assets']);
         }
 
         // Register the browser's bundled `ui-icons` set with the core registry.

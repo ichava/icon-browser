@@ -54,6 +54,27 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | What the browser shell says about this package
+    |--------------------------------------------------------------------------
+    | Shared to the browser page as `ichava.ui`. The browser UI is the vendored
+    | @ichava/react-icon-browser library, whose own defaults describe that
+    | library: without these the settings footer and the About dialog would show
+    | its version and an MIT licence. This package is proprietary.
+    |
+    | `docs_url` is the Help menu's Docs link and must stay equal to
+    | composer.json's `support.docs` (UiConfigTest). `links` are extra About
+    | dialog links, `[['label' => ..., 'href' => ...], ...]`.
+    */
+    'ui' => [
+        'license'  => env('ICHAVA_BROWSER_UI_LICENSE', 'Proprietary'),
+        'docs_url' => env('ICHAVA_BROWSER_UI_DOCS_URL', 'https://github.com/ichava/icon-browser/tree/main/docs'),
+        'links'    => [
+            ['label' => 'simtabi.com', 'href' => 'https://simtabi.com'],
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Demo / test components
     |--------------------------------------------------------------------------
     | The `<x-ichava::ichava-test-icons>` and `<x-ichava::ichava-ui-icons>`

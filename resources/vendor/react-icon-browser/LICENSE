@@ -1,0 +1,36 @@
+Copyright (c) Simtabi LLC. All rights reserved.
+
+This software and its source code are proprietary and confidential. No part of
+it may be copied, modified, distributed, published, sublicensed or sold, in
+whole or in part, without the prior written permission of Simtabi LLC.
+
+Untitled UI PRO
+---------------
+This package includes components from Untitled UI React PRO, used under the
+Untitled UI licence (https://www.untitledui.com/license). They live under:
+
+- src/components/application/command-menus
+- src/components/application/modal-layouts
+- src/components/application/notifications
+- src/components/application/tree-view
+- src/components/shared-assets
+
+and each file opens with a comment saying so. That licence does not permit
+exposing their source code publicly or redistributing them as a UI kit or
+library. This repository must therefore remain private, and
+its source may be shared only with people who hold their own Untitled UI
+licence.
+
+Third-party components
+----------------------
+Third-party code in this repository stays under its own licence:
+
+- Untitled UI React (free components, vendored under src/components/base,
+  src/components/foundations, src/components/application except the PRO
+  folders listed above, and src/styles/uui-theme.css): MIT License,
+  Copyright (c) Untitled UI.
+  https://github.com/untitleduico/react/blob/main/LICENSE
+- Geist and Geist Mono fonts (public/fonts, copied into dist/lib/fonts by the
+  library build): SIL Open Font License 1.1, Copyright (c) Vercel.
+- Icon assets under public/assets keep the licence of their upstream icon set,
+  as recorded by each Ichava icon pack.

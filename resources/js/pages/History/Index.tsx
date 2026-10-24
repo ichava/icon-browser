@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
 import { Link, usePage } from '@inertiajs/react';
-import { IconAsset } from '@/components/ui/IconAsset';
+import { IconImage } from '@/components/IconImage';
 import { FlashBanner } from '@/components/FlashBanner';
 import { normalizeRawIcon, type ServerIcon } from '@/core/propsToCatalog';
-import { toIcon, type Icon } from '@/core/model';
+import { toIcon, type Icon } from '@/lib/browser';
 import type { SharedProps } from '@/types';
 
 interface HistoryRow {
@@ -51,7 +51,7 @@ export default function HistoryIndex() {
               >
                 {entry.icon ? (
                   <Link href={`${showBase}/${entry.icon_id}`} className="flex-shrink-0">
-                    <IconAsset icon={entry.icon as Icon} size={24} />
+                    <IconImage icon={entry.icon as Icon} size={24} />
                   </Link>
                 ) : (
                   <span className="theme-text-muted font-mono text-xs">#{entry.icon_id}</span>

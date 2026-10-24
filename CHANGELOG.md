@@ -4,17 +4,49 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
 
 ## [Unreleased]
 
-### Security
-
-- **Vitest is raised from `^2.1.5` to `^4.1.12`**, with `@vitest/coverage-v8` alongside, which clears two Dependabot alerts: GHSA-5xrq-8626-4rwp (critical, fixed in 3.2.6: arbitrary file read and execution while the Vitest UI server listens) and GHSA-82fw-gwwq-j7x9 (moderate, fixed in 4.1.11: path traversal through `@vitest/mocker` redirect mocks). A dev dependency only; nothing it touches ships in the bundle. 4.1 keeps Vite 7 and Node 24 supported.
-
 ### Added
 
+- **`ichava.ui` in the shared Inertia props**, from the new `ichava.icon-browser.ui` config block: this package's version, licence (`Proprietary`), Docs link (equal to `composer.json` `support.docs`, pinned by `UiConfigTest`) and About links. The browser shows these instead of the library's defaults, which describe react-icon-browser (A6 N5: the settings footer read "MIT").
+
+- **`npm run sync:react-icon-browser`** (`.dev/tools/sync-react-icon-browser.mjs`) vendors a new build of the library from a react-icon-browser checkout; it refuses uncommitted source or a stale `dist/lib`, and leaves out the source map, whose sources are the readable library source. `docs/release.md` documents the update.
+
+- **`SECURITY.md`**, email only (`security@simtabi.com`): private vulnerability reporting does not exist on a private repository. The issue chooser points there too.
+
+- **Guards:** `vendoredLibrary.test.ts` (the vendored files match their manifest), `ProprietaryPackageTest` (no MIT claim, proprietary manifests, email-only disclosure, the release refusal), `AssetPublishTagTest`, `UiConfigTest`, and adapter tests for `InertiaCatalog`, `libraryDiff`, `useLibrarySync` and the mount, which renders `IchavaBrowser` from `Browser/Index` props with no visit.
+
 - **Releases are prepared by release-please.** A *Release Please* workflow reads the Conventional Commit log, keeps one release pull request open that bumps `.release-please-manifest.json` and `package.json`, and tags the release when that pull request merges; the tag starts `release.yml` as before. On 0.x a breaking change bumps the minor and everything else bumps the patch. The minor moves in lockstep with the other coupled ichava packages: a breaking change anywhere in the family reaches every coupled repository as a `Release-As: 0.N.0` footer, so `^0.N` means the same line everywhere. Release notes stay hand-written: release-please is set to `skip-changelog`, and the workflow closes this `[Unreleased]` section under the new version on the release branch, failing if it is empty. It runs on `workflow_dispatch`, a weekly schedule, and the merge of a release pull request, so the only `push` trigger is still the tag. The pull request and the tag are made with a per-run Refresh Bot token, because ones made with `GITHUB_TOKEN` start no workflows. `release.yml` gains a `workflow_dispatch` recovery path for a tag push that started nothing; its first step refuses any ref that is not a `vX.Y.Z` tag.
+
+### Changed
+
+- **The browser UI is `@ichava/react-icon-browser`, ported in whole.** `resources/js` held a fork of it (copied 2026-09-23; 44 of its files had since diverged from the library and 15 lagged behind it, `.claude/design/react-ui/audits/fork-diff.md`). The 143 forked files are removed and the library's built output is vendored under `resources/vendor/react-icon-browser`, from react-icon-browser `c37ae66` (0.1.0, `main`), with a `VENDORED.json` naming that commit and hashing every file. `resources/js` is now the Inertia adapter, 24 files kept and 13 added: `pages/Browser/Index.tsx` builds the browser with the library's `browser()` builder, `InertiaCatalog` implements the library's `IconCatalog` port over Inertia (the first page from the props, every other page a partial reload of the same route, so the JSON API can stay off), and `useLibrarySync` sends the browser's favourite, history and collection changes to the Inertia routes. The look and behaviour are react-icon-browser's as verified in its A6 audit, which differ from the fork's in places; the committed bundle is rebuilt and changes throughout.
+
+- **This package is proprietary, and its repository private.** It ships the library's build, which contains Untitled UI PRO components, and that licence forbids exposing them publicly. `LICENSE` is now proprietary (© Simtabi LLC, with the Untitled UI PRO terms), `composer.json` declares `"license": "proprietary"`, `package.json` `"UNLICENSED"`, and the README carries no MIT badge or claim. **Installing it now needs a licence and a GitHub token with read access to the repository** (`docs/installation.md` gives the `repositories` entry and the `COMPOSER_AUTH` form). `ichava/core` and the icon packs stay open source and work headless without it.
+
+- **Library writes change the browser first, then the server.** The forked UI sent every favourite, history and collection write to the server and waited for its reload. The library changes its store at once; `useLibrarySync` replays the change against the same Inertia routes, and the reload's props replace the store's, so a write the server refuses is undone. Library visits are `async`, so a quick second write no longer cancels the first, and creating a collection no longer remounts the page (it was `preserveState: false`).
+
+- **Stored history verbs are read back as the browser's.** The server records `view`/`copy`/`download` and the browser `viewed`/`copied`/`downloaded`; hydrated entries are mapped back, so an icon viewed again replaces its entry instead of adding a second.
+
+- **`per_page` is clamped to at least 10**, `IconFilterRequest`'s minimum, as it already was to at most 120. Below it a page change bounced a validation error.
+
+- **The asset publish tag is `ichava::icon-browser-assets`.** See *Deprecated*.
+
+- **CI follows the private-repository policy.** Draft pull requests run nothing (mark one ready to run the checks), every job keeps its timeout and superseded runs are cancelled, `tests.yml` gains one weekly run on `main` as the post-merge check and a bundle build in the frontend job, and Dependabot groups GitHub Actions and npm updates as it already did Composer's. `release.yml` refuses to publish from a public repository.
+
+### Deprecated
+
+- **The `ichava-assets` publish tag.** Use `ichava::icon-browser-assets`; the old tag publishes the same paths (`IconBrowserServiceProvider::DEPRECATED_ASSETS_TAG`) and may be removed in 0.2.0 (plan I3).
+
+### Removed
+
+- **The forked browser UI in `resources/js`** (143 files: components, engines, hooks, store, styles and their tests), replaced by the vendored library above. Its tests live on in react-icon-browser, which carries every fix the fork had (A0, `fork-diff.md`). Dependencies only the fork imported are dropped from `package.json`: `@ichava/js-motion`, `@tanstack/react-virtual`, `clsx`, `dompurify`, `fflate`, `tailwind-merge`, `tailwindcss-react-aria-components`, `@types/dompurify`; the library bundles its own. React, `react-aria`, `react-aria-components` and `zustand` move to the library's peer floors.
 
 ### Fixed
 
 - **The release pull request is found in the same run that opens it.** The step that hands the release branch to the changelog close asked `gh pr list --label 'autorelease: pending'`, which goes through GitHub's search index; on the first live run (js-motion#30) the index had not caught up with the pull request opened seconds earlier, so the close was skipped and a second dispatch was needed. It now takes the branch from release-please's own `pr` output, and only when the action reports nothing (the pull request was already current) falls back to the open pull requests, matched by the `release-please--branches--main` prefix rather than the label.
+
+### Security
+
+- **Vitest is raised from `^2.1.5` to `^4.1.12`**, with `@vitest/coverage-v8` alongside, which clears two Dependabot alerts: GHSA-5xrq-8626-4rwp (critical, fixed in 3.2.6: arbitrary file read and execution while the Vitest UI server listens) and GHSA-82fw-gwwq-j7x9 (moderate, fixed in 4.1.11: path traversal through `@vitest/mocker` redirect mocks). A dev dependency only; nothing it touches ships in the bundle. 4.1 keeps Vite 7 and Node 24 supported.
 
 ## [0.1.0] - 2026-10-23
 

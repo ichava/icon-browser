@@ -1,96 +1,28 @@
-import { useEffect, useMemo } from 'react';
-import { propsToCatalog, toCategoryGroups, type ServerIcon, type ServerPackage } from '@/core/propsToCatalog';
-import type { Catalog } from '@/core/IconRepository';
-import type { IconId } from '@/core/model';
-import { useStore, type Collection, type HistoryEntry } from '@/store';
+import { useEffect } from 'react';
+import { hydrateLibrary, type BrowserMount, type BrowserPageProps } from '@/core/browserMount';
 
-/** Server collection rows (`icon_ids` plus resolved icons). */
-export interface ServerCollection {
-  id: string;
-  name: string;
-  icon_ids?: number[];
-  [key: string]: unknown;
-}
-
-/** Server history rows. */
-export interface ServerHistoryEntry {
-  icon_id: number;
-  action: string;
-  timestamp?: string;
-  [key: string]: unknown;
-}
-
-export interface ServerPagination {
-  total: number;
-  per_page: number;
-  current_page: number;
-  last_page: number;
-  from: number | null;
-  to: number | null;
-}
+export type { ServerCollection, ServerHistoryEntry } from '@/core/browserMount';
+export type { ServerPagination } from '@/core/InertiaCatalog';
 
 /**
- * Build the client catalog from Inertia props and hydrate the store slices
- * derived from the server (library data, server page/tree truth).
+ * Keep a browser mount on the page's props.
  *
- * Filter state is owned by `useInertiaFilters`, not here: seeding filters
- * from every prop update would clobber in-flight edits.
+ * Every Inertia visit to `Browser/Index` (a page change, a library write's partial reload)
+ * hands the page new props. The listing goes into the mount's `InertiaCatalog`, so the
+ * browser's next request for that page is answered without another visit, and the library
+ * props are written over the store, since the server is the record for those.
+ *
+ * Filter state is owned by `useFilterSync`, not here: seeding filters from every prop update
+ * would clobber in-flight edits.
  */
-export function useInertiaCatalog(opts: {
-  icons: ServerIcon[];
-  packages: ServerPackage[];
-  total: number;
-  pagination?: ServerPagination | null;
-  tree?: unknown;
-  favorites?: IconId[] | null;
-  collections?: ServerCollection[] | null;
-  history?: ServerHistoryEntry[] | null;
-}): Catalog {
-  const catalog = useMemo(
-    () => propsToCatalog(opts.icons, opts.packages, opts.total),
-    // New array identities per visit; stable across renders of one visit.
-    [opts.icons, opts.packages, opts.total],
-  );
+export function useInertiaCatalog(mount: BrowserMount, props: BrowserPageProps): void {
+  const { icons, pagination, appliedFilters, favorites, collections, history } = props;
 
   useEffect(() => {
-    const set = useStore.setState;
+    mount.client.update({ icons, pagination, appliedFilters });
+  }, [mount, icons, pagination, appliedFilters]);
 
-    if (opts.pagination) {
-      const p = opts.pagination;
-      set({
-        serverPage: {
-          total: p.total,
-          page: p.current_page,
-          perPage: p.per_page,
-          lastPage: p.last_page,
-          rangeStart: p.from ?? 0,
-          rangeEnd: p.to ?? 0,
-        },
-      });
-    }
-
-    if (opts.tree) set({ serverTree: toCategoryGroups(opts.tree) });
-    if (opts.favorites) set({ favorites: opts.favorites.map(Number) });
-
-    if (opts.collections) {
-      const collections: Collection[] = opts.collections.map((c) => ({
-        id: String(c.id),
-        name: String(c.name ?? ''),
-        icons: (c.icon_ids ?? []).map(Number),
-      }));
-      set({ collections });
-    }
-
-    if (opts.history) {
-      const history: HistoryEntry[] = opts.history.map((h) => ({
-        id: Number(h.icon_id),
-        action: String(h.action ?? 'view'),
-        ts: h.timestamp ? Date.parse(h.timestamp) || Date.now() : Date.now(),
-      }));
-      set({ history });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- keyed on visit payload
-  }, [catalog]);
-
-  return catalog;
+  useEffect(() => {
+    hydrateLibrary(mount.store, { favorites, collections, history });
+  }, [mount, favorites, collections, history]);
 }

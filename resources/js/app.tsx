@@ -1,7 +1,11 @@
 import { createRoot } from 'react-dom/client';
 import { createInertiaApp } from '@inertiajs/react';
 import '../assets/styles/ichava.scss';
-import '@/styles/theme.css';
+// The browser shell's stylesheet, prebuilt by @ichava/react-icon-browser (vendored under
+// resources/vendor/react-icon-browser). It sets nothing on html or body; its tokens are
+// scoped to the browser's root, and its fonts sit next to it.
+import '@ichava/react-icon-browser/styles.css';
+import '@/styles/pages.css';
 
 void createInertiaApp({
     title: (title) => (title ? `${title} - Ichava` : 'Ichava'),
