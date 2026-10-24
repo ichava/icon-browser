@@ -4,6 +4,10 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
 
 ## [Unreleased]
 
+### Security
+
+- **Vitest is raised from `^2.1.5` to `^4.1.12`**, with `@vitest/coverage-v8` alongside, which clears two Dependabot alerts: GHSA-5xrq-8626-4rwp (critical, fixed in 3.2.6: arbitrary file read and execution while the Vitest UI server listens) and GHSA-82fw-gwwq-j7x9 (moderate, fixed in 4.1.11: path traversal through `@vitest/mocker` redirect mocks). A dev dependency only; nothing it touches ships in the bundle. 4.1 keeps Vite 7 and Node 24 supported.
+
 ### Added
 
 - **Releases are prepared by release-please.** A *Release Please* workflow reads the Conventional Commit log, keeps one release pull request open that bumps `.release-please-manifest.json` and `package.json`, and tags the release when that pull request merges; the tag starts `release.yml` as before. On 0.x a breaking change bumps the minor and everything else bumps the patch. The minor moves in lockstep with the other coupled ichava packages: a breaking change anywhere in the family reaches every coupled repository as a `Release-As: 0.N.0` footer, so `^0.N` means the same line everywhere. Release notes stay hand-written: release-please is set to `skip-changelog`, and the workflow closes this `[Unreleased]` section under the new version on the release branch, failing if it is empty. It runs on `workflow_dispatch`, a weekly schedule, and the merge of a release pull request, so the only `push` trigger is still the tag. The pull request and the tag are made with a per-run Refresh Bot token, because ones made with `GITHUB_TOKEN` start no workflows. `release.yml` gains a `workflow_dispatch` recovery path for a tag push that started nothing; its first step refuses any ref that is not a `vX.Y.Z` tag.
