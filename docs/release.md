@@ -53,9 +53,26 @@ An empty result means no consumed code moved and the constraint stays where it i
 
 ## Assets ship pre-built
 
-The SPA is published as pre-built Vite output through `vendor:publish --tag=ichava-assets`, so a consuming application needs no JS toolchain. That makes the build a **release-time** concern: the artifacts committed for a tag are what consumers receive.
+The browser is published as a pre-built bundle through `vendor:publish --tag=ichava::icon-browser-assets`, so a consuming application needs no JS toolchain. That makes the build a **release-time** concern: the artifacts committed for a tag are what consumers receive.
 
-> `vite.config.js` imports a shared configurator from outside this repository, so a frontend build only works inside the host workspace. A release cut elsewhere cannot rebuild the assets.
+`npm run build:prod` rebuilds `public/assets/js/inertia-app.js` and `public/assets/css/inertia-app.css` from `resources/js` and the vendored library (`vite.inertia.config.ts`, self-contained). No lock file is committed, so a rebuild on another day can resolve different React or Inertia patch releases and rewrite most of the minified bundle; review the build as a whole, not as a diff.
+
+## Updating the browser UI
+
+The browser UI is `@ichava/react-icon-browser`, vendored as a build (see [Architecture](architecture.md#the-browser-ui-is-react-icon-browser-vendored)). To take a new version of it:
+
+```bash
+# in react-icon-browser, on the commit to ship (main, or a tag)
+npm install && npm run build:lib
+
+# here
+npm run sync:react-icon-browser -- ../react-icon-browser
+npm install && npm run typecheck:inertia && npm run test:js && npm run build:prod
+```
+
+The sync refuses a checkout with uncommitted source or a `dist/lib` older than its commit, and writes `resources/vendor/react-icon-browser/VENDORED.json`. `vendoredLibrary.test.ts` fails on any file that does not match it, so never edit the vendored files by hand. Name the library commit in the changelog entry.
+
+This repository is private and must stay private: the vendored build and the committed bundle both contain Untitled UI PRO components ([LICENSE](../LICENSE)). `release.yml` refuses to publish from a public repository.
 
 There is no `version` field in `composer.json` — the version comes from the git tag. No lock file is committed.
 

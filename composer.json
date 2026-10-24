@@ -1,6 +1,6 @@
 {
     "name": "ichava/icon-browser",
-    "description": "Visual icon browser for the Ichava ecosystem. Vue/Vite SPA, Blade views, REST API, and middleware for searching, previewing, and copying icons from installed Ichava icon packs.",
+    "description": "Visual icon browser for the Ichava ecosystem: Inertia + React browser pages, REST API and middleware for searching, previewing and copying icons from installed Ichava icon packs. Proprietary, licensed add-on.",
     "type": "library",
     "keywords": [
         "laravel",
@@ -8,18 +8,19 @@
         "icons",
         "svg",
         "browser",
-        "ReactJs",
+        "react",
+        "inertia",
         "vite",
         "ichava"
     ],
-    "homepage": "https://opensource.simtabi.com/products/ichava/icon-browser",
+    "homepage": "https://github.com/ichava/icon-browser",
     "support": {
         "source": "https://github.com/ichava/icon-browser",
         "issues": "https://github.com/ichava/icon-browser/issues",
-        "security": "https://github.com/ichava/icon-browser/security/policy",
-        "docs": "https://opensource.simtabi.com/documentation/ichava/icon-browser/"
+        "security": "https://github.com/ichava/icon-browser/blob/main/SECURITY.md",
+        "docs": "https://github.com/ichava/icon-browser/tree/main/docs"
     },
-    "license": "MIT",
+    "license": "proprietary",
     "authors": [
         {
             "name": "Imani Manyara",

@@ -2,32 +2,64 @@
 
 [![Tests](https://github.com/ichava/icon-browser/actions/workflows/tests.yml/badge.svg)](https://github.com/ichava/icon-browser/actions/workflows/tests.yml)
 [![Code Quality](https://github.com/ichava/icon-browser/actions/workflows/code-quality.yml/badge.svg)](https://github.com/ichava/icon-browser/actions/workflows/code-quality.yml)
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-> The HTTP layer for the Ichava Laravel icon ecosystem — REST API, React 19 + Inertia.js browser pages and middleware, installed on top of `ichava/core` when you want a visual icon browser or programmatic REST access.
+Two badges, not four: the package is not on Packagist, so there is no registry version to show, and it is proprietary, not MIT.
 
-This package is not published to Packagist, so there is no registry-version badge to show. Targets PHP `^8.4.1 || ^8.5` on Laravel `^13`, against `ichava/core` `^0.1`.
+> The HTTP layer for the Ichava Laravel icon ecosystem: the icon browser (Inertia pages around `@ichava/react-icon-browser`), the REST API and the middleware, installed on top of `ichava/core`.
+
+A licensed, proprietary package in a private repository. Targets PHP `^8.4.1 || ^8.5` on Laravel `^13`, against `ichava/core` `^0.1`. Core and the icon packs stay open source and work headless without it.
 
 ## Install
 
+The repository is private, so Composer needs its repository entry and a GitHub token that can read it:
+
 ```bash
-composer require ichava/icon-browser
+composer config repositories.ichava-icon-browser vcs https://github.com/ichava/icon-browser
+composer config --global --auth github-oauth.github.com <token>
+composer require ichava/icon-browser:^0.1
 ```
 
-Browser and its dependencies are unpublished, so your application's `composer.json` needs VCS repository entries before that command resolves — [Installation](docs/installation.md) gives the block, then covers publishing the config and SPA assets and reaching the browser at `/{prefix}/icons`.
+[Installation](docs/installation.md) gives the full repository block (core's dependencies are unpublished too), the `COMPOSER_AUTH` form for CI, and the asset publishing.
+
+## Quick start guide and usage
+
+### Getting started
+
+Publish the config and the pre-built browser bundle, and seed at least one icon pack:
+
+```bash
+php artisan vendor:publish --tag=ichava::icon-browser-config
+php artisan vendor:publish --tag=ichava::icon-browser-assets
+composer require ichava/icon-sets-tabler
+php artisan ichava::ichava-core.database seed --package=ichava/icon-sets-tabler
+```
+
+### Usage
+
+Open the browser at `/{prefix}/icons` (`/ichava/icons` by default). To expose the JSON API as well, turn it on:
+
+```dotenv
+ICHAVA_API_ENABLED=true
+```
+
+```bash
+curl "https://example.test/ichava/api/icons?search=home&packages[]=ichava/icon-sets-tabler"
+```
+
+[Getting started](docs/getting-started.md) walks through both; the [Documentation](#documentation) index covers the rest.
 
 ## <a name="documentation"></a>Documentation
 
-Full documentation is at **[opensource.simtabi.com/documentation/ichava/icon-browser](https://opensource.simtabi.com/documentation/ichava/icon-browser/)**.
+The docs live in this repository, under [`docs/`](docs/).
 
 ### Guides
 
-- [Installation](docs/installation.md) — VCS repositories, config, asset publishing, the prefix
+- [Installation](docs/installation.md) — private repository access, config, asset publishing, the prefix
 - [Getting started](docs/getting-started.md) — the browser and your first REST call
 - [Configuration](docs/configuration.md) — every config key and what it changes
 - [Environment variables](docs/environment.md) — the `ICHAVA_BROWSER_*` surface
-- [Architecture](docs/architecture.md) — what browser ships, the middleware stack, hybrid auth
-- [Release](docs/release.md) — how a version is cut, and what a release carries
+- [Architecture](docs/architecture.md) — what the package ships, the vendored browser UI, the middleware stack, hybrid auth
+- [Release](docs/release.md) — how a version is cut, and how the browser UI is updated
 
 ### Reference
 
@@ -40,8 +72,8 @@ Full documentation is at **[opensource.simtabi.com/documentation/ichava/icon-bro
 
 ## Contributing & security
 
-See [CONTRIBUTING.md](CONTRIBUTING.md). PHP tests run with `vendor/bin/pest`; the frontend dev server is `npm install && npm run dev` on port 5174. Report vulnerabilities privately through [security policy](https://github.com/ichava/icon-browser/security/policy) — never in a public issue.
+Contributions come from licensed collaborators with access to this repository; see [CONTRIBUTING.md](CONTRIBUTING.md). Report vulnerabilities to **security@simtabi.com**, never in an issue; see [SECURITY.md](SECURITY.md).
 
 ## License
 
-MIT. © Simtabi LLC. See [LICENSE](LICENSE).
+Proprietary. © Simtabi LLC, all rights reserved. The browser interface includes Untitled UI PRO components, used under the Untitled UI licence. See [LICENSE](LICENSE).
