@@ -54,7 +54,7 @@
         "tailwindcss-animate": "^1.0.7",
         "typescript": "~5.9.3",
         "vite": "^7.2.4",
-        "vitest": "^4.1.12"
+        "vitest": "^5.0.5"
     },
     "license": "UNLICENSED"
 }
