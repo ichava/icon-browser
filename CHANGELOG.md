@@ -32,6 +32,8 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
 
 - **CI follows the private-repository policy.** Draft pull requests run nothing (mark one ready to run the checks), every job keeps its timeout and superseded runs are cancelled, `tests.yml` gains one weekly run on `main` as the post-merge check and a bundle build in the frontend job, and Dependabot groups GitHub Actions and npm updates as it already did Composer's. `release.yml` refuses to publish from a public repository.
 
+- **`@types/node` is raised from `^24.10.1` to `^26.6.5`.** Type definitions only: `tsconfig.inertia.json` loads them, and nothing from them reaches the bundle, which builds byte for byte as before. CI still runs Node 24, so the types now describe some Node 26 APIs the runner lacks; the only Node code here is the Vite and Vitest configs, which use `node:url` alone.
+
 ### Deprecated
 
 - **The `ichava-assets` publish tag.** Use `ichava::icon-browser-assets`; the old tag publishes the same paths (`IconBrowserServiceProvider::DEPRECATED_ASSETS_TAG`) and may be removed in 0.2.0 (plan I3).
