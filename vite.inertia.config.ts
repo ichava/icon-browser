@@ -47,7 +47,16 @@ export default defineConfig({
         emptyOutDir: false, // NEVER wipe the Vue / React parallel-run output
         cssCodeSplit: false, // single CSS file, like the other builds
         manifest: false, // Blade loads a fixed path, not a manifest
-        rollupOptions: {
+        // Vite 8 minifies CSS with Lightning CSS and raised the default browser targets.
+        // Both change the committed inertia-app.css: Lightning CSS merges the two Tailwind
+        // stylesheets' duplicate layers, which moves rules, and drops the -moz- prefixes the
+        // old targets kept. Until that output has been checked in a browser, keep the
+        // stylesheet as Vite 7 built it: esbuild's minifier, Vite 7's default targets.
+        // With these two lines the CSS matches Vite 7's byte for byte, apart from the
+        // `/*$vite$:1*/` marker Vite 8 appends.
+        cssMinify: 'esbuild',
+        cssTarget: ['chrome107', 'edge107', 'firefox104', 'safari16'],
+        rolldownOptions: {
             input: 'resources/js/app.tsx',
             output: {
                 entryFileNames: 'assets/js/inertia-app.js',
