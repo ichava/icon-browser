@@ -30,6 +30,8 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
 
 - **The asset publish tag is `ichava::icon-browser-assets`.** See *Deprecated*.
 
+- **Vitest is raised from `^4.1.12` to `^5.0.5`, with `@vitest/coverage-v8` alongside.** The config needed no change. Vitest 5 takes Vite as a peer (`^6.4 || ^7 || ^8`), which the dev dependency already satisfies. It needs Node 22.12 or later, and CI runs 24. Its new `clearMocks: true` default affects nothing, because every mock here is created inside its own test. Coverage reports the same 434 statements across the same files, so the root-relative `include` patterns still match.
+
 - **CI follows the private-repository policy.** Draft pull requests run nothing (mark one ready to run the checks), every job keeps its timeout and superseded runs are cancelled, `tests.yml` gains one weekly run on `main` as the post-merge check and a bundle build in the frontend job, and Dependabot groups GitHub Actions and npm updates as it already did Composer's. `release.yml` refuses to publish from a public repository.
 
 ### Deprecated
