@@ -656,15 +656,62 @@ function Bt(e) {
 	} catch {}
 	for (let t of Rt) t(e);
 }
+// node_modules/@ichava/js-ui-kernel/dist/consent.js
+var Vt = "ichava.consent";
+function Ht(e) {
+	return e === "essential" || e === "all";
+}
+var Ut = /* @__PURE__ */ new Set();
+function Wt() {
+	try {
+		let e = globalThis.localStorage?.getItem(Vt);
+		return Ht(e) ? e : null;
+	} catch {
+		return null;
+	}
+}
+function Gt(e) {
+	try {
+		e === null ? globalThis.localStorage?.removeItem(Vt) : globalThis.localStorage?.setItem(Vt, e);
+	} catch {}
+	for (let t of Ut) t(e);
+}
+function Kt(e) {
+	return Ut.add(e), () => {
+		Ut.delete(e);
+	};
+}
+function qt(e) {
+	let t = Wt();
+	return t === null ? Ht(e) ? (Gt(e), e) : null : t;
+}
+var Jt = [], Yt = /* @__PURE__ */ new Set();
+function Xt() {
+	for (let e of Yt) e();
+}
+function Zt(e) {
+	return Jt.includes(e) || (Jt.push(e), Xt()), () => {
+		let t = Jt.indexOf(e);
+		t !== -1 && (Jt.splice(t, 1), Xt());
+	};
+}
+function Qt(e) {
+	return Jt[0] === e;
+}
+function $t(e) {
+	return Yt.add(e), () => {
+		Yt.delete(e);
+	};
+}
 // src/core/format.ts
-var Vt = (e) => e.toLocaleString("en-US");
-function Ht() {
+var en = (e) => e.toLocaleString("en-US");
+function tn() {
 	return typeof navigator > "u" ? "Ctrl+" : /Mac|iPhone|iPad|iPod/.test(navigator.platform) ? "⌘" : "Ctrl+";
 }
-function Ut(e = Ht()) {
+function nn(e = tn()) {
 	return e === "⌘" ? "⇧⌘⌫" : "Ctrl+Shift+Backspace";
 }
-function Wt(e, t = Date.now()) {
+function rn(e, t = Date.now()) {
 	let n = Math.max(0, Math.round((t - e) / 1e3));
 	if (n < 5) return "just now";
 	if (n < 60) return `${n}s ago`;
@@ -673,7 +720,7 @@ function Wt(e, t = Date.now()) {
 	let i = Math.round(r / 60);
 	return i < 24 ? `${i}h ago` : `${Math.round(i / 24)}d ago`;
 }
-function Gt(e, t, n = 62) {
+function an(e, t, n = 62) {
 	let r = n / 100 * Math.min(t / 100, 1 - t / 100), i = (n) => {
 		let i = (n + e / 30) % 12, a = t / 100 - r * Math.max(Math.min(i - 3, 9 - i, 1), -1);
 		return Math.round(255 * a).toString(16).padStart(2, "0");
@@ -681,7 +728,7 @@ function Gt(e, t, n = 62) {
 	return `#${i(0)}${i(8)}${i(4)}`;
 }
 // src/core/i18n.ts
-var Kt = [
+var on = [
 	{
 		code: "en",
 		label: "English",
@@ -718,10 +765,10 @@ var Kt = [
 		dir: "rtl"
 	}
 ];
-function qt(e) {
-	return Kt.find((t) => t.code === e)?.dir ?? "ltr";
+function sn(e) {
+	return on.find((t) => t.code === e)?.dir ?? "ltr";
 }
-var Jt = {
+var cn = {
 	en: {
 		"detail.snippetFormat": "Snippet format",
 		"console.code": "Code",
@@ -3243,35 +3290,35 @@ var Jt = {
 		"clipboard.copied": "تم النسخ إلى الحافظة"
 	}
 };
-function Yt(e) {
+function ln(e) {
 	return e;
 }
-var Xt = {};
-function Zt(e, t = Xt) {
-	return It.of(Jt).withOverrides(t).locale(e);
+var un = {};
+function dn(e, t = un) {
+	return It.of(cn).withOverrides(t).locale(e);
 }
-function Qt(e, t, n) {
-	return Zt(e.locale, e.translationOverrides).t(t, n);
+function fn(e, t, n) {
+	return dn(e.locale, e.translationOverrides).t(t, n);
 }
 // src/core/api/httpClient.ts
-var $t = new $e();
-function en() {
-	return $t;
+var pn = new $e();
+function mn() {
+	return pn;
 }
-function tn(e) {
-	$t = $t.with(e);
+function hn(e) {
+	pn = pn.with(e);
 }
-function nn() {
-	return $t.config;
+function gn() {
+	return pn.config;
 }
-function rn() {
-	return $t.initCsrf();
+function _n() {
+	return pn.initCsrf();
 }
-function an(e, t = {}) {
-	return $t.request(e, t);
+function vn(e, t = {}) {
+	return pn.request(e, t);
 }
 // src/core/api/ApiClient.ts
-var on = class {
+var yn = class {
 	repo;
 	#e;
 	constructor(e) {
@@ -3284,7 +3331,7 @@ var on = class {
 		return this.repo.byId(e) ?? null;
 	}
 	async getSvg(e, t) {
-		return e.svgContent ? e.svgContent : e.svgUrl ? an(e.svgUrl, {
+		return e.svgContent ? e.svgContent : e.svgUrl ? vn(e.svgUrl, {
 			raw: !0,
 			baseUrl: "",
 			signal: t
@@ -3314,17 +3361,17 @@ var on = class {
 	async getVariantCounts(e) {
 		return this.repo.variantCounts(e);
 	}
-}, sn = class e {
+}, bn = class e {
 	#e;
 	#t = null;
-	constructor(e = nn().baseUrl) {
+	constructor(e = gn().baseUrl) {
 		this.#e = e;
 	}
 	static at(t) {
-		return new e(t).withTransport(en().with({ baseUrl: t }));
+		return new e(t).withTransport(mn().with({ baseUrl: t }));
 	}
 	get transport() {
-		return this.#t ?? en();
+		return this.#t ?? mn();
 	}
 	withTransport(t) {
 		let n = new e(this.#e);
@@ -3346,7 +3393,7 @@ var on = class {
 		});
 	}
 	async listIcons(e, t) {
-		return un(await this.#n(`/icons${pn(fn(e))}`, { signal: t }), e);
+		return Cn(await this.#n(`/icons${En(Tn(e))}`, { signal: t }), e);
 	}
 	async getIcon(e, t) {
 		let n = await this.#n(`/icons/${e}`, { signal: t });
@@ -3372,7 +3419,7 @@ var on = class {
 	}
 	async getTree(e) {
 		let t = await this.#n("/icons/tree", { signal: e });
-		return (Array.isArray(t) ? t : t.data ?? []).map(cn);
+		return (Array.isArray(t) ? t : t.data ?? []).map(xn);
 	}
 	async getRelated(e, t = 6, n) {
 		let { items: r } = await this.listIcons({
@@ -3387,8 +3434,8 @@ var on = class {
 		return new Map(n.variants.map((e) => [e.name, e.count]));
 	}
 };
-function cn(e) {
-	let t = (e.children ?? []).map(ln);
+function xn(e) {
+	let t = (e.children ?? []).map(Sn);
 	return {
 		pack: e.id,
 		label: e.title ?? e.name,
@@ -3396,7 +3443,7 @@ function cn(e) {
 		cats: t
 	};
 }
-function ln(e) {
+function Sn(e) {
 	let t = (e.children ?? []).map((e) => ({
 		slug: e.name,
 		name: e.label ?? e.name,
@@ -3408,10 +3455,10 @@ function ln(e) {
 		sub: t.length ? t : void 0
 	};
 }
-function un(e, t) {
+function Cn(e, t) {
 	let n = e ?? {}, r = n.data ?? n, i;
 	i = Array.isArray(r) ? r : r && typeof r == "object" ? Object.entries(r).filter(([e]) => e !== "grouped" && /^\d+$/.test(e)).map(([, e]) => e) : [];
-	let a = n.meta ?? {}, o = dn(a.per_page, t.perPage ?? i.length), s = dn(a.total, i.length), c = dn(a.current_page, t.page ?? 1), l = dn(a.last_page, Math.max(1, Math.ceil(s / Math.max(1, o)))), u = dn(a.from, s ? (c - 1) * o + 1 : 0), d = dn(a.to, Math.min(c * o, s));
+	let a = n.meta ?? {}, o = wn(a.per_page, t.perPage ?? i.length), s = wn(a.total, i.length), c = wn(a.current_page, t.page ?? 1), l = wn(a.last_page, Math.max(1, Math.ceil(s / Math.max(1, o)))), u = wn(a.from, s ? (c - 1) * o + 1 : 0), d = wn(a.to, Math.min(c * o, s));
 	return {
 		items: i.map(st),
 		total: s,
@@ -3422,12 +3469,12 @@ function un(e, t) {
 		rangeEnd: d
 	};
 }
-function dn(e, t) {
+function wn(e, t) {
 	Array.isArray(e) && (e = e[0]);
 	let n = typeof e == "string" ? parseInt(e, 10) : e;
 	return Number.isFinite(n) ? n : t;
 }
-function fn(e) {
+function Tn(e) {
 	return {
 		search: e.search,
 		packages: e.packages,
@@ -3440,27 +3487,27 @@ function fn(e) {
 		sort_direction: e.sortDirection
 	};
 }
-function pn(e) {
+function En(e) {
 	let t = new URLSearchParams();
 	for (let [n, r] of Object.entries(e)) r == null || r === "" || Array.isArray(r) && r.length === 0 || (Array.isArray(r) ? r.forEach((e) => t.append(`${n}[]`, String(e))) : t.append(n, String(r)));
 	let n = t.toString();
 	return n ? `?${n}` : "";
 }
-function mn(e, t) {
-	if (e === "rest") return new sn(t.base);
+function Dn(e, t) {
+	if (e === "rest") return new bn(t.base);
 	if (!t.catalog) throw Error("StaticCatalog requires a bundled catalog");
-	return new on(t.catalog);
+	return new yn(t.catalog);
 }
 // src/core/env.ts
-var hn = "ichava.debug";
-function gn() {
+var On = "ichava.debug";
+function kn() {
 	try {
 		return !0;
 	} catch {
 		return !1;
 	}
 }
-function _n() {
+function An() {
 	try {
 		let e = new URLSearchParams(window.location.search);
 		if (e.has("debug")) {
@@ -3470,34 +3517,34 @@ function _n() {
 	} catch {}
 	return null;
 }
-function vn() {
+function jn() {
 	try {
-		let e = window.localStorage.getItem(hn);
+		let e = window.localStorage.getItem(On);
 		return e == null ? null : e === "1" || e === "true";
 	} catch {
 		return null;
 	}
 }
-function yn(e) {
-	return e?.env ?? (gn() ? "production" : "development");
+function Mn(e) {
+	return e?.env ?? (kn() ? "production" : "development");
 }
-function bn(e) {
-	let t = _n();
+function Nn(e) {
+	let t = An();
 	if (t !== null) return t;
-	let n = vn();
-	return n === null ? e?.debug?.enabled == null ? yn(e) !== "production" : e.debug.enabled : n;
+	let n = jn();
+	return n === null ? e?.debug?.enabled == null ? Mn(e) !== "production" : e.debug.enabled : n;
 }
-function xn(e) {
-	return bn(e) && e?.features?.devtools !== !1;
+function Pn(e) {
+	return Nn(e) && e?.features?.devtools !== !1;
 }
 // src/modules/telemetry/infrastructure/Logger.ts
-var Sn = {
+var Fn = {
 	debug: 10,
 	info: 20,
 	warn: 30,
 	error: 40,
 	silent: 100
-}, Cn = /* @__PURE__ */ new WeakMap(), wn = 0, Tn = "page", En = new class e {
+}, In = /* @__PURE__ */ new WeakMap(), Ln = 0, Rn = "page", zn = new class e {
 	level = "debug";
 	cap = 300;
 	buf = [];
@@ -3505,7 +3552,7 @@ var Sn = {
 	#e;
 	#t;
 	#n = 0;
-	constructor(e = Tn, t = null) {
+	constructor(e = Rn, t = null) {
 		this.#e = e, this.#t = t;
 	}
 	get source() {
@@ -3517,7 +3564,7 @@ var Sn = {
 	configure(e) {
 		e?.limits?.logBuffer && (this.cap = e.limits.logBuffer);
 		let t = e?.debug?.logLevel;
-		this.level = t || (bn(e) ? "debug" : yn(e) === "production" ? "warn" : "debug");
+		this.level = t || (Nn(e) ? "debug" : Mn(e) === "production" ? "warn" : "debug");
 	}
 	setLevel(e) {
 		this.level = e;
@@ -3534,11 +3581,11 @@ var Sn = {
 	}
 	buffer() {
 		if (!this.#t) return this.buf;
-		let e = this.#t.buffer().filter((e) => Cn.get(e) > this.#n);
-		return e.length ? [...e, ...this.buf].sort((e, t) => Cn.get(e) - Cn.get(t)) : this.buf;
+		let e = this.#t.buffer().filter((e) => In.get(e) > this.#n);
+		return e.length ? [...e, ...this.buf].sort((e, t) => In.get(e) - In.get(t)) : this.buf;
 	}
 	clear() {
-		this.buf = [], this.#n = wn;
+		this.buf = [], this.#n = Ln;
 	}
 	write(e, t, n, r) {
 		let i = {
@@ -3549,11 +3596,11 @@ var Sn = {
 			data: r,
 			source: this.#e
 		};
-		if (Cn.set(i, ++wn), this.buf.push(i), this.buf.length > this.cap && this.buf.splice(0, this.buf.length - this.cap), this.subs.forEach((e) => {
+		if (In.set(i, ++Ln), this.buf.push(i), this.buf.length > this.cap && this.buf.splice(0, this.buf.length - this.cap), this.subs.forEach((e) => {
 			try {
 				e(i);
 			} catch {}
-		}), Sn[e] >= Sn[this.level] && this.level !== "silent") {
+		}), Fn[e] >= Fn[this.level] && this.level !== "silent") {
 			let i = `[ichava:${t}]`, a = e === "error" ? console.error : e === "warn" ? console.warn : e === "info" ? console.info : console.debug;
 			r === void 0 ? a(i, n) : a(i, n, r);
 		}
@@ -3570,11 +3617,11 @@ var Sn = {
 	error(e, t, n) {
 		this.write("error", e, t, n);
 	}
-}(), Dn = "page", On = new class e {
+}(), Bn = "page", Vn = new class e {
 	#e = /* @__PURE__ */ new Set();
 	#t;
 	#n;
-	constructor(e = Dn, t = null) {
+	constructor(e = Bn, t = null) {
 		this.#t = e, this.#n = t;
 	}
 	get source() {
@@ -3604,11 +3651,11 @@ var Sn = {
 			this.#e.delete(e), t?.();
 		};
 	}
-}(), kn = (e, t) => ((e?.[0] ?? "") + (t?.[0] ?? e?.[1] ?? "")).toUpperCase() || "??", An = class {
+}(), Hn = (e, t) => ((e?.[0] ?? "") + (t?.[0] ?? e?.[1] ?? "")).toUpperCase() || "??", Un = class {
 	signIn(e, t, n) {
 		return t === "000000" ? null : {
 			name: n?.user?.name ?? e.split("@")[0],
-			initials: n?.user?.initials ?? kn(e),
+			initials: n?.user?.initials ?? Hn(e),
 			email: e,
 			plan: n?.user?.plan ?? "PRO"
 		};
@@ -3616,7 +3663,7 @@ var Sn = {
 	createAccount(e) {
 		return {
 			name: `${e.first} ${e.last}`.trim(),
-			initials: kn(e.first, e.last),
+			initials: Hn(e.first, e.last),
 			email: e.email,
 			plan: "FREE"
 		};
@@ -3627,7 +3674,7 @@ var Sn = {
 		version: "0.1.0",
 		author: "Imani Manyara",
 		sets: 70,
-		license: "MIT",
+		license: "Proprietary",
 		url: "https://simtabi.com"
 	},
 	seo: {
@@ -3982,149 +4029,102 @@ var Sn = {
 		laravelDriver: "session"
 	}
 };
-function jn(e) {
+function Wn(e) {
 	return typeof e == "object" && !!e && !Array.isArray(e);
 }
-function Mn(e, t) {
+function Gn(e, t) {
 	if (t === void 0) return e;
 	if (Array.isArray(t)) return t;
-	if (jn(t) && jn(e)) {
+	if (Wn(t) && Wn(e)) {
 		let n = { ...e };
-		for (let r of Object.keys(t)) n[r] = Mn(e[r], t[r]);
+		for (let r of Object.keys(t)) n[r] = Gn(e[r], t[r]);
 		return n;
 	}
 	return t ?? e;
 }
-function Nn(e) {
-	return Mn(U, e ?? {});
+function Kn(e) {
+	return Gn(U, e ?? {});
 }
 // src/core/storage.ts
-var Pn = U.storageKeys.driver, Fn = U.storageKeys.persist;
-function In() {
+var qn = U.storageKeys.driver, Jn = U.storageKeys.persist;
+function Yn() {
 	try {
 		return window.localStorage;
 	} catch {
 		return null;
 	}
 }
-function Ln() {
+function Xn() {
 	try {
 		return window.sessionStorage;
 	} catch {
 		return null;
 	}
 }
-var Rn = (() => {
-	let e = In()?.getItem(Pn);
+var Zn = (() => {
+	let e = Yn()?.getItem(qn);
 	return e === "session" || e === "local" ? e : U.storage.frontendDriver === "session" ? "session" : "local";
 })();
-function zn() {
-	return Rn === "session" ? Ln() : In();
+function Qn() {
+	return Zn === "session" ? Xn() : Yn();
 }
-var Bn = /* @__PURE__ */ new Set();
-function Vn(e) {
-	Bn.add(e);
+var $n = /* @__PURE__ */ new Set();
+function er(e) {
+	$n.add(e);
 }
-function Hn() {
-	return zn();
+function tr() {
+	return Qn();
 }
-function Un() {
-	return In();
+function nr() {
+	return Yn();
 }
-function Wn(e) {
+function rr(e) {
 	try {
-		return zn()?.getItem(e) != null;
+		return Qn()?.getItem(e) != null;
 	} catch {
 		return !1;
 	}
 }
-function Gn() {
-	return Rn;
+function ir() {
+	return Zn;
 }
-function Kn(e) {
-	if (e === Rn) return;
-	let t = Rn === "session" ? Ln() : In(), n = e === "session" ? Ln() : In();
-	for (let e of [Fn, ...Bn]) try {
+function ar(e) {
+	if (e === Zn) return;
+	let t = Zn === "session" ? Xn() : Yn(), n = e === "session" ? Xn() : Yn();
+	for (let e of [Jn, ...$n]) try {
 		let r = t?.getItem(e);
 		r != null && n && (n.setItem(e, r), t?.removeItem(e));
 	} catch {}
-	Rn = e;
+	Zn = e;
 	try {
-		In()?.setItem(Pn, e);
+		Yn()?.setItem(qn, e);
 	} catch {}
 }
-function qn() {
+function or() {
 	try {
-		zn()?.removeItem(Fn);
+		Qn()?.removeItem(Jn);
 	} catch {}
 }
-var Jn = {
-	getItem: (e) => zn()?.getItem(e) ?? null,
+var sr = {
+	getItem: (e) => Qn()?.getItem(e) ?? null,
 	setItem: (e, t) => {
 		try {
-			zn()?.setItem(e, t);
+			Qn()?.setItem(e, t);
 		} catch {}
 	},
 	removeItem: (e) => {
 		try {
-			zn()?.removeItem(e);
+			Qn()?.removeItem(e);
 		} catch {}
 	}
-}, Yn = b(() => Jn);
+}, cr = b(() => sr);
 (() => {
 	try {
-		return zn()?.getItem(Fn) != null;
+		return Qn()?.getItem(Jn) != null;
 	} catch {
 		return !1;
 	}
 })();
-// src/core/consentShare.ts
-var Xn = U.storageKeys.consent ?? "ichava.consent";
-function Zn(e) {
-	return e === "essential" || e === "all";
-}
-var Qn = /* @__PURE__ */ new Set();
-function $n() {
-	try {
-		let e = localStorage.getItem(Xn);
-		return Zn(e) ? e : null;
-	} catch {
-		return null;
-	}
-}
-function er(e) {
-	try {
-		e === null ? localStorage.removeItem(Xn) : localStorage.setItem(Xn, e);
-	} catch {}
-	for (let t of Qn) t(e);
-}
-function tr(e) {
-	return Qn.add(e), () => {
-		Qn.delete(e);
-	};
-}
-function nr(e) {
-	let t = $n();
-	return t === null ? Zn(e) ? (er(e), e) : null : t;
-}
-var rr = [], ir = /* @__PURE__ */ new Set();
-function ar() {
-	for (let e of ir) e();
-}
-function or(e) {
-	return rr.includes(e) || (rr.push(e), ar()), () => {
-		let t = rr.indexOf(e);
-		t !== -1 && (rr.splice(t, 1), ar());
-	};
-}
-function sr(e) {
-	return rr[0] === e;
-}
-function cr(e) {
-	return ir.add(e), () => {
-		ir.delete(e);
-	};
-}
 // src/core/defaults.ts
 var lr = U.defaults, ur = {
 	search: "",
@@ -4151,20 +4151,20 @@ var lr = U.defaults, ur = {
 })), mr = U.limits.historyCap, hr = class {
 	#e;
 	constructor(e) {
-		this.#e = e, Vn(e), Object.freeze(this);
+		this.#e = e, er(e), Object.freeze(this);
 	}
 	get key() {
 		return this.#e;
 	}
 	read() {
-		for (let e of [Hn(), Un()]) try {
+		for (let e of [tr(), nr()]) try {
 			let t = e?.getItem(this.#e);
 			if (t != null) return JSON.parse(t);
 		} catch {}
 	}
 	write(e) {
 		try {
-			Hn()?.setItem(this.#e, JSON.stringify(e));
+			tr()?.setItem(this.#e, JSON.stringify(e));
 		} catch {}
 	}
 };
@@ -4663,9 +4663,9 @@ function zr(e, t, n) {
 // src/state/slices/storage.ts
 function Br(e, t, n) {
 	return {
-		storageDriver: Gn(),
+		storageDriver: ir(),
 		setStorageDriver: (t) => {
-			Kn(t), e({ storageDriver: t }), n.emit("storage", "storage.driver", { driver: t });
+			ar(t), e({ storageDriver: t }), n.emit("storage", "storage.driver", { driver: t });
 		}
 	};
 }
@@ -4703,9 +4703,9 @@ function Vr(e, t) {
 			},
 			tourSeen: !0
 		}),
-		consent: $n(),
+		consent: Wt(),
 		setConsent: (t) => {
-			e({ consent: t }), er(t);
+			e({ consent: t }), Gt(t);
 		}
 	};
 }
@@ -4744,7 +4744,7 @@ function Ur(e, t) {
 			notifications: [],
 			consent: null,
 			tourSeen: !1
-		}), er(null);
+		}), Gt(null);
 	} };
 }
 // src/store.ts
@@ -4759,8 +4759,8 @@ var Gr = {
 function Jr(e) {
 	return qr.get(e);
 }
-function Yr({ persistKey: e = U.storageKeys.persist, devBus: t, identity: n = new An() } = {}) {
-	let r = t ?? On.child(`store-${++Kr}`), i = e !== null && Wn(e), a = y()(x((e, t) => ({
+function Yr({ persistKey: e = U.storageKeys.persist, devBus: t, identity: n = new Un() } = {}) {
+	let r = t ?? Vn.child(`store-${++Kr}`), i = e !== null && rr(e), a = y()(x((e, t) => ({
 		...Sr(e, t, i),
 		...Cr(e, t),
 		...wr(e, t),
@@ -4779,7 +4779,7 @@ function Yr({ persistKey: e = U.storageKeys.persist, devBus: t, identity: n = ne
 	}), {
 		name: e ?? "ichava.browser.ephemeral",
 		version: 3,
-		storage: e === null ? Gr : Yn,
+		storage: e === null ? Gr : cr,
 		migrate: (e) => {
 			let t = e ?? {}, n = t.filters;
 			return n && (!Array.isArray(n.categories) || !("sortBy" in n)) ? delete t.filters : n && !Array.isArray(n.subs) && (n.subs = []), Array.isArray(t.favorites) && t.favorites.some((e) => typeof e != "number") && (t.favorites = []), delete t.locale, t;
@@ -4788,7 +4788,7 @@ function Yr({ persistKey: e = U.storageKeys.persist, devBus: t, identity: n = ne
 			...t,
 			...e,
 			locale: zt(),
-			consent: nr(e?.consent)
+			consent: qt(e?.consent)
 		}),
 		partialize: (e) => ({
 			theme: e.theme,
@@ -4823,7 +4823,7 @@ function Yr({ persistKey: e = U.storageKeys.persist, devBus: t, identity: n = ne
 			if (!e) return;
 			let t = Object.keys(e).length;
 			r.emit("storage", "state.restore", {
-				driver: Gn(),
+				driver: ir(),
 				keys: t
 			});
 		}
@@ -4836,7 +4836,7 @@ function Zr(e) {
 	return e.search.trim() === "" && e.categories.length === 0 && e.subs.length === 0 && e.variant === null;
 }
 function Qr(e, t) {
-	let n = e.getState(), r = t ?? (n.catalog ? new on(n.catalog) : null);
+	let n = e.getState(), r = t ?? (n.catalog ? new yn(n.catalog) : null);
 	if (!r) return;
 	let i = Wr(n.filters), a = () => void nt(r, i).then((t) => e.getState().setSelection(t)).catch(() => {});
 	!t || !Zr(n.filters) ? a() : r.listIcons({
@@ -4844,7 +4844,7 @@ function Qr(e, t) {
 		page: 1,
 		perPage: 1
 	}).then(({ total: t }) => {
-		let n = e.getState(), r = n.locale, i = (e, t) => Qt(n, e, t);
+		let n = e.getState(), r = n.locale, i = (e, t) => fn(n, e, t);
 		e.getState().openConfirm({
 			title: i("selectAll.confirmTitle", { n: new Intl.NumberFormat(r).format(t) }),
 			body: i("selectAll.confirmBody"),
@@ -4873,7 +4873,7 @@ function ni(e) {
 			return i && s;
 		}, s = (r) => {
 			if (!e(r.target)) return;
-			let i = r.metaKey || r.ctrlKey, a = t.getState(), o = r.target, s = o?.tagName === "INPUT" || o?.tagName === "TEXTAREA" || o?.tagName === "SELECT" || !!o?.isContentEditable, c = (e) => Qt(a, e);
+			let i = r.metaKey || r.ctrlKey, a = t.getState(), o = r.target, s = o?.tagName === "INPUT" || o?.tagName === "TEXTAREA" || o?.tagName === "SELECT" || !!o?.isContentEditable, c = (e) => fn(a, e);
 			if (r.key === "Escape") {
 				if (a.devtools.open) {
 					a.toggleDevtools(), r.preventDefault();
@@ -5844,7 +5844,7 @@ function G({ name: e, size: t = 14, color: n, style: r, className: i }) {
 }
 // src/hooks/useT.ts
 function K() {
-	let e = W((e) => e.locale), t = W((e) => e.translationOverrides), n = d(() => Zt(e, t), [e, t]);
+	let e = W((e) => e.locale), t = W((e) => e.translationOverrides), n = d(() => dn(e, t), [e, t]);
 	return o((e, t) => n.t(e, t), [n]);
 }
 // node_modules/tailwind-merge/dist/bundle-mjs.mjs
@@ -8802,7 +8802,7 @@ function Hs() {
 						/* @__PURE__ */ C(Z, {
 							size: "sm",
 							"aria-label": E("appearance.language"),
-							items: Kt.map((e) => ({
+							items: on.map((e) => ({
 								id: e.code,
 								label: e.label
 							})),
@@ -9039,7 +9039,7 @@ function Qs({ trigger: e, items: t, align: n = "left", label: r = "Menu" }) {
 }
 // src/components/layout/LanguagePopover.tsx
 function $s() {
-	let e = W((e) => e.locale), t = W((e) => e.setLocale), n = K(), r = Kt.find((t) => t.code === e), [i, a] = p(!1);
+	let e = W((e) => e.locale), t = W((e) => e.setLocale), n = K(), r = on.find((t) => t.code === e), [i, a] = p(!1);
 	return /* @__PURE__ */ w(Js.Root, {
 		isOpen: i,
 		onOpenChange: a,
@@ -9061,7 +9061,7 @@ function $s() {
 				selectedKeys: [e],
 				disallowEmptySelection: !0,
 				onAction: (e) => t(e),
-				children: Kt.map((e) => /* @__PURE__ */ C(Js.Item, {
+				children: on.map((e) => /* @__PURE__ */ C(Js.Item, {
 					id: e.code,
 					textValue: e.label,
 					addon: e.code.toUpperCase(),
@@ -9651,7 +9651,7 @@ function mc() {
 					children: /* @__PURE__ */ C(pc, {
 						icon: ic(e.icon),
 						color: e.icon === "check" ? "success" : "brand",
-						meta: Wt(e.ts),
+						meta: rn(e.ts),
 						children: e.text
 					})
 				}, e.id))
@@ -9661,7 +9661,7 @@ function mc() {
 }
 // src/components/help/HelpMenu.tsx
 function hc() {
-	let e = W((e) => e.openLayer), t = W((e) => e.startTour), n = W((e) => e.config?.about.links.find((e) => e.label.toLowerCase() === "docs")?.href ?? "https://github.com/ichava/icon-browser/tree/main/docs"), r = Ht(), i = K(), [a, o] = p(!1);
+	let e = W((e) => e.openLayer), t = W((e) => e.startTour), n = W((e) => e.config?.about.links.find((e) => e.label.toLowerCase() === "docs")?.href ?? "https://github.com/ichava/icon-browser/tree/main/docs"), r = tn(), i = K(), [a, o] = p(!1);
 	return /* @__PURE__ */ w(Js.Root, {
 		isOpen: a,
 		onOpenChange: o,
@@ -9776,7 +9776,7 @@ function Sc(e) {
 }
 // src/components/layout/AppHeader.tsx
 function Cc() {
-	let e = W((e) => e.view), t = W((e) => e.setView), n = W((e) => e.toggleSidebar), r = W((e) => e.theme), i = W((e) => e.toggleTheme), a = W((e) => e.openLayer), o = W((e) => e.openLibrary), s = W((e) => e.favorites), c = W((e) => e.auth.status === "authed"), l = W((e) => e.openAuth), u = W((e) => e.config), d = W((e) => e.devtools.open), f = W((e) => e.toggleDevtools), p = xn(u), m = Ht(), h = K(), [g, _] = vc();
+	let e = W((e) => e.view), t = W((e) => e.setView), n = W((e) => e.toggleSidebar), r = W((e) => e.theme), i = W((e) => e.toggleTheme), a = W((e) => e.openLayer), o = W((e) => e.openLibrary), s = W((e) => e.favorites), c = W((e) => e.auth.status === "authed"), l = W((e) => e.openAuth), u = W((e) => e.config), d = W((e) => e.devtools.open), f = W((e) => e.toggleDevtools), p = Pn(u), m = tn(), h = K(), [g, _] = vc();
 	return /* @__PURE__ */ w("header", {
 		style: {
 			height: Sc(48),
@@ -10449,7 +10449,7 @@ function Yc({ counts: e }) {
 			return /* @__PURE__ */ w(Ms, {
 				id: n.id ?? Jc,
 				className: "h-[26px] flex-1 justify-center gap-1 rounded-md bg-transparent px-1 py-0 text-[11.5px] font-medium text-tertiary ring-0 [&:not([data-selected])]:shadow-none not-last:pr-1 first:rounded-md last:rounded-md hover:bg-transparent selected:bg-primary selected:font-semibold selected:text-primary selected:shadow-[var(--shadow)]",
-				children: [r(Yt(`variant.${n.id ?? "all"}`)), i !== null && /* @__PURE__ */ C("span", {
+				children: [r(ln(`variant.${n.id ?? "all"}`)), i !== null && /* @__PURE__ */ C("span", {
 					className: `font-mono text-[10px] ${t === n.id ? "text-primary" : "text-[var(--muted-fg)]"}`,
 					children: i
 				})]
@@ -10762,7 +10762,7 @@ function nl() {
 										fontSize: 10.5,
 										color: "var(--muted-fg)"
 									},
-									children: Vt(e.count)
+									children: en(e.count)
 								})
 							] })
 						}, e.id))
@@ -10775,23 +10775,23 @@ function nl() {
 				children: [
 					/* @__PURE__ */ C(il, {
 						label: p("sidebar.inView"),
-						value: Vt(t.total)
+						value: en(t.total)
 					}),
 					s.length > 0 && /* @__PURE__ */ C(il, {
 						label: p("sidebar.selected"),
-						value: Vt(s.length)
+						value: en(s.length)
 					}),
 					/* @__PURE__ */ C(il, {
 						label: p("sidebar.loadedIcons"),
-						value: Vt(_)
+						value: en(_)
 					}),
 					/* @__PURE__ */ C(il, {
 						label: p("sidebar.ecosystemTotal"),
-						value: Vt(e?.meta.total_ecosystem ?? 0)
+						value: en(e?.meta.total_ecosystem ?? 0)
 					}),
 					/* @__PURE__ */ C(il, {
 						label: p("sidebar.favorites"),
-						value: Vt(o.length)
+						value: en(o.length)
 					})
 				]
 			})
@@ -10900,8 +10900,8 @@ var ol = [
 	"#0891b2"
 ];
 function sl({ value: e, onChange: t }) {
-	let [n, r] = p(265), [i, a] = p(50), [o, s] = p(100), [c, l] = p(e ?? "#7c3aed"), u = K(), d = Gt(n, 50), f = (e, n) => t(n >= 100 ? e : lt(e, n)), m = (e, t) => {
-		let n = Gt(e, t);
+	let [n, r] = p(265), [i, a] = p(50), [o, s] = p(100), [c, l] = p(e ?? "#7c3aed"), u = K(), d = an(n, 50), f = (e, n) => t(n >= 100 ? e : lt(e, n)), m = (e, t) => {
+		let n = an(e, t);
 		l(n), f(n, o);
 	};
 	return /* @__PURE__ */ w("div", {
@@ -11017,13 +11017,13 @@ var cl = {
 	allowedTags: /* @__PURE__ */ "svg.g.defs.symbol.title.desc.metadata.switch.path.circle.ellipse.rect.line.polyline.polygon.text.tspan.textPath.linearGradient.radialGradient.stop.pattern.mask.clipPath.filter.feBlend.feColorMatrix.feComponentTransfer.feComposite.feConvolveMatrix.feDiffuseLighting.feDisplacementMap.feDropShadow.feFlood.feFuncA.feFuncB.feFuncG.feFuncR.feGaussianBlur.feMerge.feMergeNode.feMorphology.feOffset.feSpecularLighting.feTile.feTurbulence.use".split("."),
 	_allowedTags_comment: {
 		stop: "REQUIRED. A gradient element with no stops paints nothing. The shipped PHP config allowed linearGradient while stripping stop, and allow-listed the offset/stop-color ATTRIBUTES of an element it removed.",
-		title: "REQUIRED. 6,966 bundled icons carry one; it is the accessible name.",
+		title: "REQUIRED. Thousands of icons in the measured corpus carry one; it is the accessible name.",
 		use: "Fragment references ONLY -- see fragmentOnlyRefs."
 	},
 	allowedAttributes: /* @__PURE__ */ "fill.stroke.stroke-width.stroke-linecap.stroke-linejoin.stroke-dasharray.stroke-dashoffset.stroke-miterlimit.fill-rule.fill-opacity.stroke-opacity.opacity.transform.transform-origin.viewBox.preserveAspectRatio.x.y.cx.cy.r.rx.ry.d.points.width.height.gradientUnits.gradientTransform.patternUnits.patternTransform.offset.stop-color.stop-opacity.clip-path.clip-rule.mask.filter.font-family.font-size.font-weight.text-anchor.dominant-baseline.letter-spacing.vector-effect.paint-order.shape-rendering.class.id.xmlns.xmlns:xlink.role.x1.y1.x2.y2.fx.fy.fr.spreadMethod.clipPathUnits.maskUnits.maskContentUnits".split("."),
 	_allowedAttributes_addendum: "The last row is NOT in phase-3-redesign.md §4.1 and is added here deliberately. §4.1 (and brief §1.3 before it) list gradientUnits and gradientTransform but omit the coordinates a gradient is actually drawn with. A <linearGradient> without x1/y1/x2/y2 has no direction, a <radialGradient> without fx/fy/fr has no focal point, and clipPathUnits / maskUnits / maskContentUnits decide whether a clip or mask is interpreted in user space or object space -- get it wrong and the shape is clipped to nothing. The shipped PHP config had all eleven; adopting §4.1 verbatim would have REMOVED them and broken all 65 gradient icons plus every clip and mask. Caught by diffing the effective config before and after this file was wired in. This is the same single-archetype omission §1.1 describes, one level up: the spec was written from the fidelity contract, and the fidelity contract itself was incomplete.",
 	allowedAttributePrefixes: ["aria-"],
-	_allowedAttributePrefixes_comment: "Includes aria-labelledby and aria-describedby. Allowed by SHAPE rather than by list, so a newly standardised ARIA attribute cannot become an accessibility regression. 283 bundled icons carry aria-labelledby, and it is the line most often forgotten when ids are rewritten.",
+	_allowedAttributePrefixes_comment: "Includes aria-labelledby and aria-describedby. Allowed by SHAPE rather than by list, so a newly standardised ARIA attribute cannot become an accessibility regression. Hundreds of icons in the measured corpus carry aria-labelledby, and it is the line most often forgotten when ids are rewritten.",
 	allowedValues: [
 		"currentColor",
 		"var(--token)",
@@ -11033,7 +11033,7 @@ var cl = {
 	fragmentOnlyRefs: {
 		attributes: ["href", "xlink:href"],
 		allow: "^#[A-Za-z_][\\w.:-]*$",
-		_comment: "Fragments are inert: they cannot fetch, leak or execute. Blocking them destroys <use>, <textPath>, <mpath> and feImage for zero security benefit. Everything else -- absolute, protocol-relative, relative, data:, javascript:, blob:, filesystem: -- is blocked. 126 flag + 130 bundled + 5 metronic icons use <use>."
+		_comment: "Fragments are inert: they cannot fetch, leak or execute. Blocking them destroys <use>, <textPath>, <mpath> and feImage for zero security benefit. Everything else -- absolute, protocol-relative, relative, data:, javascript:, blob:, filesystem: -- is blocked. 261 icons in the measured corpus use <use>, 126 of them in the flag pack."
 	},
 	styleAttribute: {
 		allow: "declarations, CSS custom properties, url(#fragment)",
@@ -11043,8 +11043,8 @@ var cl = {
 			"behavior:",
 			"-moz-binding"
 		],
-		_comment: "REQUIRED. Sole paint source for 261 of 501 metronic icons -- only ONE metronic icon uses currentColor -- plus 2,976 bundled and 2 flag. url(#gradient) must work; url(https://…) is the CSS exfiltration vector.",
-		_count_note: "§4.1 records 2,917 bundled here. The census measured 2,976 on 2026-09-02 (style-attribute paint source). The policy is unchanged either way; the figure is corrected rather than carried forward."
+		_comment: "REQUIRED. Sole paint source for 3,239 icons in the measured corpus, 2 of them flags. In one proprietary icon set it paints about half the icons and almost none use currentColor. url(#gradient) must work; url(https://…) is the CSS exfiltration vector.",
+		_count_note: "§4.1 records 59 fewer icons for one pack here. The census measured the higher count on 2026-09-02 (style-attribute paint source). The policy is unchanged either way; the figure is corrected rather than carried forward."
 	},
 	forbiddenTags: [
 		"script",
@@ -11069,7 +11069,7 @@ var cl = {
 	blockImageNonFragmentHref: !0,
 	blockAnchorNonFragmentHref: !0,
 	blockCdataScript: !0,
-	_always_blocked_comment: "stripDoctype and stripEntities cover XXE and billion-laughs. <image> and <a> with a non-fragment href are blocked, which is why the 5 raster-embedded metronic brand logos render blank -- known-degraded by policy, OQ-018."
+	_always_blocked_comment: "stripDoctype and stripEntities cover XXE and billion-laughs. <image> and <a> with a non-fragment href are blocked, which is why 5 brand logos that embed a raster image render blank -- known-degraded by policy, OQ-018."
 };
 function ll() {
 	let e = [...cl.allowedAttributes];
@@ -12686,9 +12686,9 @@ var _f = new class {
 }(), vf = U.toolbar.exportFormats, yf = U.toolbar.sortOptions, bf = U.toolbar.treatments, xf = U.toolbar.sizeUnits;
 function Sf() {
 	let { page: e, repo: t, client: n } = kc(), r = W((e) => e.filters), i = W((e) => e.setSearch), a = W((e) => e.toggleCat), o = W((e) => e.setVariant), s = W((e) => e.setSort), c = W((e) => e.toggleOrder), l = W((e) => e.size), u = W((e) => e.setSize), f = W((e) => e.sizeUnit), p = W((e) => e.setSizeUnit), m = W((e) => e.gridStroke), h = W((e) => e.setGridStroke), g = W((e) => e.color), _ = W((e) => e.setColor), v = W((e) => e.treatment), y = W((e) => e.setTreatment), b = W((e) => e.selection), x = W((e) => e.clearSelection), T = W((e) => e.resetFilters), E = W((e) => e.openConfirm), D = W((e) => e.showToast), O = W((e) => e.config), k = al(), A = K(), j = (e, t) => {
-		let n = A(Yt(e));
+		let n = A(ln(e));
 		return n === e ? t : n;
-	}, M = Ht(), N = O?.ranges ?? U.ranges, ee = O?.features ?? U.features, te = () => E({
+	}, M = tn(), N = O?.ranges ?? U.ranges, ee = O?.features ?? U.features, te = () => E({
 		title: A("toolbar.resetTitle"),
 		body: A("toolbar.resetBody"),
 		confirmLabel: A("toolbar.resetConfirm"),
@@ -12735,7 +12735,7 @@ function Sf() {
 			/* @__PURE__ */ w("span", {
 				className: "text-[12px] text-[var(--muted-fg)] whitespace-nowrap",
 				children: [
-					Vt(e.total),
+					en(e.total),
 					" ",
 					e.total === 1 ? A("toolbar.iconOne") : A("toolbar.iconMany")
 				]
@@ -12999,7 +12999,7 @@ function Sf() {
 			}),
 			/* @__PURE__ */ C("button", {
 				onClick: te,
-				title: `${A("toolbar.resetFilters")} — ${Ut(M)}`,
+				title: `${A("toolbar.resetFilters")} — ${nn(M)}`,
 				style: {
 					...Os,
 					width: 28,
@@ -13736,7 +13736,7 @@ var ap = class {
 				target: e,
 				maxAtWrite: n
 			} : null;
-		}, this.getVirtualDistanceFromEnd = () => Math.max(this._getLayoutTotalSize() - this.getSize() - this.getScrollOffset(), 0), this.getDistanceFromEnd = () => Math.max(this.getMaxScrollOffset() - this.getScrollOffset(), 0), this.isAtEnd = (e = this.options.scrollEndThreshold) => this.getDistanceFromEnd() <= e, this.getOffsetForAlignment = (e, t, n = 0) => {
+		}, this.getVirtualDistanceFromEnd = () => Math.max(this._getLayoutTotalSize() + this.options.scrollMargin - this.getSize() - this.getScrollOffset(), 0), this.getDistanceFromEnd = () => Math.max(this.getMaxScrollOffset() - this.getScrollOffset(), 0), this.isAtEnd = (e = this.options.scrollEndThreshold) => this.getDistanceFromEnd() <= e, this.getOffsetForAlignment = (e, t, n = 0) => {
 			if (!this.scrollElement) return 0;
 			let r = this.getSize(), i = this.getScrollOffset();
 			t === "auto" && (t = e >= i + r ? "end" : "start"), t === "center" ? e += (n - r) / 2 : t === "end" && (e -= r);
@@ -14867,9 +14867,9 @@ function Wp() {
 			/* @__PURE__ */ C("span", {
 				className: "text-[11.5px] text-[var(--muted-fg)]",
 				children: e.total === 0 ? t("footer.noResults") : t("footer.range", {
-					start: Vt(e.rangeStart),
-					end: Vt(e.rangeEnd),
-					total: Vt(e.total)
+					start: en(e.rangeStart),
+					end: en(e.rangeEnd),
+					total: en(e.total)
 				})
 			}),
 			/* @__PURE__ */ C("span", { className: "flex-1" }),
@@ -16213,7 +16213,7 @@ var Pm = "flex-wrap self-start gap-0.5 rounded-[calc(var(--radius)_-_2px)] p-0.5
 function Lm() {
 	let e = ti(), { repo: t, client: n } = kc(), r = W((e) => e.detailId), i = W((e) => e.closeLayer), a = W((e) => e.openDetail), o = W((e) => e.favorites), s = W((e) => e.toggleFavorite), l = W((e) => e.collections), u = W((e) => e.addToCollection), m = W((e) => e.pushHistory), h = al(), g = ai(), _ = ui(), v = f(void 0);
 	c(() => () => di(_?.current, v.current), [_]);
-	let y = (e) => e ? Im.includes(e.id) ? x(Yt(`snippetTab.${e.id}`)) : e.label : "", b = W((e) => e.reduceMotion), x = K(), [S, T] = p("svg"), E = W((e) => e.locale), [D, O] = p(96), [k, A] = p("px"), [j, M] = p(null), [N, ee] = p(1.5), [te, P] = p(null), [F, ne] = p(_m[0]), [re, I] = p("ease-in-out"), [L, ae] = p(50), [oe, R] = p(!1), [se, ce] = p("[\n  { \"transform\": \"rotate(0deg) scale(1)\", \"opacity\": 1 },\n  { \"transform\": \"rotate(-14deg) scale(1.12)\", \"opacity\": 1, \"offset\": 0.3 },\n  { \"transform\": \"rotate(0deg) scale(1)\", \"opacity\": 1 }\n]"), le = f(null), ue = f(null), { icons: [de] } = Xp(r == null ? [] : [r]), z = de;
+	let y = (e) => e ? Im.includes(e.id) ? x(ln(`snippetTab.${e.id}`)) : e.label : "", b = W((e) => e.reduceMotion), x = K(), [S, T] = p("svg"), E = W((e) => e.locale), [D, O] = p(96), [k, A] = p("px"), [j, M] = p(null), [N, ee] = p(1.5), [te, P] = p(null), [F, ne] = p(_m[0]), [re, I] = p("ease-in-out"), [L, ae] = p(50), [oe, R] = p(!1), [se, ce] = p("[\n  { \"transform\": \"rotate(0deg) scale(1)\", \"opacity\": 1 },\n  { \"transform\": \"rotate(-14deg) scale(1.12)\", \"opacity\": 1, \"offset\": 0.3 },\n  { \"transform\": \"rotate(0deg) scale(1)\", \"opacity\": 1 }\n]"), le = f(null), ue = f(null), { icons: [de] } = Xp(r == null ? [] : [r]), z = de;
 	c(() => {
 		v.current = z?.id;
 	}, [z?.id]);
@@ -17047,7 +17047,7 @@ var Jm = ({ label: e, children: t, description: n, stacked: r, shortcutKeys: i, 
 nh.Item = Jm, nh.List = Qm, nh.Group = th, nh.Footer = Gm, nh.Preview = eh, nh.Section = $m, nh.Trigger = N, nh.Collection = k;
 // src/components/command/CommandPalette.tsx
 function rh() {
-	let e = ti(), t = at(), { catalog: n, page: r } = kc(), i = W((e) => e.closeLayer), [a, o] = p(""), [s, c] = p(ah), l = Ht(), u = K(), f = W((e) => e.config?.limits) ?? U.limits, m = e.getState(), h = d(() => [
+	let e = ti(), t = at(), { catalog: n, page: r } = kc(), i = W((e) => e.closeLayer), [a, o] = p(""), [s, c] = p(ah), l = tn(), u = K(), f = W((e) => e.config?.limits) ?? U.limits, m = e.getState(), h = d(() => [
 		{
 			id: "theme",
 			label: u("palette.toggleTheme"),
@@ -17094,7 +17094,7 @@ function rh() {
 			id: "reset",
 			label: u("palette.resetFilters"),
 			icon: "refresh",
-			kbd: Ut(l),
+			kbd: nn(l),
 			run: () => m.openConfirm({
 				title: u("toolbar.resetTitle"),
 				body: u("toolbar.resetBody"),
@@ -17427,7 +17427,7 @@ function hh() {
 					/* @__PURE__ */ C("span", { className: "flex-1" }),
 					/* @__PURE__ */ C("span", {
 						className: "font-[family-name:'Geist_Mono',monospace] text-[10.5px] text-[var(--faint-fg)]",
-						children: Wt(e.ts)
+						children: rn(e.ts)
 					})
 				]
 			}, `${e.id}-${e.action}-${t}`);
@@ -17676,7 +17676,7 @@ function xh() {
 							"aria-label": e("settings.copyFormatTitle"),
 							items: v.map((t) => ({
 								id: t.id,
-								label: U.toolbar.copyFormats.some((e) => e.id === t.id && e.label === t.label) ? e(Yt(`copyFormat.${t.id}`)) : t.label
+								label: U.toolbar.copyFormats.some((e) => e.id === t.id && e.label === t.label) ? e(ln(`copyFormat.${t.id}`)) : t.label
 							})),
 							selectedKey: i,
 							onSelectionChange: (e) => a(e),
@@ -18002,7 +18002,7 @@ function Oh() {
 				className: "flex border-t border-t-[var(--border)] border-b border-b-[var(--border)]",
 				children: [
 					/* @__PURE__ */ C(kh, {
-						value: Vt(r?.meta.total_ecosystem ?? 0),
+						value: en(r?.meta.total_ecosystem ?? 0),
 						label: i.stats[0]?.label ?? e("about.statIcons"),
 						border: !0
 					}),
@@ -18722,10 +18722,10 @@ function Vh() {
 // src/hooks/useConsentNotice.ts
 function Hh(e) {
 	let t = ti(), [n] = p(() => Symbol("ichava.consent.notice"));
-	c(() => tr((e) => {
+	c(() => Kt((e) => {
 		t.getState().consent !== e && t.setState({ consent: e });
-	}), [t]), c(() => e ? or(n) : void 0, [e, n]);
-	let r = m(cr, () => sr(n), () => sr(n));
+	}), [t]), c(() => e ? Zt(n) : void 0, [e, n]);
+	let r = m($t, () => Qt(n), () => Qt(n));
 	return e && r;
 }
 // src/components/team/InviteModal.tsx
@@ -19117,12 +19117,12 @@ function Yh({ c: e, palette: t, onManageAccess: n, onOpenDetail: r }) {
 }
 // src/hooks/useDevBus.ts
 function Xh() {
-	return Jr(ti()) ?? On;
+	return Jr(ti()) ?? Vn;
 }
 // src/hooks/useLogger.ts
 var Zh = i(null);
 function Qh() {
-	return s(Zh) ?? En;
+	return s(Zh) ?? zn;
 }
 // src/components/devtools/regression.ts
 function $h(e, t, n) {
@@ -19365,9 +19365,9 @@ function og() {
 			className: "text-[11px] text-[var(--muted-fg)] leading-[1.5] mb-2.5 font-[family-name:'Geist',system-ui]",
 			children: [
 				"State key ",
-				/* @__PURE__ */ C("b", { children: Fn }),
+				/* @__PURE__ */ C("b", { children: Jn }),
 				" — appearance, filters, view, favorites, collections, auth, notifications, consent. Active driver: ",
-				/* @__PURE__ */ C("b", { children: Gn() }),
+				/* @__PURE__ */ C("b", { children: ir() }),
 				"."
 			]
 		}),
@@ -19381,7 +19381,7 @@ function og() {
 				confirmLabel: "Reset state",
 				danger: !0,
 				onConfirm: () => {
-					qn(), i();
+					or(), i();
 				}
 			}),
 			children: "Reset stored state…"
@@ -19597,11 +19597,11 @@ function _g({ catalog: e, client: t, config: n = null, manageDocument: r = !1, s
 }
 var vg = 0;
 function yg({ catalog: e, config: t, manageDocument: n, syncUrl: r, urlPrefix: i, locale: a }) {
-	let s = ti(), l = d(() => En.child(`ichava-${++vg}`), []);
+	let s = ti(), l = d(() => zn.child(`ichava-${++vg}`), []);
 	u(() => {
 		a && Nt(a) && s.getState().locale !== a && s.setState({ locale: a });
 	}, [a, s]);
-	let m = W((e) => e.theme), g = W((e) => e.accent), v = W((e) => e.radius), y = W((e) => e.scale), b = W((e) => e.density), x = W((e) => e.locale), S = W((e) => e.translationOverrides), T = W((e) => e.layer), E = W((e) => e.auth.status === "authed"), D = W((e) => e.loading), O = W((e) => e.reduceMotion), k = W((e) => e.tour.active), A = W((e) => e.consent), j = Hh(A === null), M = W((e) => e.inviteOpen), N = W((e) => e.accessCollectionId), ee = W((e) => e.sharedOpen), te = W((e) => e.devtools.open), P = xn(t), F = f(null), ne = f(null);
+	let m = W((e) => e.theme), g = W((e) => e.accent), v = W((e) => e.radius), y = W((e) => e.scale), b = W((e) => e.density), x = W((e) => e.locale), S = W((e) => e.translationOverrides), T = W((e) => e.layer), E = W((e) => e.auth.status === "authed"), D = W((e) => e.loading), O = W((e) => e.reduceMotion), k = W((e) => e.tour.active), A = W((e) => e.consent), j = Hh(A === null), M = W((e) => e.inviteOpen), N = W((e) => e.accessCollectionId), ee = W((e) => e.sharedOpen), te = W((e) => e.devtools.open), P = Pn(t), F = f(null), ne = f(null);
 	ni({
 		manageDocument: n,
 		rootRef: F,
@@ -19620,7 +19620,7 @@ function yg({ catalog: e, config: t, manageDocument: n, syncUrl: r, urlPrefix: i
 		v
 	]);
 	c(() => {
-		e ? (s.getState().setCatalog(e), s.getState().setFiltersData(new We(e).filters()), l.info("app", "catalog mounted", { icons: e.icons.length })) : (s.setState({ loading: !1 }), l.info("app", "REST client mounted")), t && s.getState().setConfig(t), l.configure(t), n && En.configure(t), t?.features?.demo && s.getState().seedDemoNotifications(), s.getState().tourSeen || s.getState().startTour();
+		e ? (s.getState().setCatalog(e), s.getState().setFiltersData(new We(e).filters()), l.info("app", "catalog mounted", { icons: e.icons.length })) : (s.setState({ loading: !1 }), l.info("app", "REST client mounted")), t && s.getState().setConfig(t), l.configure(t), n && zn.configure(t), t?.features?.demo && s.getState().seedDemoNotifications(), s.getState().tourSeen || s.getState().startTour();
 	}, [
 		e,
 		t,
@@ -19628,7 +19628,7 @@ function yg({ catalog: e, config: t, manageDocument: n, syncUrl: r, urlPrefix: i
 		l,
 		n
 	]), c(() => {
-		if (!xn(t)) return;
+		if (!Pn(t)) return;
 		let e = window, n = l.source, r = {
 			id: n,
 			store: s,
@@ -19674,7 +19674,7 @@ function yg({ catalog: e, config: t, manageDocument: n, syncUrl: r, urlPrefix: i
 	]), c(() => {
 		if (!n) return;
 		let e = document.documentElement, t = e.getAttribute("lang"), r = e.getAttribute("dir");
-		return e.setAttribute("lang", x), e.setAttribute("dir", qt(x)), () => {
+		return e.setAttribute("lang", x), e.setAttribute("dir", sn(x)), () => {
 			t === null ? e.removeAttribute("lang") : e.setAttribute("lang", t), r === null ? e.removeAttribute("dir") : e.setAttribute("dir", r);
 		};
 	}, [n, x]), c(() => {
@@ -19688,7 +19688,7 @@ function yg({ catalog: e, config: t, manageDocument: n, syncUrl: r, urlPrefix: i
 		};
 	}, [t, s]), c(() => {
 		if (!n) return;
-		let e = t?.seo ?? U.seo, r = document.title, i = e?.title === U.seo.title ? Qt({
+		let e = t?.seo ?? U.seo, r = document.title, i = e?.title === U.seo.title ? fn({
 			locale: x,
 			translationOverrides: S
 		}, "app.documentTitle") : e?.title;
@@ -19748,7 +19748,7 @@ function yg({ catalog: e, config: t, manageDocument: n, syncUrl: r, urlPrefix: i
 			"data-density": b,
 			"data-reduce-motion": O ? "" : void 0,
 			lang: x,
-			dir: qt(x)
+			dir: sn(x)
 		}), document.body), /* @__PURE__ */ C(Zh.Provider, {
 			value: l,
 			children: /* @__PURE__ */ C(ii.Provider, {
@@ -19765,7 +19765,7 @@ function yg({ catalog: e, config: t, manageDocument: n, syncUrl: r, urlPrefix: i
 						"data-density": b,
 						"data-reduce-motion": O ? "" : void 0,
 						lang: x,
-						dir: qt(x),
+						dir: sn(x),
 						children: [
 							/* @__PURE__ */ C("h1", {
 								className: "sr-only",
@@ -19916,5 +19916,5 @@ function Sg() {
 		createStore: Yr
 	});
 }
-export { bg as BrowserBuilder, U as CONFIG_DEFAULTS, Xe as HttpError, $e as HttpTransport, _g as IchavaBrowser, We as IconRepository, Ye as LARAVEL_SANCTUM_PRESET, Ze as RequestAbortedError, sn as RestCatalog, Sp as SNIPPET_TABS, Ep as SnippetFactory, on as StaticCatalog, fa as SvgFidelity, ua as assetUrl, Sg as browser, tn as configureTransport, mn as createCatalog, pa as fidelity, Je as getBrowserId, Tp as iconRef, rn as initCsrf, xg as mountIchavaBrowser, an as request, Nn as resolveConfig, Dp as snippets, da as svgDataUrl, ot as svgHasOwnColors, st as toIcon, nn as transportConfig, Xr as useStore };
+export { bg as BrowserBuilder, U as CONFIG_DEFAULTS, Xe as HttpError, $e as HttpTransport, _g as IchavaBrowser, We as IconRepository, Ye as LARAVEL_SANCTUM_PRESET, Ze as RequestAbortedError, bn as RestCatalog, Sp as SNIPPET_TABS, Ep as SnippetFactory, yn as StaticCatalog, fa as SvgFidelity, ua as assetUrl, Sg as browser, hn as configureTransport, Dn as createCatalog, pa as fidelity, Je as getBrowserId, Tp as iconRef, _n as initCsrf, xg as mountIchavaBrowser, vn as request, Kn as resolveConfig, Dp as snippets, da as svgDataUrl, ot as svgHasOwnColors, st as toIcon, gn as transportConfig, Xr as useStore };
 
