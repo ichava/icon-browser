@@ -53,6 +53,8 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
 
 ### Security
 
+- **The vendoring script refuses private icon content.** `.dev/tools/sync-vendored-library.mjs` now fails, before it clears the target, when the library's `dist/lib` holds any `baseline/` path or any SVG whose path names `icon-sets-metronic`, `icon-sets-bundled` or Metronic, and lists what it refused. react-icon-browser's `public/baseline/` holds Metronic and bundled SVGs for its rendering tests; both packs are private to Simtabi LLC (2026-10-26), so that sample may stay there but is never copied into a host. It also re-checks the written target. `privateContent()` is exported, and `syncVendoredLibrary.test.ts` plants each case in a synthetic library and asserts the refusal and an untouched target; with the refusal disabled, all three fail. The shared copy in ichava/ichava.com must take the same change (`cmp`).
+
 - **Vitest is raised from `^2.1.5` to `^4.1.12`**, with `@vitest/coverage-v8` alongside, which clears two Dependabot alerts: GHSA-5xrq-8626-4rwp (critical, fixed in 3.2.6: arbitrary file read and execution while the Vitest UI server listens) and GHSA-82fw-gwwq-j7x9 (moderate, fixed in 4.1.11: path traversal through `@vitest/mocker` redirect mocks). A dev dependency only; nothing it touches ships in the bundle. 4.1 keeps Vite 7 and Node 24 supported.
 
 ## [0.1.0] - 2026-10-23

@@ -19,6 +19,12 @@
 //
 // Never copies `*.map`: a map's sourcesContent is the readable library source, Untitled UI PRO
 // included, and nothing at runtime reads it.
+//
+// Refuses, before touching the target, any `baseline/` path and any SVG from
+// icon-sets-metronic or icon-sets-bundled in what it would copy. react-icon-browser's
+// `public/baseline/` holds Metronic and bundled SVGs for its rendering tests, and Vite copies
+// it into `dist/`; both packs are private to Simtabi LLC (Sim, 2026-10-26), so that sample
+// may stay where it is but must never be copied into anything public.
 
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
@@ -27,6 +33,19 @@ import { join, relative, resolve, sep } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 export class SyncError extends Error {}
+
+/** Path segments and SVG paths that must never be vendored (see the header). */
+const BASELINE_SEGMENT = /(^|\/)baseline(\/|$)/i;
+const PRIVATE_PACK_SVG = /(icon-sets-metronic|icon-sets-bundled|metronic)[^]*\.svg$/i;
+
+/**
+ * The paths, relative and `/`-separated, that may not be vendored: anything under a
+ * `baseline/` directory, and any SVG whose path names icon-sets-metronic, icon-sets-bundled
+ * or Metronic. Empty when the set is clean.
+ */
+export function privateContent(paths) {
+  return paths.filter((p) => BASELINE_SEGMENT.test(p) || PRIVATE_PACK_SVG.test(p)).sort();
+}
 
 /**
  * The vendored copy's own package.json: the library's `dist/lib` exports with the prefix
@@ -91,6 +110,16 @@ export function syncVendoredLibrary({ packageName, source, target, typeDependenc
   if (pkg.name !== packageName) throw new SyncError(`${source} is ${pkg.name}, not ${packageName}`);
   if (!existsSync(join(lib, 'index.js'))) throw new SyncError(`no ${relative(root, lib)}/index.js; run \`npm run build:lib\` there first`);
 
+  const walk = (dir) =>
+    readdirSync(dir, { withFileTypes: true }).flatMap((d) => (d.isDirectory() ? [join(dir, d.name) + sep, ...walk(join(dir, d.name))] : [join(dir, d.name)]));
+  // Checked before the target is cleared, so a refused sync leaves the vendored copy as it was.
+  const refused = privateContent(walk(lib).map((f) => relative(lib, f).split(sep).join('/') + (f.endsWith(sep) ? '/' : '')));
+  if (refused.length) {
+    throw new SyncError(
+      `refusing to vendor ${refused.length} private path(s) from ${relative(root, lib)}: baseline/ and Metronic or bundled SVGs never leave react-icon-browser (${refused.slice(0, 5).join(', ')}${refused.length > 5 ? ', …' : ''})`,
+    );
+  }
+
   const git = (...args) => execFileSync('git', ['-C', source, '-c', 'core.fsmonitor=false', ...args], { encoding: 'utf8' }).trim();
   const commit = git('rev-parse', 'HEAD');
   const dirty = git('status', '--porcelain', '--untracked-files=no', '--', 'src', 'package.json', 'vite.lib.config.ts');
@@ -109,16 +138,16 @@ export function syncVendoredLibrary({ packageName, source, target, typeDependenc
   writeFileSync(entry, readFileSync(entry, 'utf8').replace(/\n\/\/# sourceMappingURL=index\.js\.map\s*$/, '\n'));
   writeFileSync(join(target, 'package.json'), JSON.stringify(manifest, null, 2) + '\n');
 
-  const walk = (dir) =>
-    readdirSync(dir, { withFileTypes: true }).flatMap((d) => (d.isDirectory() ? walk(join(dir, d.name)) : [join(dir, d.name)]));
   const files = Object.fromEntries(
     walk(target)
+      .filter((f) => !f.endsWith(sep))
       .map((f) => relative(target, f).split(sep).join('/'))
       .filter((f) => f !== 'VENDORED.json')
       .sort()
       .map((f) => [f, createHash('sha256').update(readFileSync(join(target, f))).digest('hex')]),
   );
   if (files['index.js.map'] || Object.keys(files).some((f) => f.endsWith('.map'))) throw new SyncError('a source map reached the target');
+  if (privateContent(Object.keys(files)).length) throw new SyncError('a baseline/ path or a Metronic or bundled SVG reached the target');
 
   writeFileSync(
     join(target, 'VENDORED.json'),

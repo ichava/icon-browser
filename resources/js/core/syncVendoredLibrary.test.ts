@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { dirname, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 /**
@@ -13,6 +14,8 @@ type Mod = {
   repositoryUrl: (pkg: Record<string, unknown>) => string;
   parseArgs: (argv: string[]) => Record<string, unknown>;
   SyncError: new (m: string) => Error;
+  privateContent: (paths: string[]) => string[];
+  syncVendoredLibrary: (o: { packageName: string; source: string; target: string; root: string; generatedBy: string }) => unknown;
 };
 // Imported by URL so the type checker does not resolve a plain-JS tool script.
 const url = pathToFileURL(resolve(process.cwd(), '.dev/tools/sync-vendored-library.mjs')).href;
@@ -72,5 +75,49 @@ describe('sync-vendored-library', () => {
     expect(() => mod.parseArgs(['--package', 'p', '--source', 's'])).toThrow(/--target is required/);
     expect(() => mod.parseArgs(['--package', 'p', '--source', 's', '--target', 't', '--nope', 'x'])).toThrow(/unknown option/);
     expect(() => mod.parseArgs(['--package'])).toThrow(/needs a value/);
+  });
+
+  it('names every baseline/ path and every Metronic or bundled SVG, and nothing else', () => {
+    expect(
+      mod.privateContent([
+        'baseline/',
+        'baseline/icon-sets-tabler/a.svg',
+        'assets/Baseline/x.png',
+        'assets/icon-sets-metronic/flags/kenya.svg',
+        'assets/icon-sets-bundled/mdi/home.svg',
+        'svg/metronic-logo.svg',
+      ]),
+    ).toHaveLength(6);
+    // Positive control: what a real vendored build holds passes, so the check can say "clean".
+    expect(mod.privateContent(['index.js', 'styles.css', 'package.json', 'LICENSE', 'fonts/Geist-Variable.woff2', 'types/index.d.ts', 'assets/icon-sets-bundled/README.md', 'x/baselines.svg'])).toEqual([]);
+  });
+
+  describe('refuses to vendor private content, and leaves the target untouched', () => {
+    const cases: [string, string][] = [
+      ['a baseline/ directory', 'baseline/icon-sets-tabler/outline/home.svg'],
+      ['a Metronic SVG', 'assets/icon-sets-metronic/flags/kenya.svg'],
+      ['a bundled SVG', 'assets/icon-sets-bundled/mdi/home.svg'],
+    ];
+    it.each(cases)('%s', (_what, planted) => {
+      const root = mkdtempSync(join(tmpdir(), 'ichava-vendor-'));
+      try {
+        const source = join(root, 'lib-checkout');
+        const target = join(root, 'host', 'vendor');
+        mkdirSync(join(source, 'dist', 'lib'), { recursive: true });
+        writeFileSync(join(source, 'package.json'), JSON.stringify(library));
+        writeFileSync(join(source, 'dist', 'lib', 'index.js'), 'export {};\n');
+        mkdirSync(dirname(join(source, 'dist', 'lib', planted)), { recursive: true });
+        writeFileSync(join(source, 'dist', 'lib', planted), '<svg xmlns="http://www.w3.org/2000/svg"/>');
+        mkdirSync(target, { recursive: true });
+        writeFileSync(join(target, 'kept.txt'), 'the previous vendored copy');
+
+        expect(() =>
+          mod.syncVendoredLibrary({ packageName: library.name, source, target, root, generatedBy: 'x.mjs' }),
+        ).toThrow(new RegExp(`refusing to vendor .*${planted.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`));
+        expect(existsSync(join(target, 'kept.txt'))).toBe(true);
+      } finally {
+        rmSync(root, { recursive: true, force: true });
+      }
+    });
   });
 });
