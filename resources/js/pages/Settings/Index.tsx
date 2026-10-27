@@ -133,7 +133,7 @@ export default function SettingsIndex() {
             </button>
             {recentlySuccessful && <span className="text-sm text-green-400">Saved.</span>}
             <span className="flex-1" />
-            <Link href={props.ichava.routes.browser} className="theme-text-accent text-sm hover:underline">
+            <Link href={props.ichava.routes.browser} className="theme-text-accent theme-link text-sm">
               ← Back to browser
             </Link>
           </div>
