@@ -15,7 +15,12 @@ import { type CSSProperties, type ReactNode } from 'react';
  * as `Focusable` in the Tooltip: adapt the element rather than force eight call sites to
  * become react-aria `Button`s and lose their `iconBtn()` styling.
  */
-export declare function Popover({ trigger, children, align, drop, width, panelStyle, label, }: {
+export declare function Popover({ trigger, children, align, drop, width, panelStyle, label, tooltip, }: {
+    /**
+     * The trigger's tooltip (the design-system one). Wrapped around the Pressable here,
+     * because the trigger render-prop must return the DOM button itself.
+     */
+    tooltip?: ReactNode;
     /**
      * The panel's accessible name, translated by the caller. Required: every popover used
      * to be announced as "Popover", in English, in every locale (A6-gaps G8).
