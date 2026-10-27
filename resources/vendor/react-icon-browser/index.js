@@ -9853,7 +9853,7 @@ function wc() {
 				children: /* @__PURE__ */ w("button", {
 					onClick: () => a("palette"),
 					title: `${h("header.commandPalette")} — ${m}K`,
-					className: "ich-header-search-button w-[280px] max-w-[40vw] h-[30px] flex items-center gap-2 py-0 px-2 border border-[var(--border)] rounded-[calc(var(--radius)_-_2px)] bg-[var(--muted2)] text-[var(--muted-fg)] cursor-pointer text-[12.5px]",
+					className: "ich-header-search-button w-full max-w-[280px] min-w-0 h-[30px] flex items-center gap-2 py-0 px-2 border border-[var(--border)] rounded-[calc(var(--radius)_-_2px)] bg-[var(--muted2)] text-[var(--muted-fg)] cursor-pointer text-[12.5px]",
 					children: [
 						/* @__PURE__ */ C(K, {
 							name: "search",
@@ -9861,11 +9861,11 @@ function wc() {
 							color: "var(--muted-fg)"
 						}),
 						/* @__PURE__ */ C("span", {
-							className: "ich-header-search-label flex-1 text-start",
+							className: "ich-header-search-label flex-1 min-w-0 truncate text-start",
 							children: h("common.search")
 						}),
 						/* @__PURE__ */ w("kbd", {
-							className: "ich-header-search-label font-[family-name:'Geist_Mono',monospace] text-[10px] py-0.5 px-[5px] border border-[var(--border)] rounded-[4px] bg-[var(--bg)]",
+							className: "ich-header-search-label ich-header-search-kbd font-[family-name:'Geist_Mono',monospace] text-[10px] py-0.5 px-[5px] border border-[var(--border)] rounded-[4px] bg-[var(--bg)]",
 							children: [m, "K"]
 						})
 					]
@@ -12996,63 +12996,65 @@ function wf() {
 				]
 			}),
 			/* @__PURE__ */ C(Of, {}),
-			/* @__PURE__ */ C(Es, {
-				label: k("toolbar.previewColor"),
-				align: "right",
-				width: 196,
-				panelStyle: { padding: 10 },
-				trigger: (e, t) => /* @__PURE__ */ w("button", {
-					onClick: t,
-					title: k("toolbar.previewColor"),
-					style: {
-						...ks,
-						padding: "0 8px"
-					},
-					children: [
-						/* @__PURE__ */ C("span", { style: {
-							width: 13,
-							height: 13,
-							borderRadius: "50%",
-							background: g ?? "linear-gradient(135deg,var(--fg),var(--muted-fg))",
-							border: "1px solid var(--border)"
-						} }),
-						/* @__PURE__ */ C("span", {
-							className: "text-[11.5px]",
-							children: k("toolbar.color")
-						}),
-						/* @__PURE__ */ C(K, {
-							name: "chevron-down",
-							size: 9,
+			/* @__PURE__ */ w("div", {
+				className: "flex flex-none items-center gap-[7px]",
+				children: [/* @__PURE__ */ C(Es, {
+					label: k("toolbar.previewColor"),
+					align: "right",
+					width: 196,
+					panelStyle: { padding: 10 },
+					trigger: (e, t) => /* @__PURE__ */ w("button", {
+						onClick: t,
+						title: k("toolbar.previewColor"),
+						style: {
+							...ks,
+							padding: "0 8px"
+						},
+						children: [
+							/* @__PURE__ */ C("span", { style: {
+								width: 13,
+								height: 13,
+								borderRadius: "50%",
+								background: g ?? "linear-gradient(135deg,var(--fg),var(--muted-fg))",
+								border: "1px solid var(--border)"
+							} }),
+							/* @__PURE__ */ C("span", {
+								className: "text-[11.5px]",
+								children: k("toolbar.color")
+							}),
+							/* @__PURE__ */ C(K, {
+								name: "chevron-down",
+								size: 9,
+								color: "currentColor"
+							})
+						]
+					}),
+					children: () => /* @__PURE__ */ C(S, { children: /* @__PURE__ */ C(ll, {
+						value: g,
+						onChange: _
+					}) })
+				}), /* @__PURE__ */ C(vc, {
+					content: k("toolbar.resetFilters"),
+					shortcut: Bt(j),
+					children: /* @__PURE__ */ C("button", {
+						onClick: P,
+						"aria-label": k("toolbar.resetFilters"),
+						style: {
+							...ks,
+							width: 28,
+							padding: 0,
+							justifyContent: "center",
+							border: "none",
+							background: "transparent",
+							color: "var(--muted-fg)"
+						},
+						children: /* @__PURE__ */ C(K, {
+							name: "refresh",
+							size: 13,
 							color: "currentColor"
 						})
-					]
-				}),
-				children: () => /* @__PURE__ */ C(S, { children: /* @__PURE__ */ C(ll, {
-					value: g,
-					onChange: _
-				}) })
-			}),
-			/* @__PURE__ */ C(vc, {
-				content: k("toolbar.resetFilters"),
-				shortcut: Bt(j),
-				children: /* @__PURE__ */ C("button", {
-					onClick: P,
-					"aria-label": k("toolbar.resetFilters"),
-					style: {
-						...ks,
-						width: 28,
-						padding: 0,
-						justifyContent: "center",
-						border: "none",
-						background: "transparent",
-						color: "var(--muted-fg)"
-					},
-					children: /* @__PURE__ */ C(K, {
-						name: "refresh",
-						size: 13,
-						color: "currentColor"
 					})
-				})
+				})]
 			})
 		]
 	});
@@ -14375,8 +14377,8 @@ function Mp(e, t, n) {
 }
 // src/components/browser/IconTile.tsx
 var Np = {
-	width: 25,
-	height: 25,
+	width: 22,
+	height: 22,
 	border: "1px solid var(--border)",
 	borderRadius: 6,
 	background: "var(--pop)",
@@ -14570,12 +14572,12 @@ function Pp({ icon: e, size: t, gridIndex: n, colIndex: r, tabIndex: i = 0, onCe
 					})
 				})
 			}), /* @__PURE__ */ w("div", {
-				className: "absolute top-1 end-1 flex gap-[3px] z-3",
+				className: "absolute inset-x-0 bottom-[3px] flex justify-center gap-[3px] z-3",
 				children: [
 					/* @__PURE__ */ C(vc, {
 						content: N("tile.copyFormat", { format: f }),
 						shortcut: "C",
-						side: "top",
+						side: "bottom",
 						children: /* @__PURE__ */ C("button", {
 							onClick: ie,
 							tabIndex: I ? -1 : void 0,
@@ -14583,7 +14585,7 @@ function Pp({ icon: e, size: t, gridIndex: n, colIndex: r, tabIndex: i = 0, onCe
 							style: Np,
 							children: /* @__PURE__ */ C(K, {
 								name: "copy",
-								size: 13.5,
+								size: 12.5,
 								color: "currentColor"
 							})
 						})
@@ -14591,7 +14593,7 @@ function Pp({ icon: e, size: t, gridIndex: n, colIndex: r, tabIndex: i = 0, onCe
 					/* @__PURE__ */ C(vc, {
 						content: N(P ? "tile.removeFavorite" : "tile.addFavorite"),
 						shortcut: "F",
-						side: "top",
+						side: "bottom",
 						children: /* @__PURE__ */ C("button", {
 							onClick: (t) => {
 								t.stopPropagation(), b(e.id);
@@ -14602,14 +14604,14 @@ function Pp({ icon: e, size: t, gridIndex: n, colIndex: r, tabIndex: i = 0, onCe
 							style: Np,
 							children: /* @__PURE__ */ C(K, {
 								name: P ? "heart-filled" : "heart",
-								size: 13.5,
+								size: 12.5,
 								color: P ? "var(--accent)" : "currentColor"
 							})
 						})
 					}),
 					/* @__PURE__ */ C(vc, {
 						content: N("detail.addToCollection"),
-						side: "top",
+						side: "bottom",
 						children: /* @__PURE__ */ C("button", {
 							onClick: re,
 							tabIndex: I ? -1 : void 0,
@@ -14618,7 +14620,7 @@ function Pp({ icon: e, size: t, gridIndex: n, colIndex: r, tabIndex: i = 0, onCe
 							style: Np,
 							children: /* @__PURE__ */ C(K, {
 								name: "folder",
-								size: 13.5,
+								size: 12.5,
 								color: "currentColor"
 							})
 						})
@@ -14641,7 +14643,7 @@ function Pp({ icon: e, size: t, gridIndex: n, colIndex: r, tabIndex: i = 0, onCe
 				size: ne
 			}),
 			d && /* @__PURE__ */ C("span", {
-				className: "max-w-[90%] text-[10px] text-[var(--muted-fg)] whitespace-nowrap overflow-hidden text-ellipsis",
+				className: `max-w-[90%] text-[10px] text-[var(--muted-fg)] whitespace-nowrap overflow-hidden text-ellipsis${u ? " invisible" : ""}`,
 				children: e.name
 			})
 		]
@@ -15261,6 +15263,7 @@ function om({ title: e, code: t, onCopy: n, height: r = 300 }) {
 		}), /* @__PURE__ */ w("div", {
 			role: "region",
 			tabIndex: 0,
+			dir: "ltr",
 			"aria-label": `${o("console.code")} — ${e}`,
 			className: "flex-1 overflow-auto flex font-[family-name:'Geist_Mono',monospace] text-[11px] leading-[1.7]",
 			children: [/* @__PURE__ */ C("div", {
@@ -16265,10 +16268,10 @@ function km({ presets: e, value: t, onChange: n, isDisabled: r }) {
 				"aria-hidden": "true",
 				className: "size-4 shrink-0 stroke-[2.25px] text-fg-quaternary"
 			})]
-		}), /* @__PURE__ */ C(ps, {
-			size: "md",
+		}), /* @__PURE__ */ C(H, {
 			placement: "bottom start",
-			className: "flex max-h-none! w-80 flex-col overflow-hidden! p-0!",
+			offset: 4,
+			className: ({ isEntering: e, isExiting: t }) => Z("z-(--z-popover) flex w-80 max-w-[calc(100vw-16px)] flex-col overflow-hidden rounded-lg bg-primary shadow-lg ring-1 ring-secondary_alt outline-hidden", e && "duration-150 ease-out animate-in fade-in", t && "duration-100 ease-in animate-out fade-out"),
 			children: /* @__PURE__ */ w(T, {
 				filter: (e, t) => t.trim().split(/\s+/).every((t) => a(e, t)),
 				children: [/* @__PURE__ */ C(he, {
@@ -16287,7 +16290,7 @@ function km({ presets: e, value: t, onChange: n, isDisabled: r }) {
 					})
 				}), /* @__PURE__ */ C(ie, {
 					items: o,
-					className: "max-h-64 overflow-y-auto py-1 outline-hidden",
+					className: "max-h-64 min-h-0 flex-1 overflow-y-auto py-1 outline-hidden",
 					renderEmptyState: () => /* @__PURE__ */ C("p", {
 						className: "px-3 py-4 text-center text-[12.5px] text-tertiary",
 						children: i("detail.noPresets")
@@ -17905,11 +17908,11 @@ function Th() {
 							},
 							children: [/* @__PURE__ */ C(Ns, {
 								id: "local",
-								className: "px-2.5 py-1 text-xs",
+								className: "h-8 px-2.5 py-0 text-xs",
 								children: e("settings.storageLocal")
 							}), /* @__PURE__ */ C(Ns, {
 								id: "session",
-								className: "px-2.5 py-1 text-xs",
+								className: "h-8 px-2.5 py-0 text-xs",
 								children: e("settings.storageSession")
 							})]
 						})
@@ -17985,7 +17988,7 @@ function Th() {
 								children: e("settings.guestNote")
 							}),
 							/* @__PURE__ */ C(Q, {
-								size: "sm",
+								size: "xs",
 								className: "flex-none",
 								onClick: () => {
 									g("signin"), t();
