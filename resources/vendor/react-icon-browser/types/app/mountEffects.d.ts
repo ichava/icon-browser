@@ -31,3 +31,10 @@ export declare function useDocumentSeo({ manageDocument, config, locale, transla
     translationOverrides: TranslationOverrides;
 }): void;
 export declare function useOverlayRemeasure(scale: Scale, density: Density): void;
+/**
+ * Take down the static prepaint loader once the browser has mounted.
+ *
+ * A host inlines `prepaint.html` so something paints before the bundle runs. The standalone
+ * app's bootsplash removes it as it takes over; an embed with no bootsplash relies on this.
+ */
+export declare function usePrepaintHandoff(): void;

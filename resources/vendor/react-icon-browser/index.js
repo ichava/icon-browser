@@ -19789,14 +19789,21 @@ function yg() {
 		logger: zn.child(e)
 	};
 }
+// src/boot/prepaint.ts
+var bg = "ichava-prepaint";
+function xg({ immediate: e = !1 } = {}) {
+	if (typeof document > "u") return;
+	let t = document.getElementById(bg);
+	t && !t.hasAttribute("data-leaving") && (t.setAttribute("data-leaving", ""), t.removeAttribute("data-slow"), e ? t.remove() : setTimeout(() => t.remove(), 220));
+}
 // src/app/mountEffects.ts
-var bg = W.ui.baseFontSize;
-function xg(e, t) {
+var Sg = W.ui.baseFontSize;
+function Cg(e, t) {
 	u(() => {
 		t && _t(t) && e.getState().locale !== t && e.setState({ locale: t });
 	}, [t, e]);
 }
-function Sg(e, t, { catalog: n, config: r, manageDocument: i }) {
+function wg(e, t, { catalog: n, config: r, manageDocument: i }) {
 	c(() => {
 		n ? (e.getState().setCatalog(n), e.getState().setFiltersData(new Qt(n).filters()), t.info("app", "catalog mounted", { icons: n.icons.length })) : (e.setState({ loading: !1 }), t.info("app", "REST client mounted")), r && e.getState().setConfig(r), t.configure(r), i && zn.configure(r), r?.features?.demo && e.getState().seedDemoNotifications(), e.getState().tourSeen || e.getState().startTour();
 	}, [
@@ -19807,7 +19814,7 @@ function Sg(e, t, { catalog: n, config: r, manageDocument: i }) {
 		i
 	]);
 }
-function Cg(e, t, n) {
+function Tg(e, t, n) {
 	c(() => {
 		if (!Pn(n)) return;
 		let r = window, i = t.source, a = {
@@ -19837,13 +19844,13 @@ function Cg(e, t, n) {
 		t
 	]);
 }
-function wg({ manageDocument: e, theme: t, vars: n, density: r, reduceMotion: i, scale: a }) {
+function Eg({ manageDocument: e, theme: t, vars: n, density: r, reduceMotion: i, scale: a }) {
 	c(() => {
 		if (!e) return;
 		let o = document.documentElement, s = o.classList.contains("dark-mode");
 		o.classList.toggle("dark-mode", t === "dark");
 		for (let [e, t] of Object.entries(n)) o.style.setProperty(e, t);
-		return o.style.setProperty("--app-font", `${bg}px`), o.style.setProperty("font-size", `${16 * (bc[a] || 1)}px`), o.setAttribute("data-density", r), o.toggleAttribute("data-reduce-motion", i), () => {
+		return o.style.setProperty("--app-font", `${Sg}px`), o.style.setProperty("font-size", `${16 * (bc[a] || 1)}px`), o.setAttribute("data-density", r), o.toggleAttribute("data-reduce-motion", i), () => {
 			o.classList.toggle("dark-mode", s), o.style.removeProperty("font-size");
 			for (let e of [...ht, "--app-font"]) o.style.removeProperty(e);
 			o.removeAttribute("data-density"), o.removeAttribute("data-reduce-motion");
@@ -19857,7 +19864,7 @@ function wg({ manageDocument: e, theme: t, vars: n, density: r, reduceMotion: i,
 		a
 	]);
 }
-function Tg(e, t) {
+function Dg(e, t) {
 	c(() => {
 		if (!e) return;
 		let n = document.documentElement, r = n.getAttribute("lang"), i = n.getAttribute("dir");
@@ -19866,7 +19873,7 @@ function Tg(e, t) {
 		};
 	}, [e, t]);
 }
-function Eg(e, t) {
+function Og(e, t) {
 	c(() => {
 		let n = e?.i18n?.endpoint;
 		if (!n) return;
@@ -19878,7 +19885,7 @@ function Eg(e, t) {
 		};
 	}, [e, t]);
 }
-function Dg({ manageDocument: e, config: t, locale: n, translationOverrides: r }) {
+function kg({ manageDocument: e, config: t, locale: n, translationOverrides: r }) {
 	c(() => {
 		if (!e) return;
 		let i = t?.seo ?? W.seo, a = document.title, o = i?.title === W.seo.title ? Yt({
@@ -19897,25 +19904,28 @@ function Dg({ manageDocument: e, config: t, locale: n, translationOverrides: r }
 		r
 	]);
 }
-function Og(e, t) {
+function Ag(e, t) {
 	c(() => {
 		if (typeof window > "u") return;
 		let e = requestAnimationFrame(() => window.dispatchEvent(new Event("resize")));
 		return () => cancelAnimationFrame(e);
 	}, [e, t]);
 }
+function jg() {
+	c(() => xg(), []);
+}
 // src/IchavaBrowser.tsx
-var kg = {
+var Mg = {
 	light: "#ffffff",
 	dark: "#0a0a0a"
 };
-function Ag({ catalog: e, client: t, config: n = null, manageDocument: r = !1, syncUrl: i = !1, urlPrefix: a = "", store: o, locale: s }) {
+function Ng({ catalog: e, client: t, config: n = null, manageDocument: r = !1, syncUrl: i = !1, urlPrefix: a = "", store: o, locale: s }) {
 	if (e == null == (t == null)) throw Error("IchavaBrowser: pass exactly one of `catalog` (static) or `client` (REST/custom).");
 	return /* @__PURE__ */ C(ei, {
 		value: o ?? null,
 		children: /* @__PURE__ */ C(Ue, {
 			value: t ?? null,
-			children: /* @__PURE__ */ C(jg, {
+			children: /* @__PURE__ */ C(Pg, {
 				catalog: e ?? null,
 				config: n,
 				manageDocument: r,
@@ -19926,44 +19936,44 @@ function Ag({ catalog: e, client: t, config: n = null, manageDocument: r = !1, s
 		})
 	});
 }
-function jg({ catalog: e, config: t, manageDocument: n, syncUrl: r, urlPrefix: i, locale: a }) {
+function Pg({ catalog: e, config: t, manageDocument: n, syncUrl: r, urlPrefix: i, locale: a }) {
 	let s = ti(), { logger: c } = d(() => yg(), []);
-	xg(s, a);
+	Cg(s, a);
 	let l = G((e) => e.theme), u = G((e) => e.accent), m = G((e) => e.radius), g = G((e) => e.scale), v = G((e) => e.density), y = G((e) => e.locale), b = G((e) => e.translationOverrides), x = G((e) => e.layer), S = G((e) => e.auth.status === "authed"), T = G((e) => e.loading), E = G((e) => e.reduceMotion), D = G((e) => e.tour.active), O = G((e) => e.consent), ee = Kh(O === null), k = G((e) => e.inviteOpen), A = G((e) => e.accessCollectionId), j = G((e) => e.sharedOpen), M = G((e) => e.devtools.open), N = Pn(t), P = f(null), F = f(null);
 	ni({
 		manageDocument: n,
 		rootRef: P,
 		overlayRef: F
-	}), si({
+	}), jg(), si({
 		enabled: r,
 		prefix: i
 	});
 	let I = d(() => ({
 		enabled: r,
 		prefix: i
-	}), [r, i]), L = d(() => U(u, l === "dark" ? kg.dark : kg.light), [u, l]), te = d(() => mt(u, L, l, m), [
+	}), [r, i]), L = d(() => U(u, l === "dark" ? Mg.dark : Mg.light), [u, l]), te = d(() => mt(u, L, l, m), [
 		u,
 		L,
 		l,
 		m
 	]);
-	Sg(s, c, {
+	wg(s, c, {
 		catalog: e,
 		config: t,
 		manageDocument: n
-	}), Cg(s, c, t), wg({
+	}), Tg(s, c, t), Eg({
 		manageDocument: n,
 		theme: l,
 		vars: te,
 		density: v,
 		reduceMotion: E,
 		scale: g
-	}), Tg(n, y), Eg(t, s), Dg({
+	}), Dg(n, y), Og(t, s), kg({
 		manageDocument: n,
 		config: t,
 		locale: y,
 		translationOverrides: b
-	}), Og(g, v);
+	}), Ag(g, v);
 	let ne = t?.brand ?? W.brand, R = `${ne.name} ${ne.suffix}`.trim(), z = d(() => {
 		let e = bc[g] || 1;
 		return {
@@ -19975,8 +19985,8 @@ function jg({ catalog: e, config: t, manageDocument: n, syncUrl: r, urlPrefix: i
 			overflow: "hidden",
 			"--spacing": `${.25 * e}rem`,
 			"--ich-rem": `${16 * e}px`,
-			fontSize: `${bg * e}px`,
-			"--app-font": `${bg * e}px`,
+			fontSize: `${Sg * e}px`,
+			"--app-font": `${Sg * e}px`,
 			...te
 		};
 	}, [te, g]), [re, ie] = p(null), B = o((e) => {
@@ -20057,7 +20067,7 @@ function jg({ catalog: e, config: t, manageDocument: n, syncUrl: r, urlPrefix: i
 	});
 }
 // src/app/BrowserBuilder.ts
-var Mg = class e {
+var Fg = class e {
 	#e;
 	#t;
 	#n;
@@ -20154,9 +20164,9 @@ var Mg = class e {
 	}
 };
 // src/mount.tsx
-function Ng(e, t) {
+function Ig(e, t) {
 	let n = t.store ?? Yr(t.persistKey === void 0 ? {} : { persistKey: t.persistKey }), i = Ve(e);
-	return i.render(/* @__PURE__ */ C(r, { children: /* @__PURE__ */ C(Ag, {
+	return i.render(/* @__PURE__ */ C(r, { children: /* @__PURE__ */ C(Ng, {
 		catalog: t.catalog,
 		client: t.client,
 		config: t.config ?? null,
@@ -20167,11 +20177,11 @@ function Ng(e, t) {
 		locale: t.locale
 	}) })), i;
 }
-function Pg() {
-	return new Mg({
-		mount: Ng,
+function Lg() {
+	return new Fg({
+		mount: Ig,
 		createStore: Yr
 	});
 }
-export { Mg as BrowserBuilder, W as CONFIG_DEFAULTS, on as HttpError, ln as HttpTransport, Ag as IchavaBrowser, Qt as IconRepository, an as LARAVEL_SANCTUM_PRESET, sn as RequestAbortedError, bn as RestCatalog, wp as SNIPPET_TABS, Op as SnippetFactory, yn as StaticCatalog, fa as SvgFidelity, ua as assetUrl, Pg as browser, hn as configureTransport, Dn as createCatalog, pa as fidelity, rn as getBrowserId, Dp as iconRef, _n as initCsrf, Ng as mountIchavaBrowser, vn as request, Kn as resolveConfig, kp as snippets, da as svgDataUrl, Ge as svgHasOwnColors, Ke as toIcon, gn as transportConfig, Xr as useStore };
+export { Fg as BrowserBuilder, W as CONFIG_DEFAULTS, on as HttpError, ln as HttpTransport, Ng as IchavaBrowser, Qt as IconRepository, an as LARAVEL_SANCTUM_PRESET, sn as RequestAbortedError, bn as RestCatalog, wp as SNIPPET_TABS, Op as SnippetFactory, yn as StaticCatalog, fa as SvgFidelity, ua as assetUrl, Lg as browser, hn as configureTransport, Dn as createCatalog, pa as fidelity, rn as getBrowserId, Dp as iconRef, _n as initCsrf, Ig as mountIchavaBrowser, vn as request, Kn as resolveConfig, kp as snippets, da as svgDataUrl, Ge as svgHasOwnColors, Ke as toIcon, gn as transportConfig, Xr as useStore };
 

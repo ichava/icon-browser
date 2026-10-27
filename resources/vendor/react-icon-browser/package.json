@@ -12,6 +12,7 @@
       "import": "./index.js"
     },
     "./styles.css": "./styles.css",
+    "./prepaint.html": "./prepaint.html",
     "./package.json": "./package.json"
   },
   "sideEffects": [
