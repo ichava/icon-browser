@@ -15080,13 +15080,66 @@ function om({ rowCount: e, rowHeight: t, gap: n, scrollRef: r, ready: i, activeR
 		}))
 	});
 }
+// src/components/browser/IconSkeleton.tsx
+function sm({ view: e, count: t }) {
+	let n = q(), r = G((e) => e.density), i = G((e) => e.size), { gap: a, rowH: o } = wc(r);
+	return /* @__PURE__ */ w("div", {
+		role: "status",
+		"aria-busy": "true",
+		"aria-live": "polite",
+		"data-ichava-skeleton": e,
+		children: [/* @__PURE__ */ C("span", {
+			className: "sr-only",
+			children: n("boot.loadingCatalog")
+		}), e === "grid" ? /* @__PURE__ */ C("div", {
+			"aria-hidden": "true",
+			style: {
+				display: "grid",
+				gridTemplateColumns: `repeat(auto-fill, minmax(${Tc(i, r)}px, 1fr))`,
+				gap: a
+			},
+			children: Array.from({ length: t ?? 24 }).map((e, t) => /* @__PURE__ */ C("div", {
+				className: "flex items-center justify-center aspect-square overflow-hidden rounded-[var(--radius)] border border-[var(--border)] bg-[var(--surface)]",
+				children: /* @__PURE__ */ C("span", {
+					className: "ich-skeleton rounded-[calc(var(--radius)_-_2px)]",
+					style: {
+						width: Math.min(i, 48),
+						height: Math.min(i, 48)
+					}
+				})
+			}, t))
+		}) : /* @__PURE__ */ C("div", {
+			"aria-hidden": "true",
+			className: "flex flex-col border border-[var(--border)] rounded-[var(--radius)] overflow-hidden",
+			children: Array.from({ length: t ?? 12 }).map((e, t) => /* @__PURE__ */ w("div", {
+				className: "flex items-center gap-[10px] px-3 border-b border-[var(--border)] last:border-b-0",
+				style: { height: o },
+				children: [
+					/* @__PURE__ */ C("span", { className: "ich-skeleton w-[18px] h-[18px] rounded-[4px]" }),
+					/* @__PURE__ */ C("span", {
+						className: "ich-skeleton h-[10px] rounded-full",
+						style: { width: 80 + t * 37 % 90 }
+					}),
+					/* @__PURE__ */ C("span", {
+						className: "flex-1 min-w-0",
+						children: /* @__PURE__ */ C("span", {
+							className: "ich-skeleton block h-[9px] rounded-full",
+							style: { width: `${30 + t * 23 % 35}%` }
+						})
+					}),
+					/* @__PURE__ */ C("span", { className: "ich-skeleton w-[46px] h-[22px] rounded-[5px]" })
+				]
+			}, t))
+		})]
+	});
+}
 // src/components/layout/AppContent.tsx
-function sm({ loading: e }) {
+function cm({ loading: e }) {
 	let { page: t } = Nc(), n = G((e) => e.view), r = G((e) => e.filters), i = G((e) => e.size), a = G((e) => e.resetFilters), o = G((e) => e.selectAllPacks), s = G((e) => e.catalog), c = f(null), l = r.packages.length === 0, u = !e && !l && t.total === 0;
 	return /* @__PURE__ */ C("div", {
 		ref: c,
 		className: "flex-1 overflow-y-auto p-3 [scrollbar-gutter:stable] bg-[var(--canvas)]",
-		children: e ? /* @__PURE__ */ C(cm, {}) : l ? /* @__PURE__ */ C(um, { onSelectAll: () => o((s?.packages ?? []).filter((e) => e.installed).map((e) => e.id)) }) : u ? /* @__PURE__ */ C(dm, {
+		children: e ? /* @__PURE__ */ C(sm, { view: n === "list" ? "list" : "grid" }) : l ? /* @__PURE__ */ C(um, { onSelectAll: () => o((s?.packages ?? []).filter((e) => e.installed).map((e) => e.id)) }) : u ? /* @__PURE__ */ C(dm, {
 			search: r.search,
 			onReset: a
 		}) : n === "grid" ? /* @__PURE__ */ C(am, {
@@ -15095,12 +15148,6 @@ function sm({ loading: e }) {
 			scrollRef: c,
 			label: `${t.total} icons`
 		}) : /* @__PURE__ */ C(fm, {})
-	});
-}
-function cm() {
-	return /* @__PURE__ */ C("div", {
-		className: "grid grid-cols-[repeat(auto-fill,minmax(88px,1fr))] gap-2",
-		children: Array.from({ length: 24 }).map((e, t) => /* @__PURE__ */ C("div", { className: "aspect-[1_/_0.92] rounded-[var(--radius)] bg-[var(--muted)] [animation:ichPulse_1.4s_ease-in-out_infinite]" }, t))
 	});
 }
 function lm() {
@@ -15347,7 +15394,7 @@ function gm({ loading: e }) {
 		className: "flex-1 flex flex-col min-w-0",
 		children: [
 			/* @__PURE__ */ C(Of, {}),
-			/* @__PURE__ */ C(sm, { loading: e }),
+			/* @__PURE__ */ C(cm, { loading: e }),
 			/* @__PURE__ */ C(mm, {})
 		]
 	});
