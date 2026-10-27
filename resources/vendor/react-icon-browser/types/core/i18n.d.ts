@@ -246,6 +246,8 @@ declare const EN: {
     'detail.pngNoSvg': string;
     'detail.pngFailed': string;
     'detail.addedTo': string;
+    'detail.removedFrom': string;
+    'detail.motionDefault': string;
     'console.copyCode': string;
     'console.copy': string;
     'console.copied': string;
