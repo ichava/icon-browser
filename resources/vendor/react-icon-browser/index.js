@@ -8527,7 +8527,7 @@ function Ds(e) {
 	return s;
 }
 // src/components/ui/controls.ts
-var Os = "background-color .12s ease, color .12s ease, border-color .12s ease", ks = (e = !1) => ({
+var Os = "background-color .12s ease, color .12s ease, border-color .12s ease, transform .12s ease", ks = (e = !1) => ({
 	width: 30,
 	height: 30,
 	display: "flex",
@@ -14772,6 +14772,7 @@ function rm({ icon: e, size: t, gridIndex: n, colIndex: r, tabIndex: i = 0, onCe
 		tabIndex: i,
 		"data-grid-index": n,
 		"data-icon-id": e.id,
+		"data-ich-tile": "",
 		"aria-colindex": r,
 		"aria-label": `${e.name} — ${re}${P ? `, ${N("tile.favoritedAria")}` : ""}${F && !I ? `, ${N("tile.selectedAria")}` : ""}`,
 		"aria-pressed": I ? void 0 : F,
@@ -14835,8 +14836,11 @@ function rm({ icon: e, size: t, gridIndex: n, colIndex: r, tabIndex: i = 0, onCe
 			borderRadius: "var(--radius)",
 			border: `1px solid ${F || u ? "var(--accent)" : "var(--border)"}`,
 			background: F ? "var(--accent-soft)" : "var(--surface)",
-			boxShadow: F || u ? "0 0 0 3px var(--accent-soft)" : "none",
+			boxShadow: F || u ? "0 0 0 3px var(--accent-soft), 0 6px 16px -10px var(--accent)" : "none",
+			transform: `translateY(${u ? -1 : 0}px) scale(var(--ich-press, 1))`,
+			transition: "border-color .15s ease, box-shadow .18s ease, background-color .15s ease, transform .15s ease",
 			cursor: "pointer",
+			userSelect: "none",
 			contentVisibility: "auto"
 		},
 		children: [
@@ -15225,11 +15229,15 @@ function fm({ search: e, onReset: t }) {
 	});
 }
 function pm() {
-	let { page: e } = Pc(), t = G((e) => e.openDetail), n = G((e) => e.toggleFavorite), r = G((e) => e.favorites), i = G((e) => e.copyFormat), a = G((e) => e.config?.snippets), o = G((e) => e.size), s = G((e) => e.sizeUnit), c = G((e) => e.color), { rowH: l } = Tc(G((e) => e.density)), u = dl(), d = q();
-	return /* @__PURE__ */ C("div", {
+	let { page: e } = Pc(), t = G((e) => e.openDetail), n = G((e) => e.toggleFavorite), r = G((e) => e.favorites), i = G((e) => e.copyFormat), a = G((e) => e.config?.snippets), o = G((e) => e.size), s = G((e) => e.sizeUnit), l = G((e) => e.color), { rowH: u } = Tc(G((e) => e.density)), d = dl(), f = q(), [m, h] = p(null);
+	return c(() => {
+		if (m === null) return;
+		let e = setTimeout(() => h(null), 1400);
+		return () => clearTimeout(e);
+	}, [m]), /* @__PURE__ */ C("div", {
 		className: "flex flex-col border border-[var(--border)] rounded-[var(--radius)] overflow-hidden",
 		children: e.items.map((e) => {
-			let f = r.includes(e.id);
+			let c = r.includes(e.id);
 			return /* @__PURE__ */ w("div", {
 				role: "button",
 				tabIndex: 0,
@@ -15238,12 +15246,13 @@ function pm() {
 				onKeyDown: (n) => {
 					(n.key === "Enter" || n.key === " ") && (n.preventDefault(), t(e.id));
 				},
+				"data-ich-row": "",
 				className: "transition-colors hover:bg-[var(--muted)]",
 				style: {
 					display: "flex",
 					alignItems: "center",
 					gap: 10,
-					height: l,
+					height: u,
 					padding: "0 12px",
 					borderBottom: "1px solid var(--border)",
 					cursor: "pointer"
@@ -15263,29 +15272,36 @@ function pm() {
 					}),
 					/* @__PURE__ */ C("button", {
 						onClick: (t) => {
-							t.stopPropagation(), u(tm(e, i, {
+							t.stopPropagation(), h(e.id), d(tm(e, i, {
 								size: o,
 								unit: s,
-								color: c,
+								color: l,
 								config: a
-							}), d("list.copiedToast", { name: e.name }));
+							}), f("list.copiedToast", { name: e.name }));
 						},
 						className: "h-[22px] py-0 px-2 border border-[var(--border)] rounded-[5px] bg-[var(--bg)] text-[11px] cursor-pointer text-[var(--fg)] transition-colors hover:border-[var(--muted-fg)] hover:bg-[var(--muted)]",
-						children: d("common.copy")
+						children: m === e.id ? /* @__PURE__ */ w("span", {
+							className: "inline-flex items-center gap-1 text-[var(--accent-text)] [animation:ichIn_.14s_ease]",
+							children: [/* @__PURE__ */ C(K, {
+								name: "check",
+								size: 11,
+								color: "currentColor"
+							}), f("console.copied")]
+						}) : f("common.copy")
 					}),
 					/* @__PURE__ */ C(Ts, {
-						content: d(f ? "tile.removeFavorite" : "tile.addFavorite"),
+						content: f(c ? "tile.removeFavorite" : "tile.addFavorite"),
 						children: /* @__PURE__ */ C("button", {
 							onClick: (t) => {
 								t.stopPropagation(), n(e.id);
 							},
-							"aria-label": d(f ? "tile.removeFavorite" : "tile.addFavorite"),
-							"aria-pressed": f,
+							"aria-label": f(c ? "tile.removeFavorite" : "tile.addFavorite"),
+							"aria-pressed": c,
 							className: "w-[26px] h-[26px] border-0 bg-transparent rounded-[5px] cursor-pointer flex items-center justify-center transition-colors hover:bg-[var(--muted)]",
 							children: /* @__PURE__ */ C(K, {
-								name: f ? "heart-filled" : "heart",
+								name: c ? "heart-filled" : "heart",
 								size: 14,
-								color: f ? "var(--accent)" : "var(--faint-fg)"
+								color: c ? "var(--accent)" : "var(--faint-fg)"
 							})
 						})
 					}),
