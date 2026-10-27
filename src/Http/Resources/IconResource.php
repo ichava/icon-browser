@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\Ichava\IconBrowser\Http\Resources;
 
-use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Simtabi\Laranail\Ichava\Models\Icon;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Simtabi\Laranail\Ichava\IconBrowser\Support\IconSnippets;
 
 /**
  * IconResource - Transform Icon model to API response
@@ -63,10 +63,9 @@ class IconResource extends JsonResource
             'width'   => $icon->width,
             'height'  => $icon->height,
 
-            // Blade Component Helpers
-            'blade_clean'   => $this->generateBladeClean($icon),
-            'blade_generic' => $this->generateBladeGeneric($icon),
-            'helper'        => $this->generateHelper($icon),
+            // Snippet strings: blade_clean, blade_generic, helper, and the host
+            // resolver's `snippets` map when one is configured (IconSnippets).
+            ...app(IconSnippets::class)->forIcon($icon),
 
             // Metadata
             'set'      => $icon->package,
@@ -77,52 +76,5 @@ class IconResource extends JsonResource
             'created_at' => $icon->created_at?->toIso8601String(),
             'updated_at' => $icon->updated_at?->toIso8601String(),
         ];
-    }
-
-    /**
-     * Generate clean Blade component syntax
-     */
-    protected function generateBladeClean(Icon $icon): string
-    {
-        $packageName = $icon->package;
-        $category = $icon->primary_category?->slug ?? '';
-
-        if (! Str::contains($packageName, '/')) {
-            return "<x-ichava::icon name=\"{$icon->icon_path}\" class=\"w-6 h-6\" />";
-        }
-
-        $vendor = Str::before($packageName, '/');
-        $packagePart = Str::after($packageName, '/');
-
-        if ($vendor === 'ichava' && $packagePart) {
-            $componentName = 'ichava-' . str_replace('-icons', '', $packagePart);
-            $attrs = "name=\"{$icon->name}\"";
-
-            if ($category) {
-                $attrs .= " category=\"{$category}\"";
-            }
-
-            $attrs .= ' class="w-6 h-6"';
-
-            return "<x-ichava::{$componentName} {$attrs} />";
-        }
-
-        return "<x-ichava::icon name=\"{$icon->icon_path}\" class=\"w-6 h-6\" />";
-    }
-
-    /**
-     * Generate generic Blade component syntax
-     */
-    protected function generateBladeGeneric(Icon $icon): string
-    {
-        return "<x-ichava::icon name=\"{$icon->icon_path}\" class=\"w-6 h-6\" />";
-    }
-
-    /**
-     * Generate helper function syntax
-     */
-    protected function generateHelper(Icon $icon): string
-    {
-        return "ichava('{$icon->icon_path}', ['class' => 'w-6 h-6'])";
     }
 }

@@ -7,9 +7,9 @@ namespace Simtabi\Laranail\Ichava\IconBrowser\Http\Controllers\Web\Concerns;
 use Simtabi\Laranail\Ichava\Models\Icon;
 
 /**
- * @property \Simtabi\Laranail\Ichava\Services\IconBrowserService $browserService
+ * @property \Simtabi\Laranail\Ichava\IconBrowser\Support\IconSnippets $iconSnippets
  *
- * Consuming controllers provide `$browserService` via constructor promotion;
+ * Consuming controllers provide `$iconSnippets` via constructor promotion;
  * the trait only assumes its presence.
  */
 trait ResolvesIconsForPages
@@ -17,7 +17,7 @@ trait ResolvesIconsForPages
     /**
      * Load icons by id into the full client shape.
      *
-     * Uses the same `transformIcon` shaping as the icon listing so every page
+     * Uses the same `IconSnippets::transform` shaping as the icon listing so every page
      * hands the frontend one uniform `RawIcon` contract for `propsToCatalog`.
      * Order follows the database, not the input ids; callers that need
      * input order re-sort from the returned `id` fields.
@@ -34,7 +34,7 @@ trait ResolvesIconsForPages
 
         return Icon::whereIn('id', $ids)
             ->get()
-            ->map(fn (Icon $icon) => $this->browserService->transformIcon($icon))
+            ->map(fn (Icon $icon) => $this->iconSnippets->transform($icon))
             ->values()
             ->toArray();
     }

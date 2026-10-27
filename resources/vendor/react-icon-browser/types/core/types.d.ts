@@ -20,6 +20,26 @@ export type { SortKey, SortOrder } from '../modules/catalog/domain/IconQuery';
 export type Theme = 'light' | 'dark';
 export type SizeUnit = 'px' | 'rem' | 'em';
 export type CopyFormat = 'svg' | 'helper' | 'blade' | 'vue' | 'react' | 'name';
+/**
+ * The icon dialog's snippet tabs, as a host configures them (`config.snippets`; on Laravel,
+ * `config('ichava.icon-browser.snippets')`). Every key is optional in a host's config.
+ *
+ * A template is a string with `{{token}}` placeholders (see `snippetTokens()` for the
+ * list). Only a bare word is a token, so Blade's own `{{ $var }}` and `{{ ichava(...) }}`
+ * pass through untouched, and an unknown token is left as written rather than erased.
+ */
+export interface SnippetConfig {
+    /** The tabs to show, in order: built-in format ids and the ids of `templates`. */
+    tabs: string[];
+    /** Tab labels by id. A label here wins over the built-in (translated) one. */
+    labels: Record<string, string>;
+    /** Templates by id: replaces a built-in format, or adds a new one when listed in `tabs`. */
+    templates: Record<string, string>;
+    /** The class the Blade, helper, Livewire and Alpine snippets put on the icon. */
+    className: string;
+    /** Origin for the API tab's absolute URL; the page's own origin when empty. */
+    apiOrigin: string;
+}
 export type Treatment = 'default' | 'solid' | 'duotone' | 'midtone' | 'halftone';
 /** Icon-label scale (drives base font size). XS added for full appearance parity. */
 export type Scale = 'xs' | 's' | 'm' | 'l';

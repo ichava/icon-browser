@@ -1,3 +1,4 @@
+import type { SnippetConfig } from '@/lib/browser';
 export interface AuthUser {
     id: number;
     name: string;
@@ -25,6 +26,8 @@ export interface IchavaShared {
     prefix: string;
     /** Optional: a host that replaces `HandleInertiaRequests` may not send it. */
     ui?: IchavaUi;
+    /** `ichava.icon-browser.snippets`, camelCased, only the keys the host set. Optional for the same reason. */
+    snippets?: Partial<SnippetConfig>;
     perPage: number;
     defaultTheme: string;
     routes: {

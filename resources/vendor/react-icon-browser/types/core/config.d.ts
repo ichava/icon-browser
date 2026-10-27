@@ -1,4 +1,4 @@
-import type { CopyFormat, Scale as ScaleT } from './types';
+import type { CopyFormat, Scale as ScaleT, SnippetConfig } from './types';
 export type { ScaleT };
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error' | 'silent';
 export type AppEnv = 'production' | 'development';
@@ -201,6 +201,8 @@ export interface AppConfig {
     };
     /** @ichava/bootsplash config block (Part D). Framework-agnostic; passed to .config(). */
     boot: Record<string, unknown>;
+    /** The icon dialog's snippet tabs: order, labels, templates, class (see `SnippetConfig`). */
+    snippets: SnippetConfig;
     storage: {
         frontendDriver: 'local' | 'session';
         laravelDriver?: string;

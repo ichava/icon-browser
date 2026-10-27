@@ -10,6 +10,7 @@ use Illuminate\Session\Middleware\StartSession;
 use Simtabi\Laranail\Ichava\Services\IchavaLogger;
 use Simtabi\Laranail\Ichava\Services\IconRegistry;
 use Simtabi\Laranail\Ichava\Support\HostCapabilities;
+use Simtabi\Laranail\Ichava\IconBrowser\Support\IconSnippets;
 use Simtabi\Laranail\Ichava\IconBrowser\View\Components\Prepaint;
 use Simtabi\Laranail\Ichava\IconBrowser\View\Components\SriAsset;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Middleware\LogRequests;
@@ -85,6 +86,15 @@ class IconBrowserServiceProvider extends PackageServiceProvider
      * paths, public asset publishing (Vite dist), and the bundled `ui-icons`
      * icon set with core's `IconRegistry`.
      */
+    public function registeringPackage(): void
+    {
+        parent::registeringPackage();
+
+        // One per request: the API builds snippets for every icon in a page, and the
+        // configured resolver should be made once, not once per icon.
+        $this->app->scoped(IconSnippets::class);
+    }
+
     public function bootingPackage(): void
     {
         // Register HTTP middleware aliases + the ichava.api / ichava.web groups.

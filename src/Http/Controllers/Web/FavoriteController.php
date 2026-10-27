@@ -12,6 +12,7 @@ use Simtabi\Laranail\Ichava\Models\Icon;
 use Simtabi\Laranail\Ichava\Services\IchavaLogger;
 use Simtabi\Laranail\Ichava\Services\IconBrowserService;
 use Simtabi\Laranail\Ichava\Services\IconPreferenceService;
+use Simtabi\Laranail\Ichava\IconBrowser\Support\IconSnippets;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Controllers\Web\Concerns\ResolvesIconsForPages;
 
 final class FavoriteController extends BaseInertiaController
@@ -20,6 +21,7 @@ final class FavoriteController extends BaseInertiaController
 
     public function __construct(
         protected IconBrowserService $browserService,
+        protected IconSnippets $iconSnippets,
         protected IconPreferenceService $preferenceService,
         IchavaLogger $logger,
     ) {

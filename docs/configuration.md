@@ -57,6 +57,48 @@ return [
 ];
 ```
 
+## Snippet tabs
+
+The icon dialog's tabs (SVG, Motion, Helper, Blade, Blade (generic), Livewire, Alpine, Vue,
+React, Svelte, Web Component, API, Name) are set by `snippets`. Every key is optional; an empty
+one keeps the browser's default. The page receives them as the browser's `snippets` config.
+
+```php
+'snippets' => [
+    'tabs'       => ['blade', 'helper', 'inertia', 'svg', 'name'],   // which tabs, in order
+    'labels'     => ['inertia' => 'Inertia'],                         // shown as written
+    'templates'  => ['inertia' => '<Icon name="{{path}}" class="{{class}}" />'],
+    'class_name' => env('ICHAVA_SNIPPET_CLASS', 'w-6 h-6'),
+    'api_origin' => env('ICHAVA_SNIPPET_API_ORIGIN', ''),            // API tab origin; the page's when empty
+    'resolver'   => \App\Icons\IconSnippetResolver::class,           // optional, see below
+],
+```
+
+A template replaces a built-in tab or, when its id is in `tabs`, adds one. Tokens are bare words in
+double braces, such as `{{path}}`, `{{class}}`, `{{leaf}}`, `{{dir}}` and `{{svg}}` (the full list
+is in react-icon-browser's `docs/configuration.md`). Blade's own `{{ $var }}` passes through
+untouched.
+
+`class_name` also sets the class in the `blade_clean`, `blade_generic` and `helper` strings that
+the API and every page send with each icon. `blade_clean` is the pack's own tag
+(`<x-icon-sets-tabler-icon name="home" category="outline">`) when the pack registered one, and
+`<x-ichava::icon name="…">` otherwise.
+
+For snippets only the server can write (a `route()` URL, a policy check, a translated label),
+name a class implementing `Contracts\SnippetResolver` in `resolver`. It is built once per request,
+and what its `snippets(Icon $icon)` returns is sent with each icon as `snippets`, which the
+browser shows in place of its own tab of the same id:
+
+```php
+final class IconSnippetResolver implements SnippetResolver
+{
+    public function snippets(Icon $icon): array
+    {
+        return ['download' => route('ichava.api.icons.svg', ['id' => $icon->id])];
+    }
+}
+```
+
 ## Notes
 
 - The route prefix (`/{prefix}/icons`, `/{prefix}/api/...`) is set by `ICHAVA_BROWSER_PREFIX` and lives in **core's** config (`config('ichava.core.prefix')`). Both packages read it.

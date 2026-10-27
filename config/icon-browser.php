@@ -75,6 +75,39 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Snippet tabs in the icon dialog
+    |--------------------------------------------------------------------------
+    | Shared to the browser page as its `snippets` config. Every key is optional;
+    | an empty one keeps the browser's default.
+    |
+    | `tabs`       which tabs show, in order: the built-in ids (svg, motion,
+    |              helper, blade, bladeGeneric, livewire, alpine, vue, react,
+    |              svelte, webcomponent, api, name) and the ids of `templates`.
+    | `labels`     tab labels by id, shown as written.
+    | `templates`  a template per id, replacing a built-in or adding a tab when
+    |              its id is in `tabs`. Tokens are bare words in double braces:
+    |              {{path}}, {{class}}, {{leaf}}, {{dir}}, {{svg}} and the rest in
+    |              react-icon-browser's docs/configuration.md. Blade's own
+    |              `{{ $var }}` passes through untouched.
+    | `class_name` the class the Blade, helper, Livewire and Alpine snippets use,
+    |              including the blade_clean/blade_generic/helper strings the API
+    |              sends.
+    | `api_origin` origin for the API tab's absolute URL; the page's own when empty.
+    | `resolver`   a class implementing Contracts\SnippetResolver, for snippets only
+    |              the server can render; sent per icon as `snippets`. Named by
+    |              class so this file stays cacheable (no closures).
+    */
+    'snippets' => [
+        'tabs'       => [],
+        'labels'     => [],
+        'templates'  => [],
+        'class_name' => env('ICHAVA_SNIPPET_CLASS', 'w-6 h-6'),
+        'api_origin' => env('ICHAVA_SNIPPET_API_ORIGIN', ''),
+        'resolver'   => null,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Demo / test components
     |--------------------------------------------------------------------------
     | The `<x-ichava::ichava-test-icons>` and `<x-ichava::ichava-ui-icons>`

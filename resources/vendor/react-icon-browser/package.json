@@ -19,7 +19,7 @@
     "./styles.css"
   ],
   "dependencies": {
-    "@ichava/js-ui-kernel": "git+https://github.com/ichava/js-ui-kernel.git#v0.1.3"
+    "@ichava/js-ui-kernel": "git+https://github.com/ichava/js-ui-kernel.git#v0.1.4"
   },
   "peerDependencies": {
     "react": "^19.3.1",
