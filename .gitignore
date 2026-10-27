@@ -50,3 +50,8 @@ composer.local.json
 # convention.
 /.dev/.*-logs/
 package-lock.json
+
+# Agent worktrees and local design notes. Tailwind's source scan honours this file but not
+# a global git excludes file, so without this line it reads every checkout under
+# .claude/worktrees/ and the committed inertia-app.css grows by the classes they use.
+/.claude/
