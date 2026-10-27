@@ -22,6 +22,8 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
 
 ### Changed
 
+- **Vendored react-icon-browser updated to `ca767fd`** (was `ee715a4`), which brings the loading skeletons for the icon grid and list (react-icon-browser#169; Sim, 2026-10-27) and the host-configured snippet tabs (#168). `inertia-app.js` and `inertia-app.css` are rebuilt.
+
 - **The vendored browser is react-icon-browser `c720991`** (was `0bf95dd`). It brings the overlap fixes (react-icon-browser#158: tile actions, header search and the phone header no longer overlap), code kept left-to-right in Arabic and a motion picker that stays on screen (#159), and the colour and reset buttons grouped in the toolbar. `inertia-app.css` grows by 434 bytes, matching the vendored stylesheet, and `inertia-app.js` is rebuilt.
 - **The vendored browser is react-icon-browser `0bf95dd`** (was `a19ba13`), which ships the static loader as `prepaint.html` (react-icon-browser#157). `inertia-app.js` is rebuilt.
 - **The vendored browser is react-icon-browser `a19ba13`** (was `0298c50`). It brings the browser UI pass (react-icon-browser#156): tile copy, favourite and a new add-to-collection action that work from the tile, dropdowns that no longer crop their text, a non-overlapping tooltip, a roomier sidebar filter, a searchable motion picker, and utilities scoped under `@scope ([data-ichava-theme])` so a host stylesheet loaded after ours cannot override them. `inertia-app.css` grows by 953 bytes for that scoping and `inertia-app.js` is rebuilt with `npm run build:prod`.
