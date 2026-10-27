@@ -133,9 +133,12 @@ export function syncVendoredLibrary({ packageName, source, target, typeDependenc
   mkdirSync(target, { recursive: true });
   cpSync(lib, target, { recursive: true, filter: (src) => !src.endsWith('.map') });
   cpSync(join(source, 'LICENSE'), join(target, 'LICENSE'));
-  // The map is not shipped, so drop the comment pointing at it (bundlers warn on a missing map).
-  const entry = join(target, 'index.js');
-  writeFileSync(entry, readFileSync(entry, 'utf8').replace(/\n\/\/# sourceMappingURL=index\.js\.map\s*$/, '\n'));
+  // Maps are not shipped, so drop each JS file's comment pointing at its own (bundlers warn on a
+  // missing map). Every file, not only index.js: a library with more than one entry splits its
+  // code into chunks, and each chunk names its map.
+  for (const file of walk(target).filter((f) => f.endsWith('.js'))) {
+    writeFileSync(file, readFileSync(file, 'utf8').replace(/\n\/\/# sourceMappingURL=[^\n]+\.js\.map\s*$/, '\n'));
+  }
   writeFileSync(join(target, 'package.json'), JSON.stringify(manifest, null, 2) + '\n');
 
   const files = Object.fromEntries(

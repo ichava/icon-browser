@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { execFileSync } from 'node:child_process';
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
@@ -90,6 +91,38 @@ describe('sync-vendored-library', () => {
     ).toHaveLength(6);
     // Positive control: what a real vendored build holds passes, so the check can say "clean".
     expect(mod.privateContent(['index.js', 'styles.css', 'package.json', 'LICENSE', 'fonts/Geist-Variable.woff2', 'types/index.d.ts', 'assets/icon-sets-bundled/README.md', 'x/baselines.svg'])).toEqual([]);
+  });
+
+  it('drops the source-map comment from every vendored script, chunks included, and copies no map', () => {
+    const root = mkdtempSync(join(tmpdir(), 'ichava-vendor-'));
+    try {
+      const source = join(root, 'lib-checkout');
+      const target = join(root, 'host', 'vendor');
+      const lib = join(source, 'dist', 'lib');
+      mkdirSync(join(source, 'src'), { recursive: true });
+      writeFileSync(join(source, 'package.json'), JSON.stringify({ ...library, exports: { ...library.exports, './server': { import: './dist/lib/server.js' } } }));
+      writeFileSync(join(source, 'LICENSE'), 'Copyright (c) Simtabi LLC.\n');
+      writeFileSync(join(source, 'src', 'index.ts'), 'export {};\n');
+      const git = (...args: string[]) => execFileSync('git', ['-C', source, '-c', 'user.name=t', '-c', 'user.email=t@t', '-c', 'core.fsmonitor=false', ...args]);
+      git('init', '-q');
+      git('add', '-A');
+      git('commit', '-qm', 'library');
+      // Built after the commit, so the script accepts it as current.
+      mkdirSync(lib, { recursive: true });
+      for (const file of ['index.js', 'server.js', 'Page-abc123.js']) {
+        writeFileSync(join(lib, file), `export {};\n//# sourceMappingURL=${file}.map\n`);
+        writeFileSync(join(lib, `${file}.map`), '{}');
+      }
+
+      mod.syncVendoredLibrary({ packageName: library.name, source, target, root, generatedBy: 'x.mjs' });
+
+      for (const file of ['index.js', 'server.js', 'Page-abc123.js']) {
+        expect(readFileSync(join(target, file), 'utf8')).toBe('export {};\n');
+        expect(existsSync(join(target, `${file}.map`))).toBe(false);
+      }
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
   });
 
   describe('refuses to vendor private content, and leaves the target untouched', () => {
