@@ -20,7 +20,7 @@ void createInertiaApp({
     title: (title) => (title ? `${title} - Ichava` : 'Ichava'),
 
     resolve: (name) => {
-        const pages = import.meta.glob('./pages/**/*.tsx', { eager: true }) as Record<
+        const pages = import.meta.glob(['./pages/**/*.tsx', '!./pages/**/*.test.tsx', '!./pages/**/__tests__/**'], { eager: true }) as Record<
             string,
             { default: React.ComponentType }
         >;

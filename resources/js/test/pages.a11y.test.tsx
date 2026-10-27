@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { render } from '@testing-library/react';
 import axe from 'axe-core';
 import type { ComponentType } from 'react';
@@ -69,17 +70,24 @@ const icon = {
 };
 
 const pages: [string, () => Promise<{ default: ComponentType }>, Record<string, unknown>[]][] = [
-  ['Collections/Index', () => import('../Collections/Index'), [{ collections: [] }, { collections: [{ id: 'c1', name: 'Nav', icons: [{ id: 7, name: 'home' }] }] }]],
-  ['Collections/Show', () => import('../Collections/Show'), [{ collection: null }, { collection: { id: 'c1', name: 'Nav', icons: [icon] } }]],
-  ['CommandHistory/Index', () => import('../CommandHistory/Index'), [{ commands: [], count: 0 }, { commands: [{ command: 'ichava::ichava-core.cache', type: 'cache', formatted_time: 'just now' }], count: 1 }]],
-  ['Favorites/Index', () => import('../Favorites/Index'), [{ ids: [], icons: [], count: 0 }, { ids: [7], icons: [icon], count: 1 }]],
-  ['History/Index', () => import('../History/Index'), [{ history: [], count: 0 }, { history: [{ icon_id: 7, action: 'viewed', formatted_time: 'just now', icon }], count: 1 }]],
-  ['Packages/Index', () => import('../Packages/Index'), [{ packages: [] }, { packages: [{ name: 'ichava/icon-sets-tabler', label: 'Tabler', count: 6202, vendor: 'ichava' }] }]],
-  ['Packages/Show', () => import('../Packages/Show'), [{ package: null }]],
-  ['Settings/Index', () => import('../Settings/Index'), [{ preferences: { preferences: { view_mode: 'grid', icon_size: 24, per_page: 24 }, sorting: { sort_by: 'name', sort_direction: 'asc' } } }]],
-  ['Stats/Index', () => import('../Stats/Index'), [{ statistics: null, packageStats: [], topCategories: [], cacheStats: {}, cacheHealthy: true, updateStatus: null }]],
-  ['Browser/Show', () => import('../Browser/Show'), [{ icon: null, related: [] }, { icon, related: [] }]],
+  ['Collections/Index', () => import('@/pages/Collections/Index'), [{ collections: [] }, { collections: [{ id: 'c1', name: 'Nav', icons: [{ id: 7, name: 'home' }] }] }]],
+  ['Collections/Show', () => import('@/pages/Collections/Show'), [{ collection: null }, { collection: { id: 'c1', name: 'Nav', icons: [icon] } }]],
+  ['CommandHistory/Index', () => import('@/pages/CommandHistory/Index'), [{ commands: [], count: 0 }, { commands: [{ command: 'ichava::ichava-core.cache', type: 'cache', formatted_time: 'just now' }], count: 1 }]],
+  ['Favorites/Index', () => import('@/pages/Favorites/Index'), [{ ids: [], icons: [], count: 0 }, { ids: [7], icons: [icon], count: 1 }]],
+  ['History/Index', () => import('@/pages/History/Index'), [{ history: [], count: 0 }, { history: [{ icon_id: 7, action: 'viewed', formatted_time: 'just now', icon }], count: 1 }]],
+  ['Packages/Index', () => import('@/pages/Packages/Index'), [{ packages: [] }, { packages: [{ name: 'ichava/icon-sets-tabler', label: 'Tabler', count: 6202, vendor: 'ichava' }] }]],
+  ['Packages/Show', () => import('@/pages/Packages/Show'), [{ package: null }]],
+  ['Settings/Index', () => import('@/pages/Settings/Index'), [{ preferences: { preferences: { view_mode: 'grid', icon_size: 24, per_page: 24 }, sorting: { sort_by: 'name', sort_direction: 'asc' } } }]],
+  ['Stats/Index', () => import('@/pages/Stats/Index'), [{ statistics: null, packageStats: [], topCategories: [], cacheStats: {}, cacheHealthy: true, updateStatus: null }]],
+  ['Browser/Show', () => import('@/pages/Browser/Show'), [{ icon: null, related: [] }, { icon, related: [] }]],
 ];
+
+describe('the page registry', () => {
+  it('never bundles a test file as a page', () => {
+    // app.tsx eagerly globs ./pages; a test placed there once shipped vitest in the bundle.
+    expect(readFileSync('resources/js/app.tsx', 'utf8')).toContain("'!./pages/**/*.test.tsx'");
+  });
+});
 
 describe('every page passes axe', () => {
   it('covers all ten non-browser pages', () => {

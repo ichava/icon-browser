@@ -93,7 +93,7 @@ failed. `--debug` keeps PHPStan in one process for sandboxes that cannot open it
 The "committed bundle" row fails when `build:prod` changes `public/assets`, which means the
 committed bundle is stale.
 
-Accessibility is checked twice: `resources/js/pages/__tests__/pages.a11y.test.tsx` runs axe over
+Accessibility is checked twice: `resources/js/test/pages.a11y.test.tsx` runs axe over
 every non-browser page in jsdom on every run; `e2e/a11y.spec.ts` runs axe (contrast included)
 and a browser smoke test against a seeded host, on desktop and phone viewports. The reference
 host is `demos/ichava-app` (`composer update`, `php artisan migrate`,
