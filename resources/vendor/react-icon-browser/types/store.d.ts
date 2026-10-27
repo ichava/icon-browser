@@ -8,7 +8,7 @@ import { type Locale } from './core/i18n';
 import type { BrowserStore, FilterState } from './state/types';
 export type { Locale };
 export type { Scale, Density, AppConfig, StorageDriver };
-export type { LibTab, Plan, AuthStatus, AuthView, DevToolsTab, BootPhase, AuthUser, AppNotification, DevToolsEvent, BootStateSlice, SearchScope, Layer, FilterState, BrowserStore, ContextMenuItem, ConfirmSpec, } from './state/types';
+export type { LibTab, Plan, AuthStatus, AuthView, DevToolsTab, DevToolsDock, BootPhase, AuthUser, AppNotification, DevToolsEvent, BootStateSlice, SearchScope, Layer, FilterState, BrowserStore, ContextMenuItem, ConfirmSpec, } from './state/types';
 export type { Collection, HistoryEntry, TeamRef } from './modules/library';
 /** `ListParams` for a filter state: one selected variant becomes a one-item list. */
 export declare function toListParams(f: FilterState): ListParams;

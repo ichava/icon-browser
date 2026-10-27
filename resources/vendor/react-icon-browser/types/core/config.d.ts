@@ -184,7 +184,7 @@ export interface AppConfig {
         }[];
     };
     /** i18n metadata. The Laravel backend may serve `available` locales + an `endpoint`
-     *  returning `{ [locale]: { key: value } }` overrides merged via registerTranslations. */
+     *  returning `{ [locale]: { key: value } }` overrides, kept in the mount's store (`addTranslations`). */
     i18n: {
         locale: string;
         available: string[];

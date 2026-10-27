@@ -1,4 +1,4 @@
-import type { Icon, IconId } from '../core/model';
+import type { Icon, IconId } from '@ichava/js-ui-kernel';
 /**
  * Resolve saved icon ids (favorites, history, collections, selection) back into
  * full `Icon` records, in both modes.

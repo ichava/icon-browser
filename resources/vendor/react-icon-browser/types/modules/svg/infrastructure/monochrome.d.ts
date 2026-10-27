@@ -14,8 +14,9 @@
  *    is part of the drawing, so any other colour, any `url(...)` (gradient, pattern)
  *    returns the input untouched.
  *  - A `<style>` element returns it untouched too: its selectors are not evaluated.
- *  - Only explicit black is rewritten. An unpainted element also renders black by
- *    default; adding paint to it is a different, broader change.
+ *  - Only explicit black (or a near-black neutral grey, see `isBlack`) is rewritten. An
+ *    unpainted element also renders black by default; adding paint to it is a different,
+ *    broader change.
  *
  * Pure apart from `DOMParser`/`XMLSerializer`, which every browser and jsdom provide.
  * Returns the input unchanged when it cannot be parsed or nothing applies.

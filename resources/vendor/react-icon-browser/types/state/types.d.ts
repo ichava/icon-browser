@@ -1,6 +1,6 @@
-import type { CopyFormat, SizeUnit, SortKey, Theme, Treatment, Scale, Density } from '../core/types';
-import type { Catalog } from '../core/IconRepository';
-import type { Filters, IconId } from '../core/model';
+import type { CopyFormat, SizeUnit, SortKey, Theme, Treatment, Scale, Density, ViewMode } from '../core/types';
+import type { Catalog } from '../modules/catalog';
+import type { Filters, IconId } from '@ichava/js-ui-kernel';
 import type { AppConfig } from '../core/config';
 import type { IconFilters } from '../modules/catalog';
 import type { Collection, HistoryEntry, TeamRef } from '../modules/library';
@@ -11,6 +11,8 @@ export type Plan = 'FREE' | 'PRO' | 'TEAM';
 export type AuthStatus = 'guest' | 'authed';
 export type AuthView = null | 'signin' | 'create' | 'signout';
 export type DevToolsTab = 'events' | 'state' | 'storage' | 'tests' | 'logs' | 'boot';
+/** The edge the DevTools drawer docks to. */
+export type DevToolsDock = 'bottom' | 'top' | 'left' | 'right';
 export type BootPhase = 'idle' | 'config' | 'catalog' | 'index' | 'hydrate' | 'ready';
 export interface AuthUser {
     name: string;
@@ -79,7 +81,7 @@ export interface BrowserStore {
     toggleLabels: () => void;
     toggleAdaptMonochrome: () => void;
     filters: FilterState;
-    view: 'grid' | 'list';
+    view: ViewMode;
     catQ: string;
     collapsedGroups: string[];
     /** categories expanded to reveal their subcategories (keys = `pack/category`). */
@@ -106,7 +108,7 @@ export interface BrowserStore {
     nextPage: (max: number) => void;
     prevPage: () => void;
     setPerPage: (n: number) => void;
-    setView: (v: 'grid' | 'list') => void;
+    setView: (v: ViewMode) => void;
     setCatQ: (v: string) => void;
     toggleGroup: (pack: string) => void;
     toggleCatExpand: (key: string) => void;
@@ -154,6 +156,18 @@ export interface BrowserStore {
     }[];
     showToast: (msg: string, icon?: string) => void;
     dismissToast: (id: number) => void;
+    /**
+     * Work the user is waiting on that has run past the task-loader delay (2s by default).
+     * Rendered by `TaskLoader`; quick work never appears here, so it never flickers.
+     */
+    tasks: {
+        id: number;
+        label: string;
+    }[];
+    /** Run `work`, showing `label` in the task loader if it takes longer than `delayMs` (2000). */
+    runTask: <T>(label: string, work: () => Promise<T>, opts?: {
+        delayMs?: number;
+    }) => Promise<T>;
     ctx: {
         x: number;
         y: number;
@@ -199,6 +213,13 @@ export interface BrowserStore {
         events: DevToolsEvent[];
         capturing: boolean;
     };
+    /** Which edge the DevTools drawer docks to and its size along the other axis, in px. Persisted. */
+    devtoolsLayout: {
+        dock: DevToolsDock;
+        size: number;
+    };
+    setDevtoolsDock: (dock: DevToolsDock) => void;
+    setDevtoolsSize: (size: number) => void;
     toggleDevtools: () => void;
     setDevToolsTab: (t: DevToolsTab) => void;
     pushDevEvent: (e: DevToolsEvent) => void;

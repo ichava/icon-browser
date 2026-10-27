@@ -1,5 +1,5 @@
 import { type ReactNode, type RefObject } from 'react';
-import type { Icon } from '../../core/model';
+import type { Icon } from '@ichava/js-ui-kernel';
 /** Above this many icons the rows are windowed; below it every row is mounted. */
 export declare const VIRTUALIZE_ABOVE = 120;
 /**

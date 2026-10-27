@@ -371,6 +371,11 @@ declare const EN: {
     'snippetTab.name': string;
     'clipboard.copyFailed': string;
     'clipboard.copied': string;
+    'task.working': string;
+    'task.export': string;
+    'task.copyNames': string;
+    'task.png': string;
+    'task.selectAll': string;
 };
 /**
  * Every key the bundled catalogs know: English's. A typo in a `t()` call, or a locale
@@ -385,15 +390,6 @@ export declare const MESSAGES: Record<Locale, Record<string, string>>;
  * fixed key is a `MessageKey` literal instead, so this is the one greppable escape hatch.
  */
 export declare function messageKey(key: string): MessageKey;
-/**
- * Merge server-provided translations over the bundled catalog, for EVERY mount.
- *
- * @deprecated since 0.1.x; may be removed in 0.2.0. It writes the module-level catalog,
- * so one mount's overrides rename another's strings. A mount's own overrides go in its
- * store (`addTranslations`), which `useT` and `translateFor` read. Still works for
- * callers that want the global effect.
- */
-export declare function registerTranslations(locale: Locale, dict: Record<string, string>): void;
 /** Resolve a key for a locale, falling back to English, then the key itself. */
 export declare function translate(locale: Locale, key: string, vars?: Record<string, string | number>): string;
 /** Server overrides, per locale, as a mount's store holds them. */

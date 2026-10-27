@@ -1,5 +1,5 @@
-import { type SvgParts } from '../core/svgCache';
-import type { Icon } from '../core/model';
+import { type SvgParts } from '../modules/svg';
+import type { Icon } from '@ichava/js-ui-kernel';
 /**
  * An icon's parsed SVG parts: synchronously when they are cached or inline, otherwise
  * `null` until the fetch resolves.

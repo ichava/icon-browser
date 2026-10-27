@@ -11,7 +11,7 @@
  * string-keyed, which is why this is not narrowed further.
  */
 export type StyleObject = Record<string, string | number | undefined>;
-export type { Icon, IconId, IconPackage, RawIcon, Term, Filters, PageMeta, PageResult, Envelope, } from './model';
+export type { Icon, IconId, IconPackage, RawIcon, Term, Filters, PageMeta, PageResult, Envelope } from '@ichava/js-ui-kernel';
 export type { Catalog, CategoryGroup, CategoryNode, SubNode } from '../modules/catalog/domain/CatalogIndex';
 export type { ListParams } from './api/ApiClient';
 export type ViewMode = 'grid' | 'list';

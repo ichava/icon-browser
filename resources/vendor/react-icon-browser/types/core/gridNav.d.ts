@@ -10,7 +10,6 @@
  * Returns the target index, or null when the key is not a grid movement key or the move
  * would leave the grid -- so the caller only prevents default for keys it handled.
  */
-export type GridKey = 'ArrowLeft' | 'ArrowRight' | 'ArrowUp' | 'ArrowDown' | 'Home' | 'End' | 'PageUp' | 'PageDown';
 export declare function nextGridIndex(key: string, index: number, columns: number, count: number, opts?: {
     rtl?: boolean;
     pageRows?: number;

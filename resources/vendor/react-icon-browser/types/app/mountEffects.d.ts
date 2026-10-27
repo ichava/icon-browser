@@ -1,4 +1,4 @@
-import type { Catalog } from '../core/IconRepository';
+import type { Catalog } from '../modules/catalog';
 import { type Logger } from '../modules/telemetry';
 import { type Locale, type TranslationOverrides } from '../core/i18n';
 import type { Density, Scale, Theme } from '../core/types';

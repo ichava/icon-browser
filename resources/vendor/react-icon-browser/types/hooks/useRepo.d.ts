@@ -1,6 +1,6 @@
-import { IconRepository } from '../core/IconRepository';
-import type { CategoryGroup } from '../core/IconRepository';
-import type { PageResult, Icon } from '../core/model';
+import { CatalogIndex as IconRepository } from '../modules/catalog';
+import type { CategoryGroup } from '../modules/catalog';
+import type { PageResult, Icon } from '@ichava/js-ui-kernel';
 /**
  * The single derived-data boundary, for BOTH modes.
  *
