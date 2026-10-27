@@ -1,4 +1,4 @@
-import type { Icon } from '../../core/model';
+import type { Icon } from '@ichava/js-ui-kernel';
 /**
  * IconAsset — renders a catalog icon, honoring the live preview color, treatment
  * and grid stroke (plan §B). Three paths, decided per icon:

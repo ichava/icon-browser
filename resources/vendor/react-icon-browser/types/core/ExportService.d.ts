@@ -1,5 +1,5 @@
 import { type ExportEntry, type ExportFormat } from '../modules/export';
-import type { Icon } from './model';
+import type { Icon } from '@ichava/js-ui-kernel';
 export type { ExportEntry, ExportFormat };
 /**
  * ExportService — real client-side multi-select export (plan §C / plan.new-features).
@@ -17,6 +17,4 @@ export declare class ExportService {
     buildStandaloneSvg(e: ExportEntry): string;
     export(format: ExportFormat, icons: Icon[]): Promise<void>;
 }
-/** The file names / symbol ids for one export, in order; see `ExportBundle.names`. */
-export declare function exportNames(icons: Icon[]): string[];
 export declare const exporter: ExportService;

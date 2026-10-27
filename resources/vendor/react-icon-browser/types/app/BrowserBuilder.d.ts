@@ -1,4 +1,4 @@
-import type { Catalog } from '../core/IconRepository';
+import type { Catalog } from '../modules/catalog';
 import type { IconCatalog } from '../core/api/ApiClient';
 import type { IchavaBrowserProps } from '../IchavaBrowser';
 import type { AppConfig, BrowserStoreHook } from '../store';

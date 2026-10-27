@@ -1,6 +1,6 @@
 import type { IconCatalog } from '../core/api/ApiClient';
-import type { CategoryGroup } from '../core/IconRepository';
-import type { ListParams, PageResult, Icon } from '../core/model';
+import type { CategoryGroup } from '../modules/catalog';
+import type { ListParams, PageResult, Icon } from '@ichava/js-ui-kernel';
 export interface RestRepoState {
     page: PageResult<Icon>;
     tree: CategoryGroup[];

@@ -23,21 +23,3 @@ export declare function switchDriver(next: StorageDriver): void;
 /** Wipe the persisted snapshot from the active backend. */
 export declare function clearPersisted(): void;
 export declare const driverStorage: import("zustand/middleware").PersistStorage<unknown, unknown> | undefined;
-/**
- * Whether a persisted blob already existed when this module loaded.
- *
- * Read ONCE at module scope, before the persist middleware writes anything --
- * calling this later always reports true, because rehydration itself persists.
- *
- * This is what lets configuration defaults apply on a first run without ever
- * overriding a choice the user already made. Precedence is: core defaults, then
- * the fetched/injected config's `defaults` block, then the user's persisted
- * state, which always wins.
- */
-/**
- * Whether the DEFAULT key held state when this module loaded.
- * @deprecated since 0.1.x; may be removed in 0.2.0. It answers for `ichava.browser.v2`
- * only, so it gave a mount with its own `persistKey` the default mount's answer. Use
- * `hasPersisted(persistKey)` before creating the store.
- */
-export declare const HAD_PERSISTED_STATE: boolean;

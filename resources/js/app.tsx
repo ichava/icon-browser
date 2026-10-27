@@ -2,6 +2,7 @@ import { createRoot } from 'react-dom/client';
 import { createInertiaApp } from '@inertiajs/react';
 import { useEffect, type ReactNode } from 'react';
 import { dismissPrepaint } from '@/core/prepaint';
+import { NavigationLoader } from '@/components/NavigationLoader';
 import '../assets/styles/ichava.scss';
 // The browser shell's stylesheet, prebuilt by @ichava/react-icon-browser (vendored under
 // resources/vendor/react-icon-browser). It sets nothing on html or body; its tokens are
@@ -37,11 +38,12 @@ void createInertiaApp({
         createRoot(el).render(
             <PrepaintHandoff>
                 <App {...props} />
+                <NavigationLoader />
             </PrepaintHandoff>,
         );
     },
 
-    progress: {
-        color: '#8b5cf6',
-    },
+    // Off: the official splash covers the first load and NavigationLoader covers a visit
+    // that runs past two seconds, so this thin bar was a third loader (Sim, 2026-10-27).
+    progress: false,
 });

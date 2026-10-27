@@ -1,6 +1,6 @@
 import { type Root } from 'react-dom/client';
 import { type AppConfig, type BrowserStoreHook } from './store';
-import type { Catalog } from './core/IconRepository';
+import type { Catalog } from './modules/catalog';
 import type { IconCatalog } from './core/api/ApiClient';
 import type { Locale } from './core/i18n';
 import { BrowserBuilder } from './app/BrowserBuilder';

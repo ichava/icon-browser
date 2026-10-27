@@ -1,5 +1,5 @@
-import type { Catalog, CategoryGroup } from '../IconRepository';
-import { type Filters, type Icon, type IconId, type ListParams, type PageResult } from '../model';
+import type { Catalog, CategoryGroup } from '../../modules/catalog';
+import { type Filters, type Icon, type IconId, type ListParams, type PageResult } from '@ichava/js-ui-kernel';
 export type { ListParams };
 import { type CsrfStrategy, type HttpTransport } from './httpClient';
 /** The port every consumer talks to, regardless of data source. */
@@ -54,7 +54,7 @@ export declare class RestCatalog implements IconCatalog {
     constructor(base?: string);
     /**
      * A REST catalog with its own transport, so two mounts can talk to two APIs (or use two
-     * CSRF strategies) without `configureTransport` re-pointing either. Starts from the
+     * CSRF strategies) without sharing one. Starts from the
      * default transport's settings with `base` as the API root; chain to change the rest:
      *
      *   RestCatalog.at('/admin/ichava/api').csrf('cookie').timeout(10_000)

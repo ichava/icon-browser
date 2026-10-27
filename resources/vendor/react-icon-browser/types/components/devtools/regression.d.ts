@@ -1,4 +1,4 @@
-import { type Catalog } from '../../core/IconRepository';
+import { type Catalog } from '../../modules/catalog';
 import type { AppConfig } from '../../core/config';
 import type { BrowserStoreHook } from '../../store';
 export interface TestResult {

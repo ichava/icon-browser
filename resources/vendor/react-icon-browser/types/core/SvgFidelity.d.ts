@@ -1,5 +1,5 @@
 import type { StyleObject } from './types';
-import type { Icon } from './model';
+import type { Icon } from '@ichava/js-ui-kernel';
 import type { RenderStrategy } from './types';
 /** Resolve the public URL for an icon's asset (static mode: under public/). */
 export declare function assetUrl(file: string): string;
