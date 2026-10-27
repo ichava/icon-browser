@@ -2,7 +2,7 @@
   "package": "@ichava/react-icon-browser",
   "version": "0.1.0",
   "repository": "https://github.com/ichava/react-icon-browser",
-  "commit": "fde799ba10a0edc1db55d461cee840a9856e8260",
+  "commit": "29480da5ac9299c73f900bf3540ade9be0d53aba",
   "builtWith": "npm run build:lib",
   "files": {
     "LICENSE": "6f0377a6a1b11718ffef8b80fd15ca62ea49385684c62d92d7acd7a3f03472ca",
@@ -12,7 +12,7 @@
     "index.js": "c08d4c042d83e437df2c81f076612616950b8f8a5210e737a68e806d2c2f5dd0",
     "package.json": "82e38f69d26d78379e7231ba1bbaaecbb3264dd9f7928a3559829170053010ac",
     "prepaint.html": "173f8a0a4f76c26d2d130b4fe08ebe35d74c71342b40f18a4c7446c866034660",
-    "styles.css": "9406d12ae60be3c41a65750d268602ed2e68b674a5b2f9f6e058226319b60a46",
+    "styles.css": "b01ca6dd9a9750b52aa48a7a549a0f19f1cbb74d417afe65e7434bb58aceac4e",
     "types/IchavaBrowser.d.ts": "3da1f90c3094e5147c21ff03fd25484251a698d6c3cda0734270c151cc13000b",
     "types/app/BrowserBuilder.d.ts": "3f7ea8dd31b84a19cdcb6b75d6b0a5aa01cb2ac339ca39895a96d66fab5cf1be",
     "types/app/mountEffects.d.ts": "0343bdafcdcc36f62a0fc3d2d884684bb42c0aa342a4aa6af708100332872bda",
