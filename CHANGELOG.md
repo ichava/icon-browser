@@ -6,6 +6,8 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
 
 ### Added
 
+- **Browser UI updated to react-icon-browser 833fdb9** (react-icon-browser#170): every control reacts to hover, icon-only controls have design-system tooltips, dropdown menus no longer lock the page's scroll, and the icon dialog grows downwards.
+
 - **The icon dialog's snippet tabs are configured from Laravel.** A `snippets` block in `config/icon-browser.php` sets which tabs show and in what order, their labels, templates that replace a tab or add one, the class every Laravel snippet uses (`ICHAVA_SNIPPET_CLASS`), and the API tab's origin. It reaches the page as the browser's `snippets` config. A `resolver` naming a `Contracts\SnippetResolver` adds snippets only the server can write, sent per icon as `snippets`. `Support\IconSnippets` builds every icon's snippet strings for the API and for every Inertia page, so both send the same ones. See [Configuration](docs/configuration.md#snippet-tabs).
 - **Browser UI updated to react-icon-browser ca767fd.** The icon grid shows loading skeletons while a page of icons loads (react-icon-browser#169), and every snippet tab now writes code that runs: the real icon path, the pack's own Blade tag, and Vue, React, Svelte and Web Component snippets that inline the icon instead of importing packages that were never published.
 
