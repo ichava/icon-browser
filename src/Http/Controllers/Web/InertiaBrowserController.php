@@ -17,12 +17,14 @@ use Simtabi\Laranail\Ichava\Services\IconCacheService;
 use Simtabi\Laranail\Ichava\Services\IconBrowserService;
 use Simtabi\Laranail\Ichava\Services\IconPackUpdateChecker;
 use Simtabi\Laranail\Ichava\Services\IconPreferenceService;
+use Simtabi\Laranail\Ichava\IconBrowser\Support\IconSnippets;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Requests\IconFilterRequest;
 
 final class InertiaBrowserController extends BaseInertiaController
 {
     public function __construct(
         protected IconBrowserService $browserService,
+        protected IconSnippets $iconSnippets,
         protected IconCacheService $cacheService,
         protected IconPreferenceService $preferenceService,
         protected IconRegistry $registry,
@@ -53,7 +55,7 @@ final class InertiaBrowserController extends BaseInertiaController
             );
 
             $icons = $paginator->getCollection()
-                ->map(fn (Icon $icon) => $this->browserService->transformIcon($icon))
+                ->map(fn (Icon $icon) => $this->iconSnippets->transform($icon))
                 ->values()
                 ->toArray();
 
@@ -144,13 +146,13 @@ final class InertiaBrowserController extends BaseInertiaController
                 })
                 ->limit(12)
                 ->get()
-                ->map(fn (Icon $relatedIcon) => $this->browserService->transformIcon($relatedIcon))
+                ->map(fn (Icon $relatedIcon) => $this->iconSnippets->transform($relatedIcon))
                 ->values()
                 ->toArray();
         }
 
         return Inertia::render('Browser/Show', [
-            'icon'    => $this->browserService->transformIcon($icon),
+            'icon'    => $this->iconSnippets->transform($icon),
             'related' => $related,
         ]);
     }

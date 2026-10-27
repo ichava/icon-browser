@@ -8,7 +8,8 @@ export { LARAVEL_SANCTUM_PRESET, HttpError, RequestAbortedError, HttpTransport }
 export type { TransportConfig, CsrfStrategy } from './core/api/httpClient';
 export { CatalogIndex as IconRepository, type Catalog } from './modules/catalog';
 export { SvgFidelity, fidelity, assetUrl, svgDataUrl } from './core/SvgFidelity';
-export { SnippetFactory, snippets, SNIPPET_TABS, type SnippetFormat } from './modules/snippets';
+export { SnippetFactory, snippets, snippetTabs, snippetTokens, renderTemplate, iconPath, svgToJsx, SNIPPET_TABS, BUILTIN_SNIPPET_FORMATS, type BuiltinSnippetFormat, type SnippetBuilder, type SnippetContext, type SnippetFormat, type SnippetOptions, } from './modules/snippets';
+export type { SnippetConfig } from './core/types';
 export { iconRef } from './modules/catalog';
 export type { IconId, IconVariant, IconKind, RawIcon, Icon, IconPackage, Term, Filters, PageMeta, Envelope, PageResult, } from '@ichava/js-ui-kernel';
 export { svgHasOwnColors, toIcon } from '@ichava/js-ui-kernel';
