@@ -243,6 +243,9 @@ body {
 .theme-text-secondary { color: var(--text-secondary); }
 .theme-text-muted { color: var(--text-muted); }
 .theme-text-accent { color: var(--text-accent); }
+/* A text link changes colour on hover and never underlines (Sim, 2026-10-27). */
+.theme-link { transition: color 0.14s ease; }
+.theme-link:hover { color: color-mix(in oklab, var(--text-accent) 72%, var(--text-primary)); }
 .theme-text-inverse { color: var(--text-inverse); }
 
 /* Borders */

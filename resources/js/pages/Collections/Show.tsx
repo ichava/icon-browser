@@ -37,7 +37,7 @@ export default function CollectionsShow() {
   return (
     <div className="theme-bg-page theme-text-primary min-h-screen p-8">
       <div className="mx-auto max-w-5xl">
-        <Link href={props.ichava.routes.collections} className="theme-text-accent text-sm hover:underline">
+        <Link href={props.ichava.routes.collections} className="theme-text-accent theme-link text-sm">
           ← All collections
         </Link>
 
