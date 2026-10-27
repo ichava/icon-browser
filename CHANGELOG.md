@@ -6,6 +6,8 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
 
 ### Added
 
+- **Browser UI updated to react-icon-browser fde799b** (react-icon-browser#172): links and link-style buttons change colour on hover instead of underlining.
+
 - **Browser UI updated to react-icon-browser e8b5215** (react-icon-browser#171): controls sink and darken while pressed, every state change eases, tiles lift on hover and press in on click, and the list's Copy button confirms in place.
 
 - **Browser UI updated to react-icon-browser 833fdb9** (react-icon-browser#170): every control reacts to hover, icon-only controls have design-system tooltips, dropdown menus no longer lock the page's scroll, and the icon dialog grows downwards.
