@@ -49,6 +49,9 @@
     </style>
 </head>
 <body class="antialiased h-full bg-white text-gray-900 dark:bg-[#0a0d1a] dark:text-gray-100">
+    {{-- First, so the loader paints before the bundle downloads; the app removes it on mount. --}}
+    <x-ichava::prepaint />
+
     <div class="flex min-h-dvh flex-col">
         @inertia
     </div>

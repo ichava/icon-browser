@@ -10,6 +10,7 @@ use Illuminate\Session\Middleware\StartSession;
 use Simtabi\Laranail\Ichava\Services\IchavaLogger;
 use Simtabi\Laranail\Ichava\Services\IconRegistry;
 use Simtabi\Laranail\Ichava\Support\HostCapabilities;
+use Simtabi\Laranail\Ichava\IconBrowser\View\Components\Prepaint;
 use Simtabi\Laranail\Ichava\IconBrowser\View\Components\SriAsset;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Middleware\LogRequests;
 use Simtabi\Laranail\Package\Tools\Providers\PackageServiceProvider;
@@ -107,6 +108,10 @@ class IconBrowserServiceProvider extends PackageServiceProvider
             'ichava::sri-asset',
             SriAsset::class,
         );
+
+        // react-icon-browser's static loader, inlined first in <body> so it paints before
+        // the bundle runs (resources/vendor/react-icon-browser/prepaint.html).
+        Blade::component('ichava::prepaint', Prepaint::class);
 
         // Publish the Vite-built browser bundle (CSS/JS/fonts) into the host's
         // public/vendor/ichava/ namespace. The asset HTTP path stays under
