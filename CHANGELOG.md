@@ -6,6 +6,8 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
 
 ### Added
 
+- **Browser UI updated to react-icon-browser 29480da** (react-icon-browser#173). The library's preflight and its focus, hover and scrollbar rules are scoped to the browser's root, so they no longer restyle elements outside it. This package's own pages keep their resets from its own Tailwind build (`inertia-app.css` carries an unscoped preflight of its own).
+
 - **Browser UI updated to react-icon-browser fde799b** (react-icon-browser#172): links and link-style buttons change colour on hover instead of underlining. This package's own back links (Browser, Collections, Packages, Settings pages) do the same through a `theme-link` class, in place of `hover:underline`.
 
 - **Browser UI updated to react-icon-browser e8b5215** (react-icon-browser#171): controls sink and darken while pressed, every state change eases, tiles lift on hover and press in on click, and the list's Copy button confirms in place.
