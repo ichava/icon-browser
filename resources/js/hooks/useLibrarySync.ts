@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useLayoutEffect } from 'react';
 import type { BrowserStoreHook } from '@/lib/browser';
 import { isHydrating } from '@/core/browserMount';
 import { diffLibrary, type LibraryOp } from '@/core/libraryDiff';
@@ -50,7 +50,12 @@ export function runLibraryOp(m: Mutations, op: LibraryOp): void {
  */
 export function useLibrarySync(store: BrowserStoreHook, mutations: Mutations): void {
   const latest = useRef(mutations);
-  latest.current = mutations;
+  // Kept current after each render rather than during it: writing a ref while rendering
+  // is unsafe under concurrent rendering (react-hooks/refs). The subscriber reads it only
+  // when the store changes, which is always after a commit.
+  useLayoutEffect(() => {
+    latest.current = mutations;
+  });
 
   useEffect(
     () =>

@@ -50,7 +50,8 @@ export default function HistoryIndex() {
                 className="theme-bg-card rounded-lg border theme-border flex items-center gap-3 px-4 py-2.5"
               >
                 {entry.icon ? (
-                  <Link href={`${showBase}/${entry.icon_id}`} className="flex-shrink-0">
+                  // The icon image is the link's only content; the name gives it one (axe: link-name).
+                  <Link href={`${showBase}/${entry.icon_id}`} className="flex-shrink-0" aria-label={entry.icon?.name ?? `#${entry.icon_id}`}>
                     <IconImage icon={entry.icon as Icon} size={24} />
                   </Link>
                 ) : (

@@ -76,6 +76,29 @@ This repository is private and must stay private: the vendored build and the com
 
 There is no `version` field in `composer.json` — the version comes from the git tag. No lock file is committed.
 
+
+## Manual CI
+
+GitHub Actions do not run in this private repository while the account's billing is off, so
+every pull request is checked locally and the result pasted into it (Sim, 2026-10-27):
+
+```bash
+npm run ci:manual            # pint, phpstan, pest, eslint, typecheck, vitest, build:prod, committed bundle
+npm run ci:manual -- --only=php
+ICHAVA_E2E_URL=http://ichava-app.test npm run ci:manual   # adds the e2e + axe run on a seeded host
+```
+
+It prints one table row per gate with the command's real exit status, and exits non-zero if any
+failed. `--debug` keeps PHPStan in one process for sandboxes that cannot open its worker port.
+The "committed bundle" row fails when `build:prod` changes `public/assets`, which means the
+committed bundle is stale.
+
+Accessibility is checked twice: `resources/js/pages/__tests__/pages.a11y.test.tsx` runs axe over
+every non-browser page in jsdom on every run; `e2e/a11y.spec.ts` runs axe (contrast included)
+and a browser smoke test against a seeded host, on desktop and phone viewports. The reference
+host is `demos/ichava-app` (`composer update`, `php artisan migrate`,
+`php artisan ichava::ichava-core.database seed --sync`).
+
 ## The 0.1.0 re-base
 
 Versioning was re-based on 2026-10-23, with every other ichava package. The tags `v0.1.0` to
