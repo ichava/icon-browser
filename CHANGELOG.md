@@ -4,6 +4,10 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
 
 ## [Unreleased]
 
+### Changed
+
+- The changelog states the MIT-to-proprietary change as breaking under 0.1.1, and labels the archived pre-reset history as the record of the MIT, public releases.
+
 ### Fixed
 
 - Vendored `@ichava/react-icon-browser` 0.1.2 (`733f5ba`): selected collection chips, the favourite button and active icon buttons now draw their label in a colour that meets WCAG AA contrast on the accent tint. It measured 2.78:1 in dark mode before.
@@ -52,6 +56,7 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
 
 - **The browser UI is `@ichava/react-icon-browser`, ported in whole.** `resources/js` held a fork of it (copied 2026-09-23; 44 of its files had since diverged from the library and 15 lagged behind it, `.claude/design/react-ui/audits/fork-diff.md`). The 143 forked files are removed and the library's built output is vendored under `resources/vendor/react-icon-browser`, from react-icon-browser `c37ae66` (0.1.0, `main`), with a `VENDORED.json` naming that commit and hashing every file. `resources/js` is now the Inertia adapter, 24 files kept and 13 added: `pages/Browser/Index.tsx` builds the browser with the library's `browser()` builder, `InertiaCatalog` implements the library's `IconCatalog` port over Inertia (the first page from the props, every other page a partial reload of the same route, so the JSON API can stay off), and `useLibrarySync` sends the browser's favourite, history and collection changes to the Inertia routes. The look and behaviour are react-icon-browser's as verified in its A6 audit, which differ from the fork's in places; the committed bundle is rebuilt and changes throughout.
 
+- **Breaking: the licence changed from MIT to proprietary, and the version stays 0.1.1.** On 0.x a breaking change would normally take 0.2.0; it was kept at 0.1.1 by decision (Sim, 2026-10-28), because nothing ever installed this package from a registry.
 - **This package is proprietary, and its repository private.** It ships the library's build, which contains Untitled UI PRO components, and that licence forbids exposing them publicly. `LICENSE` is now proprietary (© Simtabi LLC, with the Untitled UI PRO terms), `composer.json` declares `"license": "proprietary"`, `package.json` `"UNLICENSED"`, and the README carries no MIT badge or claim. **Installing it now needs a licence and a GitHub token with read access to the repository** (`docs/installation.md` gives the `repositories` entry and the `COMPOSER_AUTH` form). `ichava/core` and the icon packs stay open source and work headless without it.
 
 - **Library writes change the browser first, then the server.** The forked UI sent every favourite, history and collection write to the server and waited for its reload. The library changes its store at once; `useLibrarySync` replays the change against the same Inertia routes, and the reload's props replace the store's, so a write the server refuses is undone. Library visits are `async`, so a quick second write no longer cancels the first, and creating a collection no longer remounts the page (it was `preserveState: false`).
@@ -198,6 +203,10 @@ Versioning re-based to 0.1.0. This release contains everything previously tagged
 
 > Versioning was re-based to 0.1.0 on 2026-10-23. The tags and GitHub releases below were removed;
 > every commit they pointed at is on `main`. Sections reproduced verbatim, one heading level down.
+>
+> Every release recorded here was MIT-licensed and published from a public repository. That is
+> no longer true: from 0.1.1 the package is proprietary and its repository private, so the
+> "open-source", MIT and public-install wording below describes those releases only.
 
 ### [0.4.1] - 2026-09-26
 
