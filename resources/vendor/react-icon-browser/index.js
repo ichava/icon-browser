@@ -3686,7 +3686,7 @@ var En = {
 	signOut() {}
 }, W = {
 	meta: {
-		version: "0.1.1",
+		version: "0.1.2",
 		author: "Imani Manyara",
 		sets: 70,
 		license: "Proprietary",
@@ -8537,7 +8537,7 @@ var Os = "background-color .12s ease, color .12s ease, border-color .12s ease, t
 	backgroundColor: e ? "var(--accent-soft)" : "var(--ich-hover-bg, transparent)",
 	borderRadius: "calc(var(--radius) - 2px)",
 	cursor: "pointer",
-	color: e ? "var(--accent)" : "var(--ich-hover-fg, var(--muted-fg))",
+	color: e ? "var(--color-text-brand-secondary)" : "var(--ich-hover-fg, var(--muted-fg))",
 	flex: "none",
 	transition: Os
 }), As = {
@@ -11073,7 +11073,7 @@ function pl({ value: e, onChange: t }) {
 					style: {
 						border: "none",
 						backgroundColor: "transparent",
-						color: e ? "var(--accent)" : "var(--faint-fg)",
+						color: e ? "var(--accent-text)" : "var(--faint-fg)",
 						fontSize: 10.5,
 						cursor: "pointer",
 						padding: 2
@@ -17229,7 +17229,7 @@ function fh() {
 								border: `1px solid ${ye ? "var(--accent)" : "var(--border)"}`,
 								borderRadius: "calc(var(--radius) - 2px)",
 								backgroundColor: ye ? "var(--accent-soft)" : "var(--bg)",
-								color: ye ? "var(--accent)" : "var(--fg)",
+								color: ye ? "var(--color-text-brand-secondary)" : "var(--fg)",
 								fontSize: 12,
 								cursor: "pointer"
 							},
@@ -17334,7 +17334,7 @@ function fh() {
 										border: `1px solid ${n ? "var(--accent)" : "var(--border)"}`,
 										borderRadius: 12,
 										backgroundColor: n ? "var(--accent-soft)" : "var(--bg)",
-										color: n ? "var(--accent)" : "var(--fg)",
+										color: n ? "var(--color-text-brand-secondary)" : "var(--fg)",
 										fontSize: 11,
 										cursor: "pointer",
 										display: "inline-flex",
@@ -18602,7 +18602,7 @@ function rg() {
 								}),
 								/* @__PURE__ */ w("span", {
 									className: "font-[family-name:'Geist_Mono',monospace] text-[11px] text-[var(--accent-text)]",
-									children: ["v", n?.meta.version ?? "0.1.1"]
+									children: ["v", n?.meta.version ?? "0.1.2"]
 								})
 							]
 						}),
@@ -20132,7 +20132,7 @@ function Rg() {
 					border: "none",
 					borderRadius: 4,
 					backgroundColor: n === e ? "var(--accent-soft)" : "transparent",
-					color: n === e ? "var(--accent)" : "var(--muted-fg)",
+					color: n === e ? "var(--color-text-brand-secondary)" : "var(--muted-fg)",
 					fontSize: 11.5,
 					fontWeight: 600,
 					cursor: "pointer"
