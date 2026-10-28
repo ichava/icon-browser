@@ -6,6 +6,8 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
 
 ### Added
 
+- **Manual CI, ESLint and accessibility checks** (I4). `npm run ci:manual` runs every gate (pint, phpstan, pest, eslint, typecheck, vitest, build:prod and a committed-bundle check) and prints a table to paste into the pull request, while private-repo Actions are off. ESLint lints `resources/js` against the shared `eslint.base.js` (byte-identical to js-ui-kernel's). `pages.a11y.test.tsx` runs axe over all ten non-browser pages, empty and with data, and `e2e/a11y.spec.ts` runs axe and a browser smoke test against a seeded host when `ICHAVA_E2E_URL` is set. See [Release](docs/release.md#manual-ci).
+
 - **Browser UI updated to react-icon-browser 29480da** (react-icon-browser#173). The library's preflight and its focus, hover and scrollbar rules are scoped to the browser's root, so they no longer restyle elements outside it. This package's own pages keep their resets from its own Tailwind build (`inertia-app.css` carries an unscoped preflight of its own).
 
 - **Browser UI updated to react-icon-browser fde799b** (react-icon-browser#172): links and link-style buttons change colour on hover instead of underlining. This package's own back links (Browser, Collections, Packages, Settings pages) do the same through a `theme-link` class, in place of `hover:underline`.
@@ -67,6 +69,9 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
 - **The forked browser UI in `resources/js`** (143 files: components, engines, hooks, store, styles and their tests), replaced by the vendored library above. Its tests live on in react-icon-browser, which carries every fix the fork had (A0, `fork-diff.md`). Dependencies only the fork imported are dropped from `package.json`: `@ichava/js-motion`, `@tanstack/react-virtual`, `clsx`, `dompurify`, `fflate`, `tailwind-merge`, `tailwindcss-react-aria-components`, `@types/dompurify`; the library bundles its own. React, `react-aria`, `react-aria-components` and `zustand` move to the library's peer floors.
 
 ### Fixed
+
+- **The library-sync hook no longer writes a ref during render.** `useLibrarySync` set `latest.current` while rendering, which is unsafe under concurrent rendering (ESLint `react-hooks/refs`, found by the new lint). It now updates in a layout effect.
+- **History's icon links have a name.** Each row's link held only the icon image, so a screen reader announced an unnamed link (axe `link-name`, found by the new page check). It is labelled with the icon's name.
 
 - **The API's Blade and helper snippets render.** `IconResource` wrote `blade_clean` as `<x-ichava::ichava-icon-sets-tabler ...>`, a tag no pack registers, and `helper` as `ichava('…', ['class' => …])`, whose class core's helper dropped. Both now come from core's `IconBrowserService` through `IconSnippets`, and `tests/Feature/SnippetsConfigTest.php` renders them through Blade. The resource's unused `generateBladeClean()`, `generateBladeGeneric()` and `generateHelper()` were removed rather than deprecated.
 - **`ichava/core` floor raised to `^0.1.3`**, for icon paths that resolve and server snippets that render.

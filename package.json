@@ -8,14 +8,17 @@
     "scripts": {
         "// clean": "Narrow on purpose. inertia-app.js/.css are CHECKED IN and no npm script or CI job rebuilds them -- only build does. rm -rf public/* destroyed them, and a failing vite build destroyed them for nothing. Delete only what the build re-emits. See issue #26.",
         "clean": "rm -rf public/assets/js/inertia-app.js public/assets/css/inertia-app.css public/.vite 2>/dev/null || true",
-        "build": "npm run clean && echo '' && echo '🔨 Building Ichava (dev)...' && NODE_ENV=development vite build --config vite.inertia.config.ts",
-        "build:prod": "npm run clean && echo '' && echo '🚀 Building Ichava (production)...' && NODE_ENV=production vite build --config vite.inertia.config.ts",
-        "watch": "echo '' && echo '👀 Watching Ichava for changes...' && vite build --watch --config vite.inertia.config.ts",
+        "build": "npm run clean && echo '' && echo '\ud83d\udd28 Building Ichava (dev)...' && NODE_ENV=development vite build --config vite.inertia.config.ts",
+        "build:prod": "npm run clean && echo '' && echo '\ud83d\ude80 Building Ichava (production)...' && NODE_ENV=production vite build --config vite.inertia.config.ts",
+        "watch": "echo '' && echo '\ud83d\udc40 Watching Ichava for changes...' && vite build --watch --config vite.inertia.config.ts",
         "dev": "vite --config vite.inertia.config.ts",
         "test:js": "vitest run",
         "test:js:watch": "vitest",
         "typecheck:inertia": "tsc -p tsconfig.inertia.json",
-        "sync:react-icon-browser": "node .dev/tools/sync-react-icon-browser.mjs"
+        "sync:react-icon-browser": "node .dev/tools/sync-react-icon-browser.mjs",
+        "lint": "eslint resources/js",
+        "ci:manual": "node .dev/tools/manual-ci.mjs",
+        "e2e": "playwright test --config e2e/playwright.config.ts"
     },
     "keywords": [
         "icons",
@@ -37,6 +40,9 @@
         "zustand": "^5.0.15"
     },
     "devDependencies": {
+        "@axe-core/playwright": "^4.14.0",
+        "@eslint/js": "^10.0.1",
+        "@playwright/test": "^1.64.1",
         "@tailwindcss/postcss": "^4.1.17",
         "@testing-library/dom": "^10.4.1",
         "@testing-library/jest-dom": "^7.0.0",
@@ -47,13 +53,19 @@
         "@vitejs/plugin-react": "^6.1.2",
         "@vitest/coverage-v8": "^5.0.5",
         "autoprefixer": "^10.4.22",
+        "axe-core": "^4.14.0",
         "esbuild": "^0.28.2",
+        "eslint": "^10.12.0",
+        "eslint-plugin-react-hooks": "^7.1.1",
+        "eslint-plugin-react-refresh": "^0.5.7",
+        "globals": "^17.13.0",
         "jsdom": "^30.0.1",
         "postcss": "^8.5.6",
         "sass": "^1.94.2",
         "tailwindcss": "^4.1.17",
         "tailwindcss-animate": "^1.0.7",
         "typescript": "~5.9.3",
+        "typescript-eslint": "^8.72.0",
         "vite": "^8.3.5",
         "vitest": "^5.0.5"
     },
