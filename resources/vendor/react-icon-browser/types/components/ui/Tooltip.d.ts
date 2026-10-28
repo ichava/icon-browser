@@ -9,10 +9,14 @@ import type { FocusableElement } from '@react-types/shared';
  *
  * Two things the design system does differently, both improvements:
  *
- * `shortcut` maps onto its `description` slot instead of an inline `<kbd>`. Untitled UI
- * lays title and description out as two lines, which is what a keyboard hint wants -- the
- * old inline badge competed with the label for a 260px bubble and wrapped awkwardly on the
- * longer ones. Mono styling is kept so a shortcut still reads as a key.
+ * `shortcut` renders as a key chip on the label's line. It used the design system's
+ * `description` slot until 2026-10-28, which put a lone letter on a second line under the
+ * label and made every hint bubble twice its height (Sim: "badly styled"). The labels are
+ * short and the bubble is `max-w-xs`, so one line holds both.
+ *
+ * Tooltips do not animate out. Adjacent triggers (a tile's copy, favourite and collection
+ * buttons) hand the tooltip over instantly, and an exit animation left the previous bubble
+ * fading beside the new one.
  *
  * The trigger is wrapped in react-aria's `Focusable`. `TooltipTrigger` needs a child that
  * accepts hover and focus props, and every call site passes a plain styled `<button>`;
