@@ -4,7 +4,11 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-10-28
+
 ### Added
+
+- **Browser UI on the released react-icon-browser v0.1.1** (773accf), the same code as the 29480da build already vendored, now taken from its release tag.
 
 - **Manual CI, ESLint and accessibility checks** (I4). `npm run ci:manual` runs every gate (pint, phpstan, pest, eslint, typecheck, vitest, build:prod and a committed-bundle check) and prints a table to paste into the pull request, while private-repo Actions are off. ESLint lints `resources/js` against the shared `eslint.base.js` (byte-identical to js-ui-kernel's). `pages.a11y.test.tsx` runs axe over all ten non-browser pages, empty and with data, and `e2e/a11y.spec.ts` runs axe and a browser smoke test against a seeded host when `ICHAVA_E2E_URL` is set. See [Release](docs/release.md#manual-ci).
 
