@@ -10,6 +10,7 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
 
 ### Fixed
 
+- Vendored `@ichava/react-icon-browser` 0.1.3 (`85d9dbd`): the browser renders in Geist again (since 0.1.1 it fell back to the system font), tooltips show their shortcut on one line with no leftover bubble, a tile's copy action reads "Copy Raw SVG" and its permalink keeps the host URL, related icons are ranked by shared words and pack, selects align to their trigger, and Arabic layout reaches selects, menus and sliders.
 - Vendored `@ichava/react-icon-browser` 0.1.2 (`733f5ba`): selected collection chips, the favourite button and active icon buttons now draw their label in a colour that meets WCAG AA contrast on the accent tint. It measured 2.78:1 in dark mode before.
 
 ## [0.1.1] - 2026-10-28

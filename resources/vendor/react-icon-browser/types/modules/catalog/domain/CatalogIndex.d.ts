@@ -13,6 +13,13 @@ export declare class CatalogIndex {
     filtered(p: ListParams): Icon[];
     page(p: ListParams): PageResult<Icon>;
     byId(id: IconId): Icon | undefined;
+    /**
+     * Icons worth showing beside `icon`, best first. Category alone was the old rule, and a
+     * category like "general" spans packs, so tabler's `accessible` listed Andorra's flag.
+     * A candidate scores for each word it shares with the icon's name, tags and keywords,
+     * for sharing its pack, and for sharing its category; one with no shared word and a
+     * different pack is not related at all. Ties keep catalog order.
+     */
     related(icon: Icon, limit?: number): Icon[];
     /** Bare `filters` contract: packages + category terms + variant terms with counts. */
     filters(): Filters;
