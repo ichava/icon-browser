@@ -3686,7 +3686,7 @@ var En = {
 	signOut() {}
 }, W = {
 	meta: {
-		version: "0.1.0",
+		version: "0.1.1",
 		author: "Imani Manyara",
 		sets: 70,
 		license: "Proprietary",
@@ -18602,7 +18602,7 @@ function rg() {
 								}),
 								/* @__PURE__ */ w("span", {
 									className: "font-[family-name:'Geist_Mono',monospace] text-[11px] text-[var(--accent-text)]",
-									children: ["v", n?.meta.version ?? "0.1.0"]
+									children: ["v", n?.meta.version ?? "0.1.1"]
 								})
 							]
 						}),
