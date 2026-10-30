@@ -61,12 +61,7 @@ final class IconBrowserApiController extends BaseApiController
             ]);
 
             $paginator = $this->browserService->getIcons(
-                filters: [
-                    'search'     => $request->getSearch(),
-                    'packages'   => $request->getPackages(),
-                    'categories' => $request->getCategories(),
-                    'variants'   => $request->getVariants(),
-                ],
+                filters: $request->filters(),
                 page: $request->getPage(),
                 perPage: $request->getPerPage(),
                 sortBy: $request->getSortBy(),
@@ -96,6 +91,11 @@ final class IconBrowserApiController extends BaseApiController
                     'from'         => $paginator->firstItem(),
                     'to'           => $paginator->lastItem(),
                     'group_by'     => $groupBy,
+                    // Why an empty page is empty, so a client can say "no match"
+                    // rather than "no icons installed".
+                    'has_search'   => $request->hasSearch(),
+                    'has_filters'  => $request->hasFilters(),
+                    'empty_reason' => $request->emptyReason($paginator->total()),
                 ],
             ])->response();
         } catch (IchavaException $e) {
@@ -110,13 +110,15 @@ final class IconBrowserApiController extends BaseApiController
     /**
      * Get filter options
      */
-    public function filters(): JsonResponse
+    public function filters(IconFilterRequest $request): JsonResponse
     {
         try {
             $this->logDebug('Fetching filter options');
 
+            // Each facet is counted over what the other filters select; with no
+            // filters the counts stay corpus-wide (and cached) as before.
             /** @var array{packages?: array<mixed>, categories?: array<mixed>, variants?: array<mixed>} $filters */
-            $filters = $this->browserService->getFilters();
+            $filters = $this->browserService->getFilters($request->filters());
 
             $this->logDebug('Filter options retrieved', [
                 'packages_count'   => count($filters['packages'] ?? []),
@@ -156,12 +158,13 @@ final class IconBrowserApiController extends BaseApiController
     /**
      * Get hierarchical icon tree
      */
-    public function tree(): JsonResponse
+    public function tree(IconFilterRequest $request): JsonResponse
     {
         try {
             $this->logDebug('Building icon tree');
 
-            $tree = $this->browserService->buildIconTree();
+            // Counted over the current selection, so the tree agrees with the grid.
+            $tree = $this->browserService->buildIconTree($request->filters());
 
             $this->logDebug('Icon tree built', [
                 'tree_size' => count($tree),

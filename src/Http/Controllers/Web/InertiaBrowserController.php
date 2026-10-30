@@ -45,14 +45,11 @@ final class InertiaBrowserController extends BaseInertiaController
         ]);
 
         try {
+            $filters = $request->filters();
+
             /** @var \Illuminate\Pagination\LengthAwarePaginator<int, Icon> $paginator */
             $paginator = $this->browserService->getIcons(
-                filters: [
-                    'search'     => $request->getSearch(),
-                    'packages'   => $request->getPackages(),
-                    'categories' => $request->getCategories(),
-                    'variants'   => $request->getVariants(),
-                ],
+                filters: $filters,
                 page: $request->getPage(),
                 perPage: $request->getPerPage(),
                 sortBy: $request->getSortBy(),
@@ -73,20 +70,27 @@ final class InertiaBrowserController extends BaseInertiaController
                     'last_page'    => $paginator->lastPage(),
                     'from'         => $paginator->firstItem(),
                     'to'           => $paginator->lastItem(),
+                    'empty_reason' => $request->emptyReason($paginator->total()),
                 ],
                 'appliedFilters' => [
                     'search'         => $request->getSearch(),
+                    'language'       => $request->getLanguage(),
                     'packages'       => $request->getPackages(),
+                    'kind'           => $request->getKind(),
                     'categories'     => $request->getCategories(),
+                    'subs'           => $request->getSubs(),
                     'variants'       => $request->getVariants(),
+                    'tags'           => $request->getTags(),
+                    'keywords'       => $request->getKeywords(),
                     'sort_by'        => $request->getSortBy(),
                     'sort_direction' => $request->getSortDirection(),
                     'page'           => $request->getPage(),
                     'per_page'       => $request->getPerPage(),
                 ],
-                'filterOptions'  => $this->browserService->getFilters(),
+                'filterOptions'  => $this->browserService->getFilters($filters),
                 'statistics'     => $this->browserService->getStatistics(),
-                'tree'           => $this->browserService->buildIconTree(),
+                'tree'           => $this->browserService->buildIconTree($filters),
+                // Every installed pack, whatever is selected, for the pack picker.
                 'packages'       => $this->browserService->getFilters()['packages'] ?? [],
                 'favorites'      => $this->preferenceService->getFavorites(),
                 'collections'    => $this->preferenceService->getCollections(),
@@ -105,9 +109,10 @@ final class InertiaBrowserController extends BaseInertiaController
                     'last_page'    => 1,
                     'from'         => null,
                     'to'           => null,
+                    'empty_reason' => null,
                 ],
                 'appliedFilters' => [],
-                'filterOptions'  => ['packages' => [], 'categories' => [], 'variants' => []],
+                'filterOptions'  => ['packages' => [], 'categories' => [], 'variants' => [], 'kinds' => []],
                 'statistics'     => null,
                 'tree'           => [],
                 'packages'       => [],
