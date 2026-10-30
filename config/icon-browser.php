@@ -90,6 +90,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Where a signed-in user's library is kept
+    |--------------------------------------------------------------------------
+    | `database` (default) keeps a signed-in user's favourites, collections,
+    | history and preferences in `ichava_owner_preferences`, keyed by the host
+    | user, so they follow the user across devices; a guest's session data is
+    | merged in on sign-in. Until that table is migrated, signed-in users fall
+    | back to the session. `session` keeps everyone on the session store.
+    */
+    'library' => [
+        'store' => env('ICHAVA_LIBRARY_STORE', 'database'),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Snippet tabs in the icon dialog
     |--------------------------------------------------------------------------
     | Shared to the browser page as its `snippets` config. Every key is optional;
