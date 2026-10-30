@@ -21,6 +21,11 @@ react-icon-browser generates its TypeScript types from this file. `tests/Feature
 
 Bump the major version for a removed or retyped field and the minor for an added one, in `PayloadSchema::VERSION` and the file's `version` together.
 
+| Version | Change |
+|---|---|
+| 1.1.0 | `icon` gains `sub`, the nested category below the top-level one, or null. Additive. |
+| 1.0.0 | First published contract. |
+
 ---
 
 [← Docs index](../../README.md#documentation)

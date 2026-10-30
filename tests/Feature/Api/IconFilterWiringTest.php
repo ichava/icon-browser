@@ -142,3 +142,25 @@ describe('the Inertia listing', function () {
                 ->has('filterOptions.kinds'));
     });
 });
+
+describe('the subcategory on each icon', function () {
+    it('names the nested category as sub over REST, null at the top level', function () {
+        $icons = filterFixture();
+
+        $listed = collect($this->getJson(route('ichava.api.v1.icons.index'))->assertOk()->json('data'))
+            ->filter(fn (mixed $item, int|string $key): bool => is_int($key))
+            ->pluck('sub', 'name');
+
+        expect($listed->all())->toMatchArray(['arrow-bend' => 'curved', 'arrow-left' => null, 'park-scene' => null])
+            ->and($this->getJson(route('ichava.api.v1.icons.show', ['id' => $icons['bend']->id]))->json('data.sub'))->toBe('curved');
+    });
+
+    it('names it in the Inertia grid too', function () {
+        filterFixture();
+
+        $icons = collect($this->get(route('ichava.inertia.browser'))->viewData('page')['props']['icons'] ?? [])->pluck('sub', 'name');
+
+        expect($icons->get('arrow-bend'))->toBe('curved')
+            ->and($icons->get('arrow-left'))->toBeNull();
+    });
+});

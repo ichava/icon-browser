@@ -94,11 +94,7 @@ it('merges a guest\'s favourites into the user\'s on sign-in', function () {
 
     expect(app(IconPreferenceService::class)->getFavorites())->toBe([$icon->id])
         ->and(DB::table(DatabaseOwnerPreferenceStore::TABLE)->where('owner_id', '7')->count())->toBe(1);
-})->skip(
-    'Blocked in ichava/core: IchavaSessionManager::put() nests "ichava.<key>" in the session, '
-    . 'but all() and clear() look for flat "ichava.*" keys, so MergeGuestPreferences reads an '
-    . 'empty guest store. Unskip once core reads the nested array.',
-);
+});
 
 it('answers as the session store until the table is migrated', function () {
     Schema::drop(DatabaseOwnerPreferenceStore::TABLE);

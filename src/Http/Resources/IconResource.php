@@ -39,9 +39,11 @@ class IconResource extends JsonResource
             'kind'   => $icon->kind->value,
             'themes' => $icon->themes(),
 
-            // Category & Variant (from relationships)
+            // Category & Variant (from relationships), and the subcategory:
+            // the nested category below the top-level one, null at the top.
             'category' => $icon->primary_category?->slug,
             'variant'  => $icon->primary_variant?->slug,
+            'sub'      => $icon->primary_subcategory?->slug,
 
             // Paths
             'path'      => $icon->icon_path,

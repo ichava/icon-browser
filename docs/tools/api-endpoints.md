@@ -49,6 +49,8 @@ See [Host integration](host-integration.md) for the shapes, and [Payload schema]
 | `subs[]` | Nested categories, or variants within the selected category |
 | `tags[]`, `keywords[]` | Tags and keywords an icon must carry |
 
+Each icon in the listing, and `GET /icons/{id}`, carries `sub`: the slug of the nested category the icon sits in below its top-level `category`, or null when it is filed only at the top level. It is the per-icon counterpart of `subs[]` (schema 1.1.0).
+
 Facet counts in `/icons/filters` are counted over the other filters, and `/icons/tree` over the selection. The `/icons` `meta` block carries `has_search`, `has_filters` and `empty_reason` (`no_match`, `no_icons`, or null). Each icon carries `kind` and `themes`.
 
 ### Package Endpoints
