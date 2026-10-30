@@ -19,6 +19,9 @@
         <testsuite name="Gated">
             <directory>tests/Gated</directory>
         </testsuite>
+        <testsuite name="Prefixed">
+            <directory>tests/Prefixed</directory>
+        </testsuite>
     </testsuites>
     <source>
         <include>

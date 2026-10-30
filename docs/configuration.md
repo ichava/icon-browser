@@ -101,7 +101,7 @@ final class IconSnippetResolver implements SnippetResolver
 
 ## Notes
 
-- The route prefix (`/{prefix}/icons`, `/{prefix}/api/...`) is set by `ICHAVA_BROWSER_PREFIX` and lives in **core's** config (`config('ichava.core.prefix')`). Both packages read it.
+- The route prefix (`/{prefix}/icons`, `/{prefix}/api/...`) is set by `ICHAVA_BROWSER_PREFIX` and lives in **core's** config (`config('ichava.ichava-core.prefix')`). Both packages read it; icon-browser reads it through `Helpers::routePrefix()`.
 - `rate_limiting.enabled = false` (default) makes per-bucket limits no-ops. The `api_floor` global throttle still applies regardless.
 - Multi-domain mode: set `ICHAVA_DOMAINS=app.test,admin.test` to restrict routes. Empty (default) means routes are reachable on every domain.
 

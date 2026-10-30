@@ -31,7 +31,7 @@ use Simtabi\Laranail\Ichava\IconBrowser\Http\Controllers\Api\CommandHistoryApiCo
 // - ichava.security (XSS, SQL injection protection)
 // - ichava.json (force JSON responses)
 // - ichava.log (request logging in debug mode)
-Route::prefix(config('ichava.core.prefix', 'ichava') . '/api')
+Route::prefix(Helpers::routePrefix() . '/api')
     ->middleware('ichava.api')
     ->name('ichava.api.')
     ->group(function () {

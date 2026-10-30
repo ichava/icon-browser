@@ -8,6 +8,7 @@ use Closure;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Simtabi\Laranail\Ichava\IconBrowser\Support\Helpers;
 
 /**
  * Validate Ichava Routes Middleware
@@ -22,7 +23,7 @@ final class ValidateIchavaRoute
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $prefix = config('ichava.ichava-core.prefix', 'ichava');
+        $prefix = Helpers::routePrefix();
         $path = $request->path();
 
         // Ensure request is for an Ichava route
