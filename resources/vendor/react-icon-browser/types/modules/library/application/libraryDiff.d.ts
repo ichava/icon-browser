@@ -28,10 +28,17 @@ export type LibraryOp = {
     action: string;
 } | {
     kind: 'history.clear';
-} | {
+}
+/**
+ * A new collection under its provisional `id`, with the icons it was created holding.
+ * `diffLibrary` always sets `icons`; it is optional so an operation built before it
+ * existed still type-checks, and means none.
+ */
+ | {
     kind: 'collection.create';
     id: string;
     name: string;
+    icons?: readonly IconId[];
 } | {
     kind: 'collection.rename';
     id: string;

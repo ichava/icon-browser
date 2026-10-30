@@ -149,7 +149,8 @@ export interface BrowserStore {
     toggleFavorite: (id: IconId) => void;
     pushHistory: (id: IconId, action: string) => void;
     clearHistory: () => void;
-    createCollection: (name: string) => void;
+    /** A new collection, holding `icons` when given (the icon or selection it was made from). */
+    createCollection: (name: string, icons?: readonly IconId[]) => void;
     renameCollection: (id: string, name: string) => void;
     removeCollection: (id: string) => void;
     addToCollection: (collId: string, iconId: IconId) => void;
@@ -169,10 +170,18 @@ export interface BrowserStore {
     layer: Layer;
     detailId: IconId | null;
     libTab: LibTab;
+    /**
+     * The icons a collection created from the library dialog starts with: the icon or
+     * selection whose "New collection" opened it. Empty when the dialog was opened plainly.
+     */
+    librarySeed: IconId[];
     openLayer: (l: Layer) => void;
     closeLayer: () => void;
     openDetail: (id: IconId) => void;
-    openLibrary: (tab: LibTab) => void;
+    /** Open the library on `tab`; `seed` is what a collection created there starts with. */
+    openLibrary: (tab: LibTab, opts?: {
+        seed?: readonly IconId[];
+    }) => void;
     /** Live toast queue. Rendered by `Toaster`; the store never touches the DOM. */
     toasts: {
         id: number;
