@@ -18,6 +18,7 @@ use Simtabi\Laranail\Ichava\Exceptions\IchavaException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Simtabi\Laranail\Ichava\Services\IconBrowserService;
 use Simtabi\Laranail\Ichava\Services\IconPreferenceService;
+use Simtabi\Laranail\Ichava\IconBrowser\Support\CacheStatsPayload;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Resources\IconResource;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Resources\IconCollection;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Requests\IconFilterRequest;
@@ -799,7 +800,7 @@ final class IconBrowserApiController extends BaseApiController
         try {
             $this->logDebug('Fetching cache stats');
 
-            $stats = $this->cacheService->getStats();
+            $stats = CacheStatsPayload::withoutAbsolutePaths($this->cacheService->getStats());
             $healthy = $this->cacheService->isHealthy();
 
             return response()->json([

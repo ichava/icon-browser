@@ -20,6 +20,8 @@ use Simtabi\Laranail\Ichava\Services\IconBrowserService;
 use Simtabi\Laranail\Ichava\Services\IconPackUpdateChecker;
 use Simtabi\Laranail\Ichava\Services\IconPreferenceService;
 use Simtabi\Laranail\Ichava\IconBrowser\Support\IconSnippets;
+use Simtabi\Laranail\Ichava\IconBrowser\Support\CacheAdminGate;
+use Simtabi\Laranail\Ichava\IconBrowser\Support\CacheStatsPayload;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Requests\IconFilterRequest;
 
 final class InertiaBrowserController extends BaseInertiaController
@@ -214,9 +216,13 @@ final class InertiaBrowserController extends BaseInertiaController
                 'statistics'    => $statistics,
                 'packageStats'  => $packageStats,
                 'topCategories' => $topCategories,
-                'cacheStats'    => $this->cacheService->getStats(),
-                'cacheHealthy'  => $this->cacheService->isHealthy(),
-                'updateStatus'  => $this->updateChecker->checkAll(),
+                // Cache statistics describe the server, so only a cache administrator
+                // gets them; everyone else sees the health flag alone.
+                'cacheStats' => CacheAdminGate::allows()
+                    ? CacheStatsPayload::withoutAbsolutePaths($this->cacheService->getStats())
+                    : [],
+                'cacheHealthy' => $this->cacheService->isHealthy(),
+                'updateStatus' => $this->updateChecker->checkAll(),
             ];
         } catch (Exception $e) {
             $this->logger->error('Failed to load Inertia statistics', $e);
