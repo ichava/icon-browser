@@ -94,9 +94,13 @@ jobs:
       - name: Install dependencies
         run: composer update --prefer-stable --prefer-dist --no-interaction
 
-      - name: Report the resolved core version
-        # The source reference is the core commit this run tested against.
-        run: composer show ichava/core | grep -E '^(name|versions|source) '
+      - name: Report the resolved siblings and restore composer.json
+        # The source reference is the core commit this run tested against. The
+        # restore makes SiblingConstraintsTest read the committed constraint,
+        # not the CI alias.
+        run: |
+          for p in ichava/core; do composer show "$p" | grep -E '^(name|versions|source) '; done
+          git checkout -- composer.json
 
       - name: Run PHPStan
         run: composer analyse

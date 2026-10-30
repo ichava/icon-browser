@@ -106,9 +106,13 @@ jobs:
           composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
           composer update --${{ matrix.stability }} --prefer-dist --no-interaction
 
-      - name: Report the resolved core version
-        # The source reference is the core commit this run tested against.
-        run: composer show ichava/core | grep -E '^(name|versions|source) '
+      - name: Report the resolved siblings and restore composer.json
+        # The source reference is the core commit this run tested against. The
+        # restore makes SiblingConstraintsTest read the committed constraint,
+        # not the CI alias.
+        run: |
+          for p in ichava/core; do composer show "$p" | grep -E '^(name|versions|source) '; done
+          git checkout -- composer.json
 
       - name: Execute tests
         run: vendor/bin/pest --coverage
@@ -210,9 +214,13 @@ jobs:
           composer require "laravel/framework:13.*" "orchestra/testbench:^11.0" --no-interaction --no-update
           composer update --prefer-stable --prefer-dist --no-interaction
 
-      - name: Report the resolved core version
-        # The source reference is the core commit this run tested against.
-        run: composer show ichava/core | grep -E '^(name|versions|source) '
+      - name: Report the resolved siblings and restore composer.json
+        # The source reference is the core commit this run tested against. The
+        # restore makes SiblingConstraintsTest read the committed constraint,
+        # not the CI alias.
+        run: |
+          for p in ichava/core; do composer show "$p" | grep -E '^(name|versions|source) '; done
+          git checkout -- composer.json
 
       - name: Execute tests
         env:
