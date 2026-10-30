@@ -8,6 +8,7 @@ use Inertia\Middleware;
 use OutOfBoundsException;
 use Illuminate\Http\Request;
 use Composer\InstalledVersions;
+use Simtabi\Laranail\Ichava\IconBrowser\Support\Helpers;
 use Simtabi\Laranail\Ichava\Services\IconPreferenceService;
 use Simtabi\Laranail\Ichava\IconBrowser\Support\IconSnippets;
 
@@ -35,7 +36,7 @@ final class HandleInertiaRequests extends Middleware
             'preferences' => fn () => $this->preferences->getAll(),
 
             'ichava' => fn () => [
-                'prefix'       => config('ichava.core.prefix', 'ichava'),
+                'prefix'       => Helpers::routePrefix(),
                 'perPage'      => (int) config('ichava.icon-browser.browser.per_page', 24),
                 'defaultTheme' => config('ichava.icon-browser.browser.default_theme', 'light'),
                 'ui'           => $this->ui(),

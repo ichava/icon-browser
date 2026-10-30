@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
+use Simtabi\Laranail\Ichava\IconBrowser\Support\Helpers;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,12 +21,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::prefix(config('ichava.core.prefix', 'ichava'))
+Route::prefix(Helpers::routePrefix())
     ->middleware('ichava.web')
     ->name('ichava.')
     ->group(function () {
 
         // Redirect bare /{prefix} to the canonical (Inertia) browser URL.
-        Route::redirect('/', '/' . config('ichava.core.prefix', 'ichava') . '/icons')
+        Route::redirect('/', '/' . Helpers::routePrefix() . '/icons')
             ->name('home');
     });

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
+use Simtabi\Laranail\Ichava\IconBrowser\Support\Helpers;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Controllers\Web\CacheController;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Controllers\Web\HistoryController;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Controllers\Web\PackageController;
@@ -30,7 +31,7 @@ use Simtabi\Laranail\Ichava\IconBrowser\Http\Controllers\Web\InertiaBrowserContr
 |
 */
 
-Route::prefix(config('ichava.core.prefix', 'ichava'))
+Route::prefix(Helpers::routePrefix())
     ->middleware('ichava.inertia')
     ->name('ichava.inertia.')
     ->group(function () {

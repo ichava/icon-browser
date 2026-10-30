@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Simtabi\Laranail\Ichava\IconBrowser\Tests\TestCase;
 use Simtabi\Laranail\Ichava\IconBrowser\Tests\ApiDisabledTestCase;
+use Simtabi\Laranail\Ichava\IconBrowser\Tests\CustomPrefixTestCase;
 
 pest()
     ->extend(TestCase::class)
@@ -15,3 +16,8 @@ pest()
     ->extend(ApiDisabledTestCase::class)
     ->use(RefreshDatabase::class)
     ->in('Gated');
+
+pest()
+    ->extend(CustomPrefixTestCase::class)
+    ->use(RefreshDatabase::class)
+    ->in('Prefixed');

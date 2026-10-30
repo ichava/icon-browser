@@ -18,6 +18,7 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
 
 ### Fixed
 
+- **`ICHAVA_BROWSER_PREFIX` moves the routes again** (I-F1). The web, API and Inertia route files and the shared Inertia `prefix` prop read `ichava.core.prefix`, a key core no longer sets (its config merges at `ichava.ichava-core.*`), so they stayed on `/ichava` while `ValidateIchavaRoute` followed the new prefix and refused them. All six reads now go through `Helpers::routePrefix()`, which reads `ichava.ichava-core.prefix` (`Helpers::ROUTE_PREFIX_KEY`). A test boots with a custom prefix and asserts the routes and the shared prop follow it, and a scan fails on any remaining `ichava.core.` read.
 - Vendored `@ichava/react-icon-browser` 0.1.3 (`85d9dbd`): the browser renders in Geist again (since 0.1.1 it fell back to the system font), tooltips show their shortcut on one line with no leftover bubble, a tile's copy action reads "Copy Raw SVG" and its permalink keeps the host URL, related icons are ranked by shared words and pack, selects align to their trigger, and Arabic layout reaches selects, menus and sliders.
 - Vendored `@ichava/react-icon-browser` 0.1.2 (`733f5ba`): selected collection chips, the favourite button and active icon buttons now draw their label in a colour that meets WCAG AA contrast on the accent tint. It measured 2.78:1 in dark mode before.
 

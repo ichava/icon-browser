@@ -14,6 +14,28 @@ namespace Simtabi\Laranail\Ichava\IconBrowser\Support;
 final class Helpers
 {
     /**
+     * The config key ichava/core merges its route prefix under.
+     *
+     * Core's config file is `ichava-core.php`, so package-tools merges it at
+     * `ichava.ichava-core.*`, and `ICHAVA_BROWSER_PREFIX` lands at this key.
+     * The pre-rename `ichava.core.prefix` resolves to nothing, so reading it
+     * kept every route on the default while the validator moved.
+     */
+    public const string ROUTE_PREFIX_KEY = 'ichava.ichava-core.prefix';
+
+    /**
+     * The URL prefix every browser route mounts under (`/{prefix}/icons`,
+     * `/{prefix}/api/...`). One reader, so routes, shared props and
+     * `ValidateIchavaRoute` cannot disagree.
+     */
+    public static function routePrefix(): string
+    {
+        $prefix = config(self::ROUTE_PREFIX_KEY, 'ichava');
+
+        return is_string($prefix) && $prefix !== '' ? $prefix : 'ichava';
+    }
+
+    /**
      * Build a Laravel throttle-middleware string from the per-route rate limit.
      *
      * Reads `ichava.icon-browser.rate_limiting.enabled` and
