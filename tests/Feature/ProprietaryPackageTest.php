@@ -3,13 +3,16 @@
 declare(strict_types=1);
 
 /**
- * This package is proprietary and its repository private (decided for Phase B of the React
- * UI plan): it ships the @ichava/react-icon-browser build, which contains Untitled UI PRO
- * components whose licence forbids exposing them publicly.
+ * This package is proprietary (decided for Phase B of the React UI plan): it ships the
  *
- * Every manifest and every reader-facing file has to say so, and none may still claim MIT or
- * offer a channel a private repository does not have. A stale MIT badge or licence field is a
- * licensing misstatement, not a cosmetic one, and nothing else reads these files.
+ * @ichava/react-icon-browser build, which contains compiled Untitled UI PRO components used
+ * under the Untitled UI licence. Its repository went public on 2026-10-30; the licence did not
+ * change.
+ *
+ * Every manifest and every reader-facing file has to say so, and none may still claim MIT. A
+ * stale MIT badge or licence field is a licensing misstatement, not a cosmetic one, and nothing
+ * else reads these files. The disclosure channels have to match the repository: a public one
+ * has GitHub private vulnerability reporting, so it is offered first and email is the fallback.
  *
  * PHPUnit assertions rather than `expect()`, for the diagnostic messages.
  */
@@ -44,17 +47,32 @@ it('claims MIT nowhere a reader or registry looks', function (string $path): voi
     $this->assertDoesNotMatchRegularExpression('~license[-: ]+MIT|MIT License|badge/license-MIT~i', $text, "{$path} still claims MIT.");
 })->with(['README.md', 'composer.json', 'package.json', 'CONTRIBUTING.md', 'docs/installation.md']);
 
-it('offers email as the only disclosure channel', function (): void {
+it('offers private vulnerability reporting first and email as the fallback', function (): void {
+    $advisories = 'https://github.com/ichava/icon-browser/security/advisories/new';
     $policy = proprietaryFile('SECURITY.md');
 
-    $this->assertStringContainsString('security@simtabi.com', $policy);
-    // Private vulnerability reporting is a public-repository feature: the button does not exist.
-    $this->assertStringNotContainsString('/security/advisories/new', $policy);
+    $this->assertStringContainsString($advisories, $policy, 'SECURITY.md does not offer GitHub private vulnerability reporting.');
+    $this->assertStringContainsString('security@simtabi.com', $policy, 'SECURITY.md does not offer the email fallback.');
+    $this->assertLessThan(
+        strpos($policy, 'security@simtabi.com'),
+        strpos($policy, $advisories),
+        'SECURITY.md must name private vulnerability reporting before the email fallback.',
+    );
+    $this->assertDoesNotMatchRegularExpression('/only channel|repository is\s+private/i', $policy, 'SECURITY.md still describes a private, email-only repository.');
 
     $contacts = proprietaryFile('.github/ISSUE_TEMPLATE/config.yml');
-    $this->assertStringNotContainsString('/security/policy', $contacts, 'The issue chooser still points reporters at a security tab with no reporting button.');
+    $this->assertStringContainsString($advisories, $contacts, 'The issue chooser does not point reporters at private vulnerability reporting.');
     $this->assertStringContainsString('security@simtabi.com', $contacts);
+    $this->assertDoesNotMatchRegularExpression('/repository is private|private repository/i', $contacts);
 });
+
+it('describes the repository as public nowhere it says private', function (string $path): void {
+    $this->assertDoesNotMatchRegularExpression(
+        '/(this|its|the) repository is private|in a private repository|in this private repository/i',
+        proprietaryFile($path),
+        "{$path} still says this repository is private.",
+    );
+})->with(['README.md', 'SECURITY.md', 'CONTRIBUTING.md', 'docs/installation.md', 'docs/release.md']);
 
 it('refuses to cut a release from a public repository', function (): void {
     $release = proprietaryFile('.github/workflows/release.yml');

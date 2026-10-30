@@ -6,20 +6,21 @@
 
 `ichava/icon-browser` is the optional HTTP layer for Ichava: the visual icon browser, the REST API and the middleware. Install it on top of [`ichava/core`](https://opensource.simtabi.com/documentation/ichava/core/installation).
 
-> **A licensed, proprietary package in a private repository.** `ichava/core` and the icon packs stay open source and work headless without it. Installing this package needs a licence from Simtabi LLC and read access to `github.com/ichava/icon-browser`. Its browser interface includes Untitled UI PRO components, which is why the repository is private; see [LICENSE](../LICENSE).
+> **A licensed, proprietary package.** Its repository is public, but the code is not open source. `ichava/core` and the icon packs stay open source and work headless without it. Installing this package needs a licence from Simtabi LLC. Its browser interface includes compiled Untitled UI PRO components, used under the Untitled UI licence; see [LICENSE](../LICENSE).
 
 ## 1. Require the package
 
-`ichava/icon-browser` is not on Packagist, and its repository is private, so Composer needs both
-its repository entry and a GitHub token that can read it. Add the repository alongside the ones
+`ichava/icon-browser` is not on Packagist, so Composer needs its repository entry. Add it
+alongside the ones
 [core's installation](https://opensource.simtabi.com/documentation/ichava/core/installation) already asked for:
 
 ```json
 { "type": "vcs", "url": "https://github.com/ichava/icon-browser" }
 ```
 
-Give Composer a token with read access to the repository (a fine-grained token with *Contents:
-read* on `ichava/icon-browser`, or a GitHub App installation token). Locally:
+The repository is public, so no token is needed to read it. Composer installs a VCS repository
+through the GitHub API, though, and anonymous calls are rate limited; on a busy CI runner give it
+a token (a fine-grained token with *Contents: read* is enough). Locally:
 
 ```bash
 composer config --global --auth github-oauth.github.com <token>

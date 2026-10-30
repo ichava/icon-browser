@@ -72,15 +72,16 @@ npm install && npm run typecheck:inertia && npm run test:js && npm run build:pro
 
 The sync refuses a checkout with uncommitted source or a `dist/lib` older than its commit, and writes `resources/vendor/react-icon-browser/VENDORED.json`. `vendoredLibrary.test.ts` fails on any file that does not match it, so never edit the vendored files by hand. Name the library commit in the changelog entry.
 
-This repository is private and must stay private: the vendored build and the committed bundle both contain Untitled UI PRO components ([LICENSE](../LICENSE)). `release.yml` refuses to publish from a public repository.
+The vendored build and the committed bundle both contain compiled Untitled UI PRO components, used under the Untitled UI licence ([LICENSE](../LICENSE)). The repository is public (decided 2026-10-30) and the package stays proprietary. `release.yml` still carries the guard written while the repository was private, which refuses to publish from a public repository, so a release cannot be cut until that guard is changed.
 
 There is no `version` field in `composer.json` — the version comes from the git tag. No lock file is committed.
 
 
 ## Manual CI
 
-GitHub Actions do not run in this private repository while the account's billing is off, so
-every pull request is checked locally and the result pasted into it (Sim, 2026-10-27):
+GitHub Actions run on every pull request now that the repository is public. Before that, while
+it was private and the account's billing was off, every pull request was checked locally and the
+result pasted into it (Sim, 2026-10-27). The command still runs the same gates locally:
 
 ```bash
 npm run ci:manual            # pint, phpstan, pest, eslint, typecheck, vitest, build:prod, committed bundle

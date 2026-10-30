@@ -7,19 +7,18 @@ Two badges, not four: the package is not on Packagist, so there is no registry v
 
 > The HTTP layer for the Ichava Laravel icon ecosystem: the icon browser (Inertia pages around `@ichava/react-icon-browser`), the REST API and the middleware, installed on top of `ichava/core`.
 
-A licensed, proprietary package in a private repository. Targets PHP `^8.4.1 || ^8.5` on Laravel `^13`, against `ichava/core` `^0.1`. Core and the icon packs stay open source and work headless without it.
+A licensed, proprietary package: the repository is public, the code is not open source. Targets PHP `^8.4.1 || ^8.5` on Laravel `^13`, against `ichava/core` `^0.1`. Core and the icon packs stay open source and work headless without it.
 
 ## Install
 
-The repository is private, so Composer needs its repository entry and a GitHub token that can read it:
+The package is not on Packagist, so Composer needs its repository entry:
 
 ```bash
 composer config repositories.ichava-icon-browser vcs https://github.com/ichava/icon-browser
-composer config --global --auth github-oauth.github.com <token>
 composer require ichava/icon-browser:^0.1
 ```
 
-[Installation](docs/installation.md) gives the full repository block (core's dependencies are unpublished too), the `COMPOSER_AUTH` form for CI, and the asset publishing.
+[Installation](docs/installation.md) gives the full repository block (core's dependencies are unpublished too), the optional `COMPOSER_AUTH` token for CI, and the asset publishing.
 
 ## Quick start guide and usage
 
@@ -54,7 +53,7 @@ The docs live in this repository, under [`docs/`](docs/).
 
 ### Guides
 
-- [Installation](docs/installation.md) — private repository access, config, asset publishing, the prefix
+- [Installation](docs/installation.md) — repository entries, the licence, config, asset publishing, the prefix
 - [Getting started](docs/getting-started.md) — the browser and your first REST call
 - [Configuration](docs/configuration.md) — every config key and what it changes
 - [Environment variables](docs/environment.md) — the `ICHAVA_BROWSER_*` surface
