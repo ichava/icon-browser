@@ -78,6 +78,8 @@ The keys are `session`, `bootstrap`, `status`; `icons.list`, `.show`, `.svg`, `.
 
 The `ichava` prop also carries `schemaVersion`, `locale` (the host's `app()->getLocale()`), `modes`, `account` (the sign-in links) and `storage`.
 
+The browser page reads both props: `browserConfig` (`resources/js/core/appConfig.ts`) passes `auth` and `ichava` to react-icon-browser's `hostConfigFromProps`, so the vendored browser signs in as the host user, links to its sign-in and sign-out routes, and renders only the features the manifest turns on. A REST client of the browser (any page outside this package) reads every URL from `api.endpoints` instead.
+
 ## Routes
 
 `routes.middleware` is appended to every browser route group and `routes.domain` mounts the browser on one domain. The `/{prefix}` redirect exists only while the Inertia pages are on.

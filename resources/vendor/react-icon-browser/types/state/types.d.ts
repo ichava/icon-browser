@@ -1,6 +1,6 @@
 import type { CopyFormat, SizeUnit, SortKey, Theme, Treatment, Scale, Density, ViewMode } from '../core/types';
 import type { Catalog } from '../modules/catalog';
-import type { Filters, IconId } from '@ichava/js-ui-kernel';
+import type { Filters, IconId, IconKind } from '@ichava/js-ui-kernel';
 import type { AppConfig } from '../core/config';
 import type { IconFilters } from '../modules/catalog';
 import type { Collection, HistoryEntry, TeamRef } from '../modules/library';
@@ -10,15 +10,22 @@ export type LibTab = 'favorites' | 'history' | 'collections';
 export type Plan = 'FREE' | 'PRO' | 'TEAM';
 export type AuthStatus = 'guest' | 'authed';
 export type AuthView = null | 'signin' | 'create' | 'signout';
-export type DevToolsTab = 'events' | 'state' | 'storage' | 'tests' | 'logs' | 'boot';
+export type DevToolsTab = 'events' | 'state' | 'storage' | 'tests' | 'logs' | 'boot' | 'status';
 /** The edge the DevTools drawer docks to. */
 export type DevToolsDock = 'bottom' | 'top' | 'left' | 'right';
 export type BootPhase = 'idle' | 'config' | 'catalog' | 'index' | 'hydrate' | 'ready';
 export interface AuthUser {
     name: string;
     initials: string;
+    /** Empty for a host user: a host never sends the email to the browser. */
     email: string;
-    plan: Plan;
+    /** The demo's tier badge; null for a host user. */
+    plan: Plan | null;
+    /** The host's user id, for a user the host signed in. */
+    id?: string;
+    avatarUrl?: string | null;
+    /** The host's Gates for this user. The UI checks abilities, never roles. */
+    abilities?: Readonly<Record<string, boolean>>;
 }
 export interface AppNotification {
     id: string;
@@ -115,6 +122,12 @@ export interface BrowserStore {
     /** expand every group + category-with-subs, or collapse all if already expanded. */
     toggleExpandAll: (allGroups: string[], allCatKeys: string[]) => void;
     resetFilters: () => void;
+    /** Icons or illustrations. Keeps the search; resets category, variant, tags and page. */
+    setKind: (k: IconKind) => void;
+    toggleTag: (tag: string) => void;
+    toggleKeyword: (keyword: string) => void;
+    /** Drop every tag and keyword filter. */
+    clearTerms: () => void;
     size: number;
     sizeUnit: SizeUnit;
     gridStroke: number;
@@ -141,6 +154,18 @@ export interface BrowserStore {
     removeCollection: (id: string) => void;
     addToCollection: (collId: string, iconId: IconId) => void;
     removeFromCollection: (collId: string, iconId: IconId) => void;
+    /** Command-palette recents: the ids of actions run, newest first. */
+    recentCommands: string[];
+    /** Record a palette action as run (a host keeps the command history on the server). */
+    logCommand: (id: string, type?: 'action' | 'search' | 'navigation') => void;
+    clearRecentCommands: () => void;
+    /**
+     * Counts "Delete my library" requests. A host's library sync sends one server delete
+     * when it moves, rather than replaying a delete per favourite and collection.
+     */
+    libraryDeletions: number;
+    /** "Delete my library": every favourite and collection, here and on the host. */
+    deleteLibrary: () => void;
     layer: Layer;
     detailId: IconId | null;
     libTab: LibTab;

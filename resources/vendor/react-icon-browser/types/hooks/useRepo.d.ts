@@ -1,6 +1,8 @@
 import { CatalogIndex as IconRepository } from '../modules/catalog';
 import type { CategoryGroup } from '../modules/catalog';
-import type { PageResult, Icon } from '@ichava/js-ui-kernel';
+import type { IconKind } from '@ichava/js-ui-kernel';
+import { type ListedPage } from '../core/api/ApiClient';
+import type { PackageMeta, VariantMeta } from '../core/api/ApiClient';
 /**
  * The single derived-data boundary, for BOTH modes.
  *
@@ -24,12 +26,18 @@ import type { PageResult, Icon } from '@ichava/js-ui-kernel';
  */
 export declare function useRepo(): {
     repo: IconRepository | null;
-    page: PageResult<Icon>;
+    page: ListedPage;
     tree: CategoryGroup[];
     variantCounts: Map<string, number>;
+    /** Icons per kind over the other filters, for the Icons | Illustrations switch. */
+    kindCounts: Record<IconKind, number> | null;
+    /** The packs to list: the static catalog's, or a REST host's (empty until loaded). */
+    packages: PackageMeta[];
+    /** Each pack's variants with labels and descriptions; a REST host's, empty in static mode. */
+    variantsByPackage: Readonly<Record<string, VariantMeta[]>>;
     catalog: import("@ichava/js-ui-kernel").Catalog | null;
     /** `null` in static mode. Pass to `useResolvedIcons` / call directly for REST-only needs. */
-    client: import("..").IconCatalog | null;
+    client: import("../core/api/ApiClient").IconCatalog | null;
     loading: boolean;
     error: unknown;
 };

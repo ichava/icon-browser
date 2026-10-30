@@ -1,6 +1,6 @@
 import type { AppConfig } from './store';
 import type { Catalog } from './modules/catalog';
-import type { IconCatalog } from './core/api/ApiClient';
+import { type IconCatalog } from './core/api/ApiClient';
 import { type Locale } from './core/i18n';
 import type { BrowserStoreHook } from './store';
 export interface IchavaBrowserProps {

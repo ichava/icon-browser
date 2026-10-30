@@ -47,8 +47,18 @@ describe('diffLibrary', () => {
       { kind: 'collection.rename', id: '1', name: 'Interface' },
       { kind: 'collection.add', id: '1', iconId: 5 },
       { kind: 'collection.remove', id: '1', iconId: 1 },
-      { kind: 'collection.create', name: 'Brand' },
+      // react-icon-browser's diff names the provisional id the collection was created under.
+      { kind: 'collection.create', id: 'c-new', name: 'Brand' },
       { kind: 'collection.delete', id: '2' },
     ]);
+  });
+});
+
+describe('diffLibrary, from react-icon-browser', () => {
+  it('reports command recents and "Delete my library"', () => {
+    expect(diffLibrary(view({ recentCommands: [] }), view({ recentCommands: ['theme'] }))).toEqual([{ kind: 'command.log', command: 'theme' }]);
+    expect(diffLibrary(view({ recentCommands: ['theme'] }), view({ recentCommands: [] }))).toEqual([{ kind: 'command.clear' }]);
+    const full = view({ favorites: [1], collections: [{ id: '5', name: 'UI', icons: [1] }], libraryDeletions: 0 });
+    expect(diffLibrary(full, view({ libraryDeletions: 1 }))).toEqual([{ kind: 'library.delete' }]);
   });
 });

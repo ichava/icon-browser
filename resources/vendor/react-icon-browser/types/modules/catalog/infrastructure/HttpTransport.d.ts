@@ -65,7 +65,7 @@ type TransportPatch = Partial<Omit<TransportConfig, 'csrf'>> & {
  * configuration changed, so a configured transport can be shared and specialised without
  * one caller's change reaching another's requests.
  *
- *   const transport = new HttpTransport().with({ baseUrl: '/admin/ichava/api', csrf: { strategy: 'cookie' } });
+ *   const transport = new HttpTransport().with({ baseUrl: '/admin/ichava/api/v1', csrf: { strategy: 'cookie' } });
  */
 export declare class HttpTransport {
     #private;

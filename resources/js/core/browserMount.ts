@@ -1,9 +1,9 @@
 import { browser, CONFIG_DEFAULTS, resolveConfig, type BrowserStoreHook, type Collection, type HistoryEntry, type IchavaBrowserProps, type IconId } from '@/lib/browser';
 import { InertiaCatalog, type BrowserSnapshot, type VisitFn } from '@/core/InertiaCatalog';
-import { appConfig } from '@/core/appConfig';
+import { browserConfig } from '@/core/appConfig';
 import { CLIENT_VERBS } from '@/core/libraryDiff';
 import { applySeed, type AppliedFilters } from '@/hooks/useFilterSync';
-import type { IchavaShared } from '@/types';
+import type { AuthUser, IchavaShared } from '@/types';
 
 /** Server collection rows (`icon_ids` plus resolved icons). */
 export interface ServerCollection {
@@ -32,7 +32,8 @@ export interface LibraryPayload {
 export type BrowserPageProps = BrowserSnapshot &
   LibraryPayload & {
     appliedFilters?: AppliedFilters | unknown[] | null;
-    ichava?: Pick<IchavaShared, 'ui'> | null;
+    ichava?: Partial<IchavaShared> | null;
+    auth?: AuthUser | null;
   };
 
 /** One browser mount for one Inertia page: its data client, its store and its props. */
@@ -114,7 +115,8 @@ export function createBrowserMount(page: BrowserPageProps, opts: { url: string; 
 
   const built = browser()
     .rest(client)
-    .config(resolveConfig(appConfig(page.ichava)))
+    // This package's own config, merged with the host's user and features manifest.
+    .config(resolveConfig(browserConfig(page)))
     .persist(CONFIG_DEFAULTS.storageKeys.persist)
     .toProps();
 

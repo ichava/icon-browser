@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { renderHook } from '@testing-library/react';
 import { createBrowserMount, hydrateLibrary } from '@/core/browserMount';
 import type { VisitFn } from '@/core/InertiaCatalog';
-import { useLibrarySync } from './useLibrarySync';
+import { libraryOps, useLibrarySync } from './useLibrarySync';
 import type { useInertiaMutations } from './useInertiaMutations';
 
 type Mutations = ReturnType<typeof useInertiaMutations>;
@@ -20,6 +20,8 @@ const mutations = () =>
     addToCollection: vi.fn(),
     removeFromCollection: vi.fn(),
     clearHistory: vi.fn(),
+    clearCommands: vi.fn(),
+    deleteLibrary: vi.fn(),
     clearCache: vi.fn(),
     rebuildCache: vi.fn(),
   }) as unknown as Mutations & Record<string, ReturnType<typeof vi.fn>>;
@@ -84,4 +86,33 @@ describe('useLibrarySync', () => {
     store.getState().toggleFavorite(9);
     expect(m.addFavorite).not.toHaveBeenCalled();
   });
+
+  it('sends command-palette recents to the command-history route', () => {
+    const { store } = mount();
+    const m = mutations();
+    renderHook(() => useLibrarySync(store, m));
+
+    store.getState().logCommand('theme');
+    expect(m.logCommand).toHaveBeenCalledWith('theme', 'action');
+    store.getState().clearRecentCommands();
+    expect(m.clearCommands).toHaveBeenCalledTimes(1);
+  });
+
+  it('sends "Delete my library" as one request, not a delete per favourite and collection', () => {
+    const { store } = mount();
+    const m = mutations();
+    renderHook(() => useLibrarySync(store, m));
+
+    store.getState().deleteLibrary();
+    expect(m.deleteLibrary).toHaveBeenCalledTimes(1);
+    expect(m.removeFavorite).not.toHaveBeenCalled();
+    expect(m.deleteCollection).not.toHaveBeenCalled();
+  });
+
+  it('creates a new collection empty: its provisional id is not the server one', () => {
+    const prev = { favorites: [], history: [], collections: [], recentCommands: [], libraryDeletions: 0 };
+    const next = { ...prev, collections: [{ id: 'c-tmp', name: 'Brand', icons: [3, 4] }] };
+    expect(libraryOps(prev, next)).toEqual([{ kind: 'collection.create', id: 'c-tmp', name: 'Brand' }]);
+  });
 });
+

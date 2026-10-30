@@ -1,4 +1,5 @@
-import type { Icon, IconId, ListParams, PageResult } from '@ichava/js-ui-kernel';
+import type { Icon, IconId, PageResult } from '@ichava/js-ui-kernel';
+import type { ListParams } from '../domain/listParams';
 /** The part of a catalog source this needs: the paginated listing every source offers. */
 export interface IconLister {
     listIcons(params: ListParams): Promise<PageResult<Icon>>;

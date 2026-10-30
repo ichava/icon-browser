@@ -1,4 +1,5 @@
-import type { ListParams } from '@ichava/js-ui-kernel';
+import type { IconKind } from '@ichava/js-ui-kernel';
+import type { ListParams } from './listParams';
 export type SortKey = 'name' | 'package' | 'category';
 export type SortOrder = 'asc' | 'desc';
 /** The browser's filter state: what the user has chosen to search, filter and page by. */
@@ -13,6 +14,15 @@ export interface IconFilters {
     sortOrder: SortOrder;
     page: number;
     perPage: number;
+    /**
+     * The top-level kind the grid shows: `icon` or `illustration`. Absent (filters saved
+     * before kinds existed) reads as no kind filter.
+     */
+    kind?: IconKind;
+    /** Tags an icon must carry, all of them (set from an icon's detail). */
+    tags?: string[];
+    /** Keywords an icon must carry, all of them. */
+    keywords?: string[];
 }
 /**
  * The filter state as an immutable value object (architecture.md 3.4).
@@ -48,6 +58,14 @@ export declare class IconQuery {
     /** The previous page, never below 1. */
     prevPage(): IconQuery;
     perPage(n: number): IconQuery;
+    /**
+     * Switch between icons and illustrations. Keeps the search; the category, variant,
+     * tag and keyword choices belong to the other kind, so they reset, and so does the page.
+     */
+    kind(kind: IconKind): IconQuery;
+    toggleTag(tag: string): IconQuery;
+    toggleKeyword(keyword: string): IconQuery;
+    clearTerms(): IconQuery;
     /** Back to `defaults`, keeping the packages the user chose. */
     reset(defaults: IconFilters): IconQuery;
     /** The plain filter state, as the store holds and persists it. */

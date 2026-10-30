@@ -1,4 +1,5 @@
 import type { CopyFormat, Scale as ScaleT, SnippetConfig } from './types';
+import type { HostContext } from '../modules/host/domain/HostContext';
 export type { ScaleT };
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error' | 'silent';
 export type AppEnv = 'production' | 'development';
@@ -37,6 +38,28 @@ export interface FeatureFlags {
      * substitute for the host's own auth or data.
      */
     demo: boolean;
+    favorites: boolean;
+    /** Command-palette recents. */
+    commands: boolean;
+    /** The server-side library as a whole: "Delete my library". */
+    library: boolean;
+    /** Preferences kept by the host (reset from Settings). */
+    preferences: boolean;
+    /** The admin status panel (`ichava.admin`). */
+    status: boolean;
+    /** Cache stats, clear and rebuild (`ichava.manage-cache`). */
+    cacheAdmin: boolean;
+    /** The Icons | Illustrations switch; it also needs at least one illustration. */
+    illustrations: boolean;
+    /** Search in the reader's language (PostgreSQL hosts). */
+    searchLanguage: boolean;
+    export: boolean;
+    /** The light/dark control. */
+    themeToggle: boolean;
+    invites: boolean;
+    sharing: boolean;
+    notifications: boolean;
+    workspaces: boolean;
 }
 export interface AppConfig {
     meta: {
@@ -199,6 +222,12 @@ export interface AppConfig {
         locale: string;
         consent?: string;
     };
+    /**
+     * The host application this browser runs in, when it runs in one: its user, features
+     * manifest, endpoints and sign-in links (`hostConfig` / `hostConfigFromProps`). Null
+     * for the standalone app.
+     */
+    host: HostContext | null;
     /** @ichava/bootsplash config block (Part D). Framework-agnostic; passed to .config(). */
     boot: Record<string, unknown>;
     /** The icon dialog's snippet tabs: order, labels, templates, class (see `SnippetConfig`). */
