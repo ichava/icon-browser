@@ -34,6 +34,11 @@ class IconResource extends JsonResource
             'package' => $icon->package,
             'name'    => $icon->name,
 
+            // What the SVG is (`icon` or `illustration`) and the theme twins it
+            // carries (e.g. `dark`), served through the same sanitiser.
+            'kind'   => $icon->kind->value,
+            'themes' => $icon->themes(),
+
             // Category & Variant (from relationships)
             'category' => $icon->primary_category?->slug,
             'variant'  => $icon->primary_variant?->slug,

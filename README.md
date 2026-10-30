@@ -63,6 +63,16 @@ The docs live in this repository, under [`docs/`](docs/).
 ### Reference
 
 - [API endpoints](docs/tools/api-endpoints.md) — every route, its parameters and its shape
+- [Host integration](docs/tools/host-integration.md) — the host's user, Gates, the owner-keyed library, the features manifest, the install command
+- [Payload schema](docs/tools/payload-schema.md) — the JSON Schema every payload matches
+
+### Recipes
+
+- [Add to a Breeze app](docs/recipes/add-to-a-breeze-app.md) — the browser behind the host's login
+- [Use with a Sanctum SPA](docs/recipes/use-with-sanctum-spa.md) — the REST API for an SPA
+- [REST mode in a non-Inertia app](docs/recipes/rest-mode.md) — the API without the Inertia pages
+- [Grant admin access](docs/recipes/grant-admin-access.md) — one Gate for status and the cache
+- [Turn features off](docs/recipes/turn-features-off.md) — hide what the host does not offer
 
 ### Ecosystem
 

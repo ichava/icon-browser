@@ -22,6 +22,12 @@
         <testsuite name="Prefixed">
             <directory>tests/Prefixed</directory>
         </testsuite>
+        <testsuite name="Configured">
+            <directory>tests/Configured</directory>
+        </testsuite>
+        <testsuite name="Headless">
+            <directory>tests/Headless</directory>
+        </testsuite>
     </testsuites>
     <source>
         <include>

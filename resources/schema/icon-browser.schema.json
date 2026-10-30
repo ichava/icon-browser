@@ -1,0 +1,1560 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/ichava/icon-browser/resources/schema/icon-browser.schema.json",
+  "title": "ichava/icon-browser payloads",
+  "description": "Every REST resource, session and bootstrap document, and Inertia prop this package serves. Version 1.0.0, matching PayloadSchema::VERSION. react-icon-browser generates its types from this file.",
+  "version": "1.0.0",
+  "$defs": {
+    "user": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "avatarUrl": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "abilities": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "boolean"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "avatarUrl",
+        "abilities"
+      ],
+      "description": "The host's signed-in user as presented by core's UserData. Never carries email, password or tokens; extra keys only when the host lists them in ichava.ichava-core.auth.expose.",
+      "propertyNames": {
+        "not": {
+          "enum": [
+            "email",
+            "password",
+            "remember_token",
+            "two_factor_secret",
+            "two_factor_recovery_codes"
+          ]
+        }
+      }
+    },
+    "kind": {
+      "enum": [
+        "icon",
+        "illustration"
+      ]
+    },
+    "icon": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "package": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "kind": {
+          "$ref": "#/$defs/kind"
+        },
+        "themes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "category": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "variant": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "path": {
+          "type": "string"
+        },
+        "icon_path": {
+          "type": "string"
+        },
+        "file_path": {
+          "type": "string"
+        },
+        "svg_content": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "svg_url": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "viewbox": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "width": {
+          "type": [
+            "string",
+            "number",
+            "null"
+          ]
+        },
+        "height": {
+          "type": [
+            "string",
+            "number",
+            "null"
+          ]
+        },
+        "blade_clean": {
+          "type": "string"
+        },
+        "blade_generic": {
+          "type": "string"
+        },
+        "helper": {
+          "type": "string"
+        },
+        "set": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "package",
+        "name",
+        "kind",
+        "themes",
+        "category",
+        "variant",
+        "path",
+        "icon_path",
+        "file_path",
+        "svg_content",
+        "svg_url",
+        "viewbox",
+        "width",
+        "height",
+        "blade_clean",
+        "blade_generic",
+        "helper",
+        "set"
+      ],
+      "description": "One icon, as IconResource (REST) and IconSnippets::transform (Inertia) send it."
+    },
+    "iconResource": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/icon"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "tags": {
+              "type": "array",
+              "items": {}
+            },
+            "keywords": {
+              "type": "array",
+              "items": {}
+            },
+            "created_at": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "updated_at": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "tags",
+            "keywords",
+            "created_at",
+            "updated_at"
+          ]
+        }
+      ]
+    },
+    "emptyReason": {
+      "enum": [
+        "no_match",
+        "no_icons",
+        null
+      ]
+    },
+    "iconList": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": [
+            "array",
+            "object"
+          ]
+        },
+        "meta": {
+          "type": "object",
+          "properties": {
+            "has_search": {
+              "type": "boolean"
+            },
+            "has_filters": {
+              "type": "boolean"
+            },
+            "empty_reason": {
+              "$ref": "#/$defs/emptyReason"
+            },
+            "group_by": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "has_search",
+            "has_filters",
+            "empty_reason",
+            "group_by"
+          ]
+        }
+      },
+      "required": [
+        "data",
+        "meta"
+      ],
+      "description": "GET {prefix}/api/icons. data is the page of iconResource items (with a grouped map beside them)."
+    },
+    "package": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "count": {
+          "type": "integer"
+        },
+        "description": {
+          "type": "string"
+        },
+        "vendor": {
+          "type": "string"
+        },
+        "kind": {
+          "$ref": "#/$defs/kind"
+        },
+        "default": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "name",
+        "label",
+        "count"
+      ]
+    },
+    "facet": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "count": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "name",
+        "count"
+      ]
+    },
+    "filters": {
+      "type": "object",
+      "properties": {
+        "packages": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/package"
+          }
+        },
+        "categories": {
+          "type": "array",
+          "items": {}
+        },
+        "variants": {
+          "type": "array",
+          "items": {}
+        },
+        "variants_by_package": {
+          "type": [
+            "array",
+            "object"
+          ]
+        },
+        "kinds": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/facet"
+          }
+        },
+        "empty": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "packages",
+        "categories",
+        "variants",
+        "kinds"
+      ],
+      "description": "GET {prefix}/api/icons/filters and the Inertia filterOptions prop; counts are scoped by the other filters."
+    },
+    "statistics": {
+      "type": "object",
+      "properties": {
+        "total": {
+          "type": "object",
+          "properties": {
+            "icons": {
+              "type": "integer"
+            },
+            "packages": {
+              "type": "integer"
+            },
+            "categories": {
+              "type": "integer"
+            },
+            "variants": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "icons",
+            "packages",
+            "categories",
+            "variants"
+          ]
+        },
+        "by_kind": {
+          "type": "object",
+          "properties": {
+            "icon": {
+              "type": "integer"
+            },
+            "illustration": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "icon",
+            "illustration"
+          ]
+        },
+        "empty": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "total",
+        "by_kind"
+      ]
+    },
+    "collection": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "color": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "icon_ids": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "created_at": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "icon_ids"
+      ]
+    },
+    "historyEntry": {
+      "type": "object",
+      "properties": {
+        "icon_id": {
+          "type": "integer"
+        },
+        "action": {
+          "enum": [
+            "view",
+            "copy",
+            "download"
+          ]
+        },
+        "timestamp": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "icon_id",
+        "action",
+        "timestamp"
+      ]
+    },
+    "command": {
+      "type": "object",
+      "properties": {
+        "command": {
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "action",
+            "search",
+            "navigation"
+          ]
+        },
+        "metadata": {
+          "type": [
+            "array",
+            "object"
+          ]
+        },
+        "timestamp": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "command",
+        "type",
+        "timestamp"
+      ]
+    },
+    "library": {
+      "type": "object",
+      "properties": {
+        "favorites": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "collections": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/collection"
+          }
+        },
+        "history": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/historyEntry"
+          }
+        },
+        "commandHistory": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/command"
+          }
+        }
+      },
+      "required": [
+        "favorites",
+        "collections",
+        "history",
+        "commandHistory"
+      ],
+      "description": "GET {prefix}/api/library: everything the current owner keeps."
+    },
+    "links": {
+      "type": "object",
+      "properties": {
+        "login": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "logout": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "login",
+        "logout"
+      ],
+      "additionalProperties": false
+    },
+    "session": {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "type": "string"
+        },
+        "authenticated": {
+          "type": "boolean"
+        },
+        "user": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/user"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "tier": {
+          "enum": [
+            "browser",
+            "session",
+            "database"
+          ]
+        },
+        "persistent": {
+          "type": "boolean"
+        },
+        "links": {
+          "$ref": "#/$defs/links"
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "authenticated",
+        "user",
+        "tier",
+        "persistent",
+        "links"
+      ],
+      "additionalProperties": false,
+      "description": "GET {prefix}/api/session."
+    },
+    "feature": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "reason": {
+          "enum": [
+            "config",
+            "gate",
+            "driver",
+            "empty",
+            null
+          ]
+        },
+        "endpoints": {
+          "type": [
+            "object",
+            "array"
+          ],
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "enabled",
+        "reason",
+        "endpoints"
+      ],
+      "additionalProperties": false
+    },
+    "features": {
+      "type": "object",
+      "properties": {
+        "favorites": {
+          "$ref": "#/$defs/feature"
+        },
+        "collections": {
+          "$ref": "#/$defs/feature"
+        },
+        "history": {
+          "$ref": "#/$defs/feature"
+        },
+        "commands": {
+          "$ref": "#/$defs/feature"
+        },
+        "library": {
+          "$ref": "#/$defs/feature"
+        },
+        "preferences": {
+          "$ref": "#/$defs/feature"
+        },
+        "status": {
+          "$ref": "#/$defs/feature"
+        },
+        "cacheAdmin": {
+          "$ref": "#/$defs/feature"
+        },
+        "illustrations": {
+          "$ref": "#/$defs/feature"
+        },
+        "searchLanguage": {
+          "$ref": "#/$defs/feature"
+        },
+        "export": {
+          "$ref": "#/$defs/feature"
+        },
+        "motion": {
+          "$ref": "#/$defs/feature"
+        },
+        "themeToggle": {
+          "$ref": "#/$defs/feature"
+        },
+        "presence": {
+          "$ref": "#/$defs/feature"
+        },
+        "invites": {
+          "$ref": "#/$defs/feature"
+        },
+        "sharing": {
+          "$ref": "#/$defs/feature"
+        },
+        "notifications": {
+          "$ref": "#/$defs/feature"
+        },
+        "workspaces": {
+          "$ref": "#/$defs/feature"
+        }
+      },
+      "required": [
+        "favorites",
+        "collections",
+        "history",
+        "commands",
+        "library",
+        "preferences",
+        "status",
+        "cacheAdmin",
+        "illustrations",
+        "searchLanguage",
+        "export",
+        "motion",
+        "themeToggle",
+        "presence",
+        "invites",
+        "sharing",
+        "notifications",
+        "workspaces"
+      ],
+      "additionalProperties": false,
+      "description": "The features manifest: per feature, enabled, why not, and its endpoints."
+    },
+    "modes": {
+      "type": "object",
+      "properties": {
+        "inertia": {
+          "type": "boolean"
+        },
+        "api": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "inertia",
+        "api"
+      ],
+      "additionalProperties": false
+    },
+    "bootstrap": {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "type": "string"
+        },
+        "locale": {
+          "type": "string"
+        },
+        "modes": {
+          "$ref": "#/$defs/modes"
+        },
+        "session": {
+          "$ref": "#/$defs/session"
+        },
+        "features": {
+          "$ref": "#/$defs/features"
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "locale",
+        "modes",
+        "session",
+        "features"
+      ],
+      "additionalProperties": false,
+      "description": "GET {prefix}/api/bootstrap."
+    },
+    "status": {
+      "type": "object",
+      "properties": {
+        "lifecycle": {},
+        "registry": {
+          "type": "object",
+          "properties": {
+            "packages": {
+              "type": "integer"
+            },
+            "conflicts": {
+              "type": "array",
+              "items": {}
+            }
+          },
+          "required": [
+            "packages",
+            "conflicts"
+          ]
+        },
+        "orphans": {
+          "type": "array",
+          "items": {}
+        },
+        "discovery": {
+          "type": "object"
+        },
+        "watcher": {
+          "type": "object",
+          "properties": {
+            "lastScan": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "lastScan"
+          ]
+        },
+        "logging": {
+          "type": "object"
+        },
+        "cache": {
+          "type": "object",
+          "properties": {
+            "lastRebuild": {
+              "type": [
+                "object",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "lastRebuild"
+          ]
+        },
+        "render": {
+          "type": "object",
+          "properties": {
+            "optimizationLevel": {
+              "type": "string"
+            },
+            "fingerprint": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "optimizationLevel",
+            "fingerprint"
+          ]
+        }
+      },
+      "required": [
+        "lifecycle",
+        "registry",
+        "orphans",
+        "discovery",
+        "watcher",
+        "logging",
+        "cache",
+        "render"
+      ],
+      "description": "GET {prefix}/api/status (ichava.admin) and the Stats page status prop: core's StatusData."
+    },
+    "preferences": {
+      "type": "object",
+      "properties": {
+        "filters": {
+          "type": "object"
+        },
+        "sorting": {
+          "type": "object"
+        },
+        "preferences": {
+          "type": "object"
+        },
+        "tree": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "filters",
+        "sorting",
+        "preferences"
+      ]
+    },
+    "ichava": {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "type": "string"
+        },
+        "locale": {
+          "type": "string"
+        },
+        "modes": {
+          "$ref": "#/$defs/modes"
+        },
+        "features": {
+          "$ref": "#/$defs/features"
+        },
+        "account": {
+          "$ref": "#/$defs/links"
+        },
+        "storage": {
+          "type": "object",
+          "properties": {
+            "tier": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "persistent": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "tier",
+            "persistent"
+          ]
+        },
+        "prefix": {
+          "type": "string"
+        },
+        "perPage": {
+          "type": "integer"
+        },
+        "defaultTheme": {
+          "type": "string"
+        },
+        "ui": {
+          "type": "object",
+          "properties": {
+            "version": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "license": {
+              "type": "string"
+            },
+            "docsUrl": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "links": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "label": {
+                    "type": "string"
+                  },
+                  "href": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "label",
+                  "href"
+                ]
+              }
+            },
+            "themeToggle": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "version",
+            "license",
+            "docsUrl",
+            "links",
+            "themeToggle"
+          ]
+        },
+        "snippets": {
+          "type": [
+            "object",
+            "array"
+          ]
+        },
+        "routes": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "locale",
+        "modes",
+        "features",
+        "account",
+        "storage",
+        "prefix",
+        "perPage",
+        "defaultTheme",
+        "ui",
+        "snippets",
+        "routes"
+      ],
+      "description": "The ichava Inertia prop, shared with every page."
+    },
+    "sharedProps": {
+      "type": "object",
+      "properties": {
+        "auth": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/user"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "flash": {
+          "type": "object",
+          "properties": {
+            "success": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "error": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "success",
+            "error"
+          ]
+        },
+        "preferences": {
+          "type": "object"
+        },
+        "ichava": {
+          "$ref": "#/$defs/ichava"
+        }
+      },
+      "required": [
+        "auth",
+        "flash",
+        "preferences",
+        "ichava"
+      ],
+      "description": "Props HandleInertiaRequests shares with every page."
+    },
+    "appliedFilters": {
+      "type": "object",
+      "properties": {
+        "search": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "language": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "packages": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "kind": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/kind"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "categories": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "subs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "variants": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "keywords": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "sort_by": {
+          "type": "string"
+        },
+        "sort_direction": {
+          "enum": [
+            "asc",
+            "desc"
+          ]
+        },
+        "page": {
+          "type": "integer"
+        },
+        "per_page": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "search",
+        "language",
+        "packages",
+        "kind",
+        "categories",
+        "subs",
+        "variants",
+        "tags",
+        "keywords",
+        "sort_by",
+        "sort_direction",
+        "page",
+        "per_page"
+      ]
+    },
+    "browserPage": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/sharedProps"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "icons": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/icon"
+              }
+            },
+            "pagination": {
+              "type": "object",
+              "properties": {
+                "total": {
+                  "type": "integer"
+                },
+                "per_page": {
+                  "type": "integer"
+                },
+                "current_page": {
+                  "type": "integer"
+                },
+                "last_page": {
+                  "type": "integer"
+                },
+                "from": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                },
+                "to": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                },
+                "empty_reason": {
+                  "$ref": "#/$defs/emptyReason"
+                }
+              },
+              "required": [
+                "total",
+                "per_page",
+                "current_page",
+                "last_page",
+                "from",
+                "to",
+                "empty_reason"
+              ]
+            },
+            "appliedFilters": {
+              "$ref": "#/$defs/appliedFilters"
+            },
+            "filterOptions": {
+              "$ref": "#/$defs/filters"
+            },
+            "statistics": {
+              "$ref": "#/$defs/statistics"
+            },
+            "tree": {
+              "type": "array",
+              "items": {}
+            },
+            "packages": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/package"
+              }
+            },
+            "favorites": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            },
+            "collections": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/collection"
+              }
+            },
+            "history": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/historyEntry"
+              }
+            },
+            "commandHistory": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/command"
+              }
+            }
+          },
+          "required": [
+            "icons",
+            "pagination",
+            "appliedFilters",
+            "filterOptions",
+            "statistics",
+            "tree",
+            "packages",
+            "favorites",
+            "collections",
+            "history",
+            "commandHistory"
+          ]
+        }
+      ],
+      "description": "Props of the Browser/Index Inertia page."
+    },
+    "statsPage": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/sharedProps"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "statistics": {
+              "type": "object"
+            },
+            "packageStats": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "icon_count": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "name",
+                  "icon_count"
+                ]
+              }
+            },
+            "topCategories": {
+              "type": "array",
+              "items": {}
+            },
+            "cacheStats": {
+              "type": [
+                "object",
+                "array"
+              ]
+            },
+            "cacheHealthy": {
+              "type": "boolean"
+            },
+            "updateStatus": {
+              "type": [
+                "object",
+                "array"
+              ]
+            },
+            "status": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/status"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "statistics",
+            "packageStats",
+            "topCategories",
+            "cacheStats",
+            "cacheHealthy",
+            "updateStatus",
+            "status"
+          ]
+        }
+      ],
+      "description": "Props of the Stats/Index Inertia page."
+    },
+    "sessionResponse": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "const": true
+        },
+        "data": {
+          "$ref": "#/$defs/session"
+        },
+        "message": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "success",
+        "data"
+      ]
+    },
+    "bootstrapResponse": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "const": true
+        },
+        "data": {
+          "$ref": "#/$defs/bootstrap"
+        },
+        "message": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "success",
+        "data"
+      ]
+    },
+    "statusResponse": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "const": true
+        },
+        "data": {
+          "$ref": "#/$defs/status"
+        },
+        "message": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "success",
+        "data"
+      ]
+    },
+    "libraryResponse": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "const": true
+        },
+        "data": {
+          "$ref": "#/$defs/library"
+        },
+        "message": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "success",
+        "data"
+      ]
+    },
+    "iconResponse": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "const": true
+        },
+        "data": {
+          "$ref": "#/$defs/iconResource"
+        }
+      },
+      "required": [
+        "success",
+        "data"
+      ]
+    },
+    "statisticsResponse": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "const": true
+        },
+        "data": {
+          "$ref": "#/$defs/statistics"
+        },
+        "message": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "success",
+        "data"
+      ]
+    },
+    "packagesResponse": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "const": true
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/package"
+          }
+        },
+        "message": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "success",
+        "data"
+      ]
+    },
+    "favoritesResponse": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "const": true
+        },
+        "data": {
+          "type": "object",
+          "properties": {
+            "ids": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            },
+            "icons": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "package": {
+                    "type": "string"
+                  },
+                  "svg_url": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "name",
+                  "package",
+                  "svg_url"
+                ]
+              }
+            },
+            "count": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "ids",
+            "icons",
+            "count"
+          ]
+        },
+        "message": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "success",
+        "data"
+      ]
+    },
+    "collectionsResponse": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "const": true
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/collection"
+          }
+        },
+        "message": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "success",
+        "data"
+      ]
+    },
+    "historyResponse": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "const": true
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/historyEntry"
+          }
+        },
+        "message": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "success",
+        "data"
+      ]
+    },
+    "commandHistoryResponse": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "const": true
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/command"
+          }
+        },
+        "message": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "success",
+        "data"
+      ]
+    },
+    "preferencesResponse": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "const": true
+        },
+        "data": {
+          "$ref": "#/$defs/preferences"
+        }
+      },
+      "required": [
+        "success",
+        "data"
+      ]
+    }
+  }
+}

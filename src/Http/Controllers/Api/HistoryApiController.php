@@ -10,7 +10,10 @@ use Illuminate\Http\JsonResponse;
 use Simtabi\Laranail\Ichava\Models\Icon;
 use Illuminate\Validation\ValidationException;
 use Simtabi\Laranail\Ichava\Services\IchavaLogger;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Simtabi\Laranail\Ichava\Services\IconPreferenceService;
+use Simtabi\Laranail\Ichava\IconBrowser\Actions\Library\ClearHistory;
+use Simtabi\Laranail\Ichava\IconBrowser\Actions\Library\RecordHistory;
 
 /**
  * HistoryApiController - RESTful API for Icon Activity History
@@ -20,6 +23,8 @@ final class HistoryApiController extends BaseApiController
     public function __construct(
         IchavaLogger $logger,
         protected IconPreferenceService $preferenceService,
+        private readonly RecordHistory $recordHistory,
+        private readonly ClearHistory $clearHistory,
     ) {
         parent::__construct($logger);
     }
@@ -60,15 +65,11 @@ final class HistoryApiController extends BaseApiController
         try {
             $validated = $request->validate([
                 'icon_id' => 'required|integer',
-                'action'  => 'required|string|in:view,copy,download',
+                'action'  => 'required|string|in:' . implode(',', RecordHistory::ACTIONS),
             ]);
             /** @var array{icon_id: int|string, action: string} $validated */
-            if (! $this->iconExists((int) $validated['icon_id'])) {
-                return $this->notFoundResponse('Icon', $validated['icon_id']);
-            }
-
-            $this->preferenceService->addHistoryEntry(
-                (int) $validated['icon_id'],
+            $this->recordHistory->handle(
+                $this->findIconOrFail((int) $validated['icon_id']),
                 $validated['action'],
             );
 
@@ -83,6 +84,8 @@ final class HistoryApiController extends BaseApiController
             );
         } catch (ValidationException $e) {
             return $this->handleValidationException($e);
+        } catch (ModelNotFoundException $e) {
+            return $this->handleNotFoundException($e, 'Icon');
         } catch (Exception $e) {
             return $this->handleException($e, 'Failed to log history entry');
         }
@@ -94,7 +97,7 @@ final class HistoryApiController extends BaseApiController
     public function clear(): JsonResponse
     {
         try {
-            $this->preferenceService->clearHistory();
+            $this->clearHistory->handle();
 
             $this->logDebug('History cleared');
 

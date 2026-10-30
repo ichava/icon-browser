@@ -13,9 +13,11 @@ use Illuminate\Database\Query\JoinClause;
 use Symfony\Component\HttpFoundation\Response;
 use Simtabi\Laranail\Ichava\Services\IchavaLogger;
 use Simtabi\Laranail\Ichava\Services\IconRegistry;
+use Simtabi\Laranail\Ichava\Actions\UpdatePreferences;
 use Simtabi\Laranail\Ichava\Services\IconCacheService;
 use Simtabi\Laranail\Ichava\Exceptions\IchavaException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Simtabi\Laranail\Ichava\IconBrowser\Support\Helpers;
 use Simtabi\Laranail\Ichava\Services\IconBrowserService;
 use Simtabi\Laranail\Ichava\Services\IconPreferenceService;
 use Simtabi\Laranail\Ichava\IconBrowser\Support\CacheStatsPayload;
@@ -23,6 +25,7 @@ use Simtabi\Laranail\Ichava\IconBrowser\Http\Resources\IconResource;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Resources\IconCollection;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Requests\IconFilterRequest;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Middleware\IchavaApiSecurity;
+use Simtabi\Laranail\Ichava\IconBrowser\Actions\Preferences\ResetPreferences;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Requests\PreferenceFilterRequest;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Requests\PreferenceSearchRequest;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Requests\PreferenceUpdateRequest;
@@ -40,6 +43,8 @@ final class IconBrowserApiController extends BaseApiController
         protected IconBrowserService $browserService,
         protected IconCacheService $cacheService,
         protected IconPreferenceService $preferenceService,
+        private readonly UpdatePreferences $writePreferences,
+        private readonly ResetPreferences $resetToDefaults,
     ) {
         parent::__construct($logger);
     }
@@ -56,12 +61,7 @@ final class IconBrowserApiController extends BaseApiController
             ]);
 
             $paginator = $this->browserService->getIcons(
-                filters: [
-                    'search'     => $request->getSearch(),
-                    'packages'   => $request->getPackages(),
-                    'categories' => $request->getCategories(),
-                    'variants'   => $request->getVariants(),
-                ],
+                filters: $request->filters(),
                 page: $request->getPage(),
                 perPage: $request->getPerPage(),
                 sortBy: $request->getSortBy(),
@@ -91,6 +91,11 @@ final class IconBrowserApiController extends BaseApiController
                     'from'         => $paginator->firstItem(),
                     'to'           => $paginator->lastItem(),
                     'group_by'     => $groupBy,
+                    // Why an empty page is empty, so a client can say "no match"
+                    // rather than "no icons installed".
+                    'has_search'   => $request->hasSearch(),
+                    'has_filters'  => $request->hasFilters(),
+                    'empty_reason' => $request->emptyReason($paginator->total()),
                 ],
             ])->response();
         } catch (IchavaException $e) {
@@ -105,13 +110,15 @@ final class IconBrowserApiController extends BaseApiController
     /**
      * Get filter options
      */
-    public function filters(): JsonResponse
+    public function filters(IconFilterRequest $request): JsonResponse
     {
         try {
             $this->logDebug('Fetching filter options');
 
+            // Each facet is counted over what the other filters select; with no
+            // filters the counts stay corpus-wide (and cached) as before.
             /** @var array{packages?: array<mixed>, categories?: array<mixed>, variants?: array<mixed>} $filters */
-            $filters = $this->browserService->getFilters();
+            $filters = $this->browserService->getFilters($request->filters());
 
             $this->logDebug('Filter options retrieved', [
                 'packages_count'   => count($filters['packages'] ?? []),
@@ -151,12 +158,13 @@ final class IconBrowserApiController extends BaseApiController
     /**
      * Get hierarchical icon tree
      */
-    public function tree(): JsonResponse
+    public function tree(IconFilterRequest $request): JsonResponse
     {
         try {
             $this->logDebug('Building icon tree');
 
-            $tree = $this->browserService->buildIconTree();
+            // Counted over the current selection, so the tree agrees with the grid.
+            $tree = $this->browserService->buildIconTree($request->filters());
 
             $this->logDebug('Icon tree built', [
                 'tree_size' => count($tree),
@@ -623,7 +631,7 @@ final class IconBrowserApiController extends BaseApiController
             $this->logDebug('Fetching preferences');
 
             $preferences = $this->preferenceService->getAll();
-            $validated = $this->preferenceService->validate($preferences);
+            $validated = $this->preferenceService->validate(Helpers::stringKeyed($preferences));
 
             if ($validated !== $preferences) {
                 $this->preferenceService->update($validated);
@@ -651,9 +659,7 @@ final class IconBrowserApiController extends BaseApiController
                 'data' => $request->validated(),
             ]);
 
-            $preferences = $this->preferenceService->update($request->validated());
-            $cleaned = $this->preferenceService->validate($preferences);
-            $this->preferenceService->update($cleaned);
+            $cleaned = $this->writePreferences->handle(Helpers::stringKeyed($request->validated()));
 
             $this->logInfo('Preferences updated successfully');
 
@@ -680,7 +686,7 @@ final class IconBrowserApiController extends BaseApiController
                 'search' => $search,
             ]);
 
-            $this->preferenceService->setSearch($search);
+            $this->writePreferences->handle(['search' => $search]);
 
             return response()->json([
                 'success' => true,
@@ -706,9 +712,17 @@ final class IconBrowserApiController extends BaseApiController
                 'filters' => $request->validated(),
             ]);
 
-            $filters = $this->preferenceService->getFilters();
-            $filters = array_merge($filters, $request->validated());
-            $this->preferenceService->setFilters($filters);
+            $validated = Helpers::stringKeyed($request->validated());
+            $this->writePreferences->handle($validated);
+
+            // Core's action owns packages and categories; variants have no setter
+            // of their own there, so they are merged into the filters as before.
+            if (array_key_exists('variants', $validated)) {
+                $this->preferenceService->setFilters(array_merge(
+                    $this->preferenceService->getFilters(),
+                    ['variants' => $validated['variants']],
+                ));
+            }
 
             $this->logInfo('Filters updated successfully');
 
@@ -731,7 +745,7 @@ final class IconBrowserApiController extends BaseApiController
         try {
             $this->logInfo('Clearing preferences');
 
-            $defaults = $this->preferenceService->clear();
+            $defaults = $this->resetToDefaults->handle();
 
             $this->logInfo('Preferences cleared successfully');
 
@@ -813,29 +827,6 @@ final class IconBrowserApiController extends BaseApiController
 
             return $this->handleException($e, 'Failed to fetch cache stats');
         }
-    }
-
-    /**
-     * Return empty icon response
-     *
-     * @return array<string, mixed>
-     */
-    protected function emptyIconResponse(IconFilterRequest $request, string $error): array
-    {
-        return [
-            'data'    => [],
-            'grouped' => [],
-            'meta'    => [
-                'total'        => 0,
-                'per_page'     => $request->getPerPage(),
-                'current_page' => 1,
-                'last_page'    => 1,
-                'from'         => null,
-                'to'           => null,
-                'group_by'     => $request->getSortBy(),
-            ],
-            'error' => $error,
-        ];
     }
 
     /**

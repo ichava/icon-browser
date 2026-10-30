@@ -14,6 +14,12 @@ use Simtabi\Laranail\Ichava\Services\IchavaLogger;
 use Simtabi\Laranail\Ichava\Services\IconBrowserService;
 use Simtabi\Laranail\Ichava\Services\IconPreferenceService;
 use Simtabi\Laranail\Ichava\IconBrowser\Support\IconSnippets;
+use Simtabi\Laranail\Ichava\IconBrowser\Exceptions\CollectionNotFound;
+use Simtabi\Laranail\Ichava\IconBrowser\Actions\Library\CreateCollection;
+use Simtabi\Laranail\Ichava\IconBrowser\Actions\Library\DeleteCollection;
+use Simtabi\Laranail\Ichava\IconBrowser\Actions\Library\UpdateCollection;
+use Simtabi\Laranail\Ichava\IconBrowser\Actions\Library\AddIconToCollection;
+use Simtabi\Laranail\Ichava\IconBrowser\Actions\Library\RemoveIconFromCollection;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Controllers\Web\Concerns\ResolvesIconsForPages;
 
 final class CollectionController extends BaseInertiaController
@@ -25,6 +31,11 @@ final class CollectionController extends BaseInertiaController
         protected IconSnippets $iconSnippets,
         protected IconPreferenceService $preferenceService,
         IchavaLogger $logger,
+        private readonly CreateCollection $createCollection,
+        private readonly UpdateCollection $updateCollection,
+        private readonly DeleteCollection $deleteCollection,
+        private readonly AddIconToCollection $addIconToCollection,
+        private readonly RemoveIconFromCollection $removeIconFromCollection,
     ) {
         parent::__construct($logger);
     }
@@ -70,7 +81,7 @@ final class CollectionController extends BaseInertiaController
             'color' => 'nullable|string|regex:/^#[a-fA-F0-9]{6}$/',
         ]);
         /** @var array{name: string, color?: string|null} $validated */
-        $collection = $this->preferenceService->createCollection(
+        $collection = $this->createCollection->handle(
             $validated['name'],
             $validated['color'] ?? null,
         );
@@ -95,7 +106,12 @@ final class CollectionController extends BaseInertiaController
             'color' => 'nullable|string|regex:/^#[a-fA-F0-9]{6}$/',
         ]);
         /** @var array{name?: string, color?: string|null} $validated */
-        $this->preferenceService->updateCollection($id, $validated);
+        try {
+            $this->updateCollection->handle($id, $validated);
+        } catch (CollectionNotFound $e) {
+            return $this->collectionMissing($e);
+        }
+
         $this->logger->debug('Collection updated from web', ['collection_id' => $id]);
 
         return redirect()->back()->with('success', 'Collection updated successfully.');
@@ -103,13 +119,12 @@ final class CollectionController extends BaseInertiaController
 
     public function destroy(string $id): RedirectResponse
     {
-        if (! $this->preferenceService->getCollection($id)) {
-            return redirect()
-                ->route('ichava.inertia.collections.index')
-                ->with('error', "Collection [{$id}] not found.");
+        try {
+            $this->deleteCollection->handle($id);
+        } catch (CollectionNotFound $e) {
+            return $this->collectionMissing($e);
         }
 
-        $this->preferenceService->deleteCollection($id);
         $this->logger->debug('Collection deleted from web', ['collection_id' => $id]);
 
         return redirect()
@@ -125,11 +140,17 @@ final class CollectionController extends BaseInertiaController
                 ->with('error', "Collection [{$id}] not found.");
         }
 
-        if (! Icon::where('id', $iconId)->exists()) {
+        $icon = Icon::find($iconId);
+
+        if (! $icon instanceof Icon) {
             return redirect()->back()->with('error', "Icon [{$iconId}] not found.");
         }
 
-        $this->preferenceService->addIconToCollection($id, $iconId);
+        try {
+            $this->addIconToCollection->handle($id, $icon);
+        } catch (CollectionNotFound $e) {
+            return $this->collectionMissing($e);
+        }
 
         $this->logger->debug('Icon added to collection from web', [
             'collection_id' => $id,
@@ -141,13 +162,11 @@ final class CollectionController extends BaseInertiaController
 
     public function removeIcon(string $id, int $iconId): RedirectResponse
     {
-        if (! $this->preferenceService->getCollection($id)) {
-            return redirect()
-                ->route('ichava.inertia.collections.index')
-                ->with('error', "Collection [{$id}] not found.");
+        try {
+            $this->removeIconFromCollection->handle($id, $iconId);
+        } catch (CollectionNotFound $e) {
+            return $this->collectionMissing($e);
         }
-
-        $this->preferenceService->removeIconFromCollection($id, $iconId);
 
         $this->logger->debug('Icon removed from collection from web', [
             'collection_id' => $id,
@@ -171,5 +190,12 @@ final class CollectionController extends BaseInertiaController
         }
 
         return $collections;
+    }
+
+    private function collectionMissing(CollectionNotFound $e): RedirectResponse
+    {
+        return redirect()
+            ->route('ichava.inertia.collections.index')
+            ->with('error', "Collection [{$e->collectionId}] not found.");
     }
 }

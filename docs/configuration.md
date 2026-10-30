@@ -23,8 +23,29 @@ return [
     'browser' => [
         'per_page'       => env('ICHAVA_BROWSER_PER_PAGE', 60),
         'cache_duration' => env('ICHAVA_BROWSER_CACHE', 3600),
-        'theme_toggle'   => true,
+        'theme_toggle'   => env('ICHAVA_BROWSER_THEME_TOGGLE', true), // ui.themeToggle, features.themeToggle
         'default_theme'  => 'light', // 'light' | 'dark'
+    ],
+
+    // The host's sign-in routes the browser links to (omitted when absent)
+    'auth' => [
+        'login_route'  => env('ICHAVA_LOGIN_ROUTE', 'login'),
+        'logout_route' => env('ICHAVA_LOGOUT_ROUTE', 'logout'),
+    ],
+
+    // Features the browser offers; a library feature turned off is not mounted
+    'features' => [
+        'favorites' => true, 'collections' => true, 'history' => true, 'commands' => true,
+        'library' => true, 'preferences' => true, 'status' => true, 'cache_admin' => true,
+        'illustrations' => true, 'search_language' => true, 'export' => true, 'motion' => true,
+        // Demo-only modules, off in a host app
+        'presence' => false, 'invites' => false, 'sharing' => false,
+        'notifications' => false, 'workspaces' => false,
+    ],
+
+    // Where a signed-in user's library is kept: 'database' (by owner) or 'session'
+    'library' => [
+        'store' => env('ICHAVA_LIBRARY_STORE', 'database'),
     ],
 
     // Demo Blade components (<x-ichava::ichava-test-icons>, <x-ichava::ichava-ui-icons>)
@@ -32,6 +53,12 @@ return [
 
     // Multi-domain restriction (empty = every domain)
     'domains' => env('ICHAVA_DOMAINS', []),
+
+    // Added to every browser route group, after the package's own
+    'routes' => [
+        'middleware' => env('ICHAVA_ROUTE_MIDDLEWARE', []), // env: "auth|verified"
+        'domain'     => env('ICHAVA_ROUTE_DOMAIN'),         // one domain, or null for all
+    ],
 
     // REST API
     'api' => [
@@ -105,7 +132,12 @@ final class IconSnippetResolver implements SnippetResolver
 - `rate_limiting.enabled = false` (default) makes per-bucket limits no-ops. The `api_floor` global throttle still applies regardless.
 - Multi-domain mode: set `ICHAVA_DOMAINS=app.test,admin.test` to restrict routes. Empty (default) means routes are reachable on every domain.
 
+- The signed-in user comes from the host, through core's `ichava.ichava-core.auth.*` keys (the guard, the name and avatar attributes, the abilities sent to the browser). See [Host integration](tools/host-integration.md).
+- `features.*` and `routes.*` are read when routes load: after changing them, clear the route cache (`php artisan route:clear`).
+
 ## See also
+
+- [Host integration](tools/host-integration.md), the user, the features manifest and the owner-keyed library
 
 - [Environment variables](environment.md), every browser-related `ICHAVA_*` env var
 - [Core configuration](https://opensource.simtabi.com/documentation/ichava/core/configuration), engine keys

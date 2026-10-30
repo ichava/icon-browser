@@ -101,59 +101,6 @@ trait ApiResponseTrait
     }
 
     /**
-     * Return unauthorized response
-     */
-    protected function unauthorizedResponse(
-        string $message = 'Unauthorized',
-    ): JsonResponse {
-        return $this->errorResponse(
-            $message,
-            Response::HTTP_UNAUTHORIZED,
-        );
-    }
-
-    /**
-     * Return forbidden response
-     */
-    protected function forbiddenResponse(
-        string $message = 'Forbidden',
-    ): JsonResponse {
-        return $this->errorResponse(
-            $message,
-            Response::HTTP_FORBIDDEN,
-        );
-    }
-
-    /**
-     * Return paginated response
-     *
-     * @param \Illuminate\Contracts\Pagination\LengthAwarePaginator<array-key, mixed> $paginator
-     * @param array<string, mixed> $additionalMeta
-     */
-    protected function paginatedResponse(
-        $paginator,
-        string $message = 'Success',
-        array $additionalMeta = [],
-    ): JsonResponse {
-        $meta = array_merge([
-            'current_page' => $paginator->currentPage(),
-            'from'         => $paginator->firstItem(),
-            'last_page'    => $paginator->lastPage(),
-            'path'         => $paginator->path(),
-            'per_page'     => $paginator->perPage(),
-            'to'           => $paginator->lastItem(),
-            'total'        => $paginator->total(),
-        ], $additionalMeta);
-
-        return $this->successResponse(
-            $paginator->items(),
-            $message,
-            Response::HTTP_OK,
-            $meta,
-        );
-    }
-
-    /**
      * Return created response
      */
     protected function createdResponse(
@@ -192,13 +139,5 @@ trait ApiResponseTrait
             $message,
             Response::HTTP_OK,
         );
-    }
-
-    /**
-     * Return no content response
-     */
-    protected function noContentResponse(): JsonResponse
-    {
-        return response()->json(null, Response::HTTP_NO_CONTENT);
     }
 }

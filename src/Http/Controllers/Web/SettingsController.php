@@ -9,9 +9,10 @@ use Inertia\Inertia;
 use Inertia\Response;
 use Illuminate\Http\RedirectResponse;
 use Simtabi\Laranail\Ichava\Services\IchavaLogger;
+use Simtabi\Laranail\Ichava\Actions\UpdatePreferences;
+use Simtabi\Laranail\Ichava\IconBrowser\Support\Helpers;
 use Simtabi\Laranail\Ichava\Services\IconPreferenceService;
-use Simtabi\Laranail\Ichava\IconBrowser\Http\Requests\PreferenceFilterRequest;
-use Simtabi\Laranail\Ichava\IconBrowser\Http\Requests\PreferenceSearchRequest;
+use Simtabi\Laranail\Ichava\IconBrowser\Actions\Preferences\ResetPreferences;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Requests\PreferenceUpdateRequest;
 
 final class SettingsController extends BaseInertiaController
@@ -19,6 +20,8 @@ final class SettingsController extends BaseInertiaController
     public function __construct(
         protected IconPreferenceService $preferenceService,
         IchavaLogger $logger,
+        private readonly UpdatePreferences $writePreferences,
+        private readonly ResetPreferences $resetToDefaults,
     ) {
         parent::__construct($logger);
     }
@@ -29,7 +32,7 @@ final class SettingsController extends BaseInertiaController
 
         try {
             $preferences = $this->preferenceService->getAll();
-            $validated = $this->preferenceService->validate($preferences);
+            $validated = $this->preferenceService->validate(Helpers::stringKeyed($preferences));
 
             if ($validated !== $preferences) {
                 $this->preferenceService->update($validated);
@@ -47,35 +50,16 @@ final class SettingsController extends BaseInertiaController
 
     public function update(PreferenceUpdateRequest $request): RedirectResponse
     {
-        $preferences = $this->preferenceService->update($request->validated());
-        $cleaned = $this->preferenceService->validate($preferences);
-        $this->preferenceService->update($cleaned);
+        $this->writePreferences->handle(Helpers::stringKeyed($request->validated()));
 
         $this->logger->info('Preferences updated from web');
 
         return redirect()->back()->with('success', 'Preferences updated successfully.');
     }
 
-    public function updateSearch(PreferenceSearchRequest $request): RedirectResponse
-    {
-        $search = $request->validated('search');
-        $search = is_string($search) ? $search : '';
-        $this->preferenceService->setSearch($search);
-
-        return redirect()->back()->with('success', 'Search query updated successfully.');
-    }
-
-    public function updateFilters(PreferenceFilterRequest $request): RedirectResponse
-    {
-        $filters = array_merge($this->preferenceService->getFilters(), $request->validated());
-        $this->preferenceService->setFilters($filters);
-
-        return redirect()->back()->with('success', 'Filters updated successfully.');
-    }
-
     public function clear(): RedirectResponse
     {
-        $this->preferenceService->clear();
+        $this->resetToDefaults->handle();
         $this->logger->info('Preferences cleared from web');
 
         return redirect()->back()->with('success', 'Preferences cleared successfully.');

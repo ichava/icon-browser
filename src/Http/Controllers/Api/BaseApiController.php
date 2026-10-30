@@ -152,7 +152,11 @@ abstract class BaseApiController extends Controller
     {
         $this->logWarning("$resource not found", ['exception' => $e->getMessage()]);
 
-        return $this->notFoundResponse($resource);
+        // The id the lookup missed, so the body reads "Icon '5' not found" exactly
+        // as the hand-built 404s it replaces did.
+        $ids = $e->getIds();
+
+        return $this->notFoundResponse($resource, $ids[0] ?? null);
     }
 
     /**

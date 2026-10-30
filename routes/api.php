@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
 use Simtabi\Laranail\Ichava\IconBrowser\Support\Helpers;
+use Simtabi\Laranail\Ichava\IconBrowser\Support\FeaturesManifest;
+use Simtabi\Laranail\Ichava\IconBrowser\Http\Controllers\Api\HostApiController;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Controllers\Api\HistoryApiController;
+use Simtabi\Laranail\Ichava\IconBrowser\Http\Controllers\Api\LibraryApiController;
+use Simtabi\Laranail\Ichava\IconBrowser\Http\Controllers\Api\SessionApiController;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Controllers\Api\FavoritesApiController;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Controllers\Api\CollectionsApiController;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Controllers\Api\IconBrowserApiController;
@@ -31,154 +35,183 @@ use Simtabi\Laranail\Ichava\IconBrowser\Http\Controllers\Api\CommandHistoryApiCo
 // - ichava.security (XSS, SQL injection protection)
 // - ichava.json (force JSON responses)
 // - ichava.log (request logging in debug mode)
-Route::prefix(Helpers::routePrefix() . '/api')
-    ->middleware('ichava.api')
-    ->name('ichava.api.')
-    ->group(function () {
+Route::group(Helpers::routeGroup(Helpers::routePrefix() . '/api', ['ichava.api'], 'ichava.api.'), function () {
 
-        // =====================================================================
-        // ICON MANAGEMENT API
-        // =====================================================================
-        Route::prefix('icons')
-            ->name('icons.')
-            ->group(function () {
-                // List all icons with filtering, searching, and pagination
-                Route::get('/', [IconBrowserApiController::class, 'index'])
-                    ->middleware(Helpers::getRateLimit('api', 120))
-                    ->name('index');
+    // =====================================================================
+    // SESSION: the host's signed-in user and where the library is kept
+    // =====================================================================
+    Route::get('/session', [SessionApiController::class, 'show'])
+        ->middleware(Helpers::getRateLimit('api', 120))
+        ->name('session');
 
-                // Get single icon details
-                Route::get('/{id}', [IconBrowserApiController::class, 'show'])
-                    ->middleware(Helpers::getRateLimit('api', 300))
-                    ->name('show')
-                    ->where('id', '[0-9]+');
+    // Schema version, locale, session and the features manifest in one call.
+    Route::get('/bootstrap', [HostApiController::class, 'bootstrap'])
+        ->middleware(Helpers::getRateLimit('api', 120))
+        ->name('bootstrap');
 
-                // Get SVG content for a specific icon
-                Route::get('/{id}/svg', [IconBrowserApiController::class, 'svg'])
-                    ->middleware(Helpers::getRateLimit('api', 300))
-                    ->name('svg')
-                    ->where('id', '[0-9]+');
+    // Core's StatusData, for administrators only (`ichava.admin`, default deny).
+    Route::get('/status', [HostApiController::class, 'status'])
+        ->middleware('ichava.admin')
+        ->middleware(Helpers::getRateLimit('api', 30))
+        ->name('status');
 
-                // Get filter options (packages, categories, variants)
-                Route::get('/filters', [IconBrowserApiController::class, 'filters'])
-                    ->middleware(Helpers::getRateLimit('api', 60))
-                    ->name('filters');
+    // =====================================================================
+    // ICON MANAGEMENT API
+    // =====================================================================
+    Route::prefix('icons')
+        ->name('icons.')
+        ->group(function () {
+            // List all icons with filtering, searching, and pagination
+            Route::get('/', [IconBrowserApiController::class, 'index'])
+                ->middleware(Helpers::getRateLimit('api', 120))
+                ->name('index');
 
-                // Get hierarchical tree structure
-                Route::get('/tree', [IconBrowserApiController::class, 'tree'])
-                    ->middleware(Helpers::getRateLimit('api', 60))
-                    ->name('tree');
+            // Get single icon details
+            Route::get('/{id}', [IconBrowserApiController::class, 'show'])
+                ->middleware(Helpers::getRateLimit('api', 300))
+                ->name('show')
+                ->where('id', '[0-9]+');
 
-                // Get icon statistics
-                Route::get('/statistics', [IconBrowserApiController::class, 'statistics'])
-                    ->middleware(Helpers::getRateLimit('api', 60))
-                    ->name('statistics');
+            // Get SVG content for a specific icon
+            Route::get('/{id}/svg', [IconBrowserApiController::class, 'svg'])
+                ->middleware(Helpers::getRateLimit('api', 300))
+                ->name('svg')
+                ->where('id', '[0-9]+');
 
-                // Upstream-tracking health: per-pack { current, latest, status }.
-                // Backed by core's IconPackUpdateChecker (12h cache); rate limit
-                // mirrors the read-only filters/tree endpoints.
-                Route::get('/update-status', [UpdateStatusApiController::class, 'index'])
-                    ->middleware(Helpers::getRateLimit('api', 30))
-                    ->name('update-status');
-            });
+            // Get filter options (packages, categories, variants)
+            Route::get('/filters', [IconBrowserApiController::class, 'filters'])
+                ->middleware(Helpers::getRateLimit('api', 60))
+                ->name('filters');
 
-        // =====================================================================
-        // PACKAGES API
-        // =====================================================================
-        Route::prefix('packages')
-            ->name('packages.')
-            ->group(function () {
-                // List all packages with icon counts
-                Route::get('/', [IconBrowserApiController::class, 'packages'])
-                    ->middleware(Helpers::getRateLimit('api', 60))
-                    ->name('index');
+            // Get hierarchical tree structure
+            Route::get('/tree', [IconBrowserApiController::class, 'tree'])
+                ->middleware(Helpers::getRateLimit('api', 60))
+                ->name('tree');
 
-                // Get single package details
-                // Package names use vendor/package format (e.g., ichava/icon-sets-tabler)
-                Route::get('/{package}', [IconBrowserApiController::class, 'package'])
-                    ->middleware(Helpers::getRateLimit('api', 60))
-                    ->name('show')
-                    ->where('package', '[a-zA-Z0-9_-]+/[a-zA-Z0-9_-]+');
-            });
+            // Get icon statistics
+            Route::get('/statistics', [IconBrowserApiController::class, 'statistics'])
+                ->middleware(Helpers::getRateLimit('api', 60))
+                ->name('statistics');
 
-        // =====================================================================
-        // TERMS API (Categories & Variants)
-        // =====================================================================
-        Route::prefix('terms')
-            ->name('terms.')
-            ->group(function () {
-                // Get all categories
-                Route::get('/categories', [IconBrowserApiController::class, 'categories'])
-                    ->middleware(Helpers::getRateLimit('api', 60))
-                    ->name('categories');
+            // Upstream-tracking health: per-pack { current, latest, status }.
+            // Backed by core's IconPackUpdateChecker (12h cache); rate limit
+            // mirrors the read-only filters/tree endpoints.
+            Route::get('/update-status', [UpdateStatusApiController::class, 'index'])
+                ->middleware(Helpers::getRateLimit('api', 30))
+                ->name('update-status');
+        });
 
-                // Get all variants
-                Route::get('/variants', [IconBrowserApiController::class, 'variants'])
-                    ->middleware(Helpers::getRateLimit('api', 60))
-                    ->name('variants');
+    // =====================================================================
+    // PACKAGES API
+    // =====================================================================
+    Route::prefix('packages')
+        ->name('packages.')
+        ->group(function () {
+            // List all packages with icon counts
+            Route::get('/', [IconBrowserApiController::class, 'packages'])
+                ->middleware(Helpers::getRateLimit('api', 60))
+                ->name('index');
 
-                // Get category/variant hierarchy with icon counts
-                Route::get('/hierarchy', [IconBrowserApiController::class, 'termsHierarchy'])
-                    ->middleware(Helpers::getRateLimit('api', 60))
-                    ->name('hierarchy');
-            });
+            // Get single package details
+            // Package names use vendor/package format (e.g., ichava/icon-sets-tabler)
+            Route::get('/{package}', [IconBrowserApiController::class, 'package'])
+                ->middleware(Helpers::getRateLimit('api', 60))
+                ->name('show')
+                ->where('package', '[a-zA-Z0-9_-]+/[a-zA-Z0-9_-]+');
+        });
 
-        // =====================================================================
-        // USER PREFERENCES API
-        // =====================================================================
-        Route::prefix('preferences')
-            ->name('preferences.')
-            ->group(function () {
-                Route::get('/', [IconBrowserApiController::class, 'preferences'])
-                    ->middleware(Helpers::getRateLimit('api', 60))
-                    ->name('index');
+    // =====================================================================
+    // TERMS API (Categories & Variants)
+    // =====================================================================
+    Route::prefix('terms')
+        ->name('terms.')
+        ->group(function () {
+            // Get all categories
+            Route::get('/categories', [IconBrowserApiController::class, 'categories'])
+                ->middleware(Helpers::getRateLimit('api', 60))
+                ->name('categories');
 
-                Route::post('/', [IconBrowserApiController::class, 'updatePreferences'])
-                    ->middleware(Helpers::getRateLimit('api', 30))
-                    ->name('update');
+            // Get all variants
+            Route::get('/variants', [IconBrowserApiController::class, 'variants'])
+                ->middleware(Helpers::getRateLimit('api', 60))
+                ->name('variants');
 
-                Route::post('/search', [IconBrowserApiController::class, 'updateSearch'])
-                    ->middleware(Helpers::getRateLimit('api', 60))
-                    ->name('search');
+            // Get category/variant hierarchy with icon counts
+            Route::get('/hierarchy', [IconBrowserApiController::class, 'termsHierarchy'])
+                ->middleware(Helpers::getRateLimit('api', 60))
+                ->name('hierarchy');
+        });
 
-                Route::post('/filters', [IconBrowserApiController::class, 'updateFilters'])
-                    ->middleware(Helpers::getRateLimit('api', 60))
-                    ->name('filters');
+    // =====================================================================
+    // USER PREFERENCES API
+    // =====================================================================
+    Route::prefix('preferences')
+        ->name('preferences.')
+        ->group(function () {
+            Route::get('/', [IconBrowserApiController::class, 'preferences'])
+                ->middleware(Helpers::getRateLimit('api', 60))
+                ->name('index');
 
-                Route::delete('/', [IconBrowserApiController::class, 'clearPreferences'])
-                    ->middleware(Helpers::getRateLimit('api', 30))
-                    ->name('clear');
-            });
+            Route::post('/', [IconBrowserApiController::class, 'updatePreferences'])
+                ->middleware(Helpers::getRateLimit('api', 30))
+                ->name('update');
 
-        // =====================================================================
-        // CACHE MANAGEMENT API
-        // =====================================================================
-        // Get cache statistics. Read-only, but it describes the server's cache
-        // configuration and watched directories, so it answers to the same
-        // fail-closed `ichava.cache-admin` decision as the write routes below.
-        Route::get('/cache/stats', [IconBrowserApiController::class, 'cacheStats'])
-            ->middleware('ichava.cache-admin')
+            Route::post('/search', [IconBrowserApiController::class, 'updateSearch'])
+                ->middleware(Helpers::getRateLimit('api', 60))
+                ->name('search');
+
+            Route::post('/filters', [IconBrowserApiController::class, 'updateFilters'])
+                ->middleware(Helpers::getRateLimit('api', 60))
+                ->name('filters');
+
+            Route::delete('/', [IconBrowserApiController::class, 'clearPreferences'])
+                ->middleware(Helpers::getRateLimit('api', 30))
+                ->name('clear');
+        });
+
+    // =====================================================================
+    // CACHE MANAGEMENT API
+    // =====================================================================
+    // Get cache statistics. Read-only, but it describes the server's cache
+    // configuration and watched directories, so it answers to the same
+    // fail-closed `ichava.cache-admin` decision as the write routes below.
+    Route::get('/cache/stats', [IconBrowserApiController::class, 'cacheStats'])
+        ->middleware('ichava.cache-admin')
+        ->middleware(Helpers::getRateLimit('api', 60))
+        ->name('cache.stats');
+
+    // Cache write operations
+    // Destructive: `clear` flushes the icon cache and `rebuild` additionally resets
+    // every stored preference. A rate limit slows repetition; it does not decide who
+    // is allowed. `ichava.cache-admin` fails closed unless the host grants the ability.
+    Route::prefix('cache')
+        ->name('cache.')
+        ->middleware(['ichava.cache-admin', Helpers::getRateLimit('api', 10)])
+        ->group(function () {
+            Route::post('/clear', [IconBrowserApiController::class, 'clearCache'])
+                ->name('clear');
+
+            Route::post('/rebuild', [IconBrowserApiController::class, 'rebuildCache'])
+                ->name('rebuild');
+        });
+
+    // =====================================================================
+    // LIBRARY API: everything the owner keeps, and "Delete my library"
+    // =====================================================================
+    if (FeaturesManifest::configured('library')) {
+        Route::get('/library', [LibraryApiController::class, 'index'])
             ->middleware(Helpers::getRateLimit('api', 60))
-            ->name('cache.stats');
+            ->name('library.index');
 
-        // Cache write operations
-        // Destructive: `clear` flushes the icon cache and `rebuild` additionally resets
-        // every stored preference. A rate limit slows repetition; it does not decide who
-        // is allowed. `ichava.cache-admin` fails closed unless the host grants the ability.
-        Route::prefix('cache')
-            ->name('cache.')
-            ->middleware(['ichava.cache-admin', Helpers::getRateLimit('api', 10)])
-            ->group(function () {
-                Route::post('/clear', [IconBrowserApiController::class, 'clearCache'])
-                    ->name('clear');
+        Route::delete('/library', [LibraryApiController::class, 'destroy'])
+            ->middleware(Helpers::getRateLimit('api', 10))
+            ->name('library.destroy');
+    }
 
-                Route::post('/rebuild', [IconBrowserApiController::class, 'rebuildCache'])
-                    ->name('rebuild');
-            });
-
-        // =====================================================================
-        // FAVORITES API
-        // =====================================================================
+    // =====================================================================
+    // FAVORITES API
+    // =====================================================================
+    if (FeaturesManifest::configured('favorites')) {
         Route::prefix('favorites')
             ->name('favorites.')
             ->group(function () {
@@ -205,10 +238,12 @@ Route::prefix(Helpers::routePrefix() . '/api')
                     ->name('toggle')
                     ->where('iconId', '[0-9]+');
             });
+    }
 
-        // =====================================================================
-        // COLLECTIONS API
-        // =====================================================================
+    // =====================================================================
+    // COLLECTIONS API
+    // =====================================================================
+    if (FeaturesManifest::configured('collections')) {
         Route::prefix('collections')
             ->name('collections.')
             ->group(function () {
@@ -249,10 +284,12 @@ Route::prefix(Helpers::routePrefix() . '/api')
                     ->name('removeIcon')
                     ->where('iconId', '[0-9]+');
             });
+    }
 
-        // =====================================================================
-        // HISTORY API
-        // =====================================================================
+    // =====================================================================
+    // HISTORY API
+    // =====================================================================
+    if (FeaturesManifest::configured('history')) {
         Route::prefix('history')
             ->name('history.')
             ->group(function () {
@@ -271,10 +308,12 @@ Route::prefix(Helpers::routePrefix() . '/api')
                     ->middleware(Helpers::getRateLimit('api', 30))
                     ->name('clear');
             });
+    }
 
-        // =====================================================================
-        // COMMAND HISTORY API (Command Palette)
-        // =====================================================================
+    // =====================================================================
+    // COMMAND HISTORY API (Command Palette)
+    // =====================================================================
+    if (FeaturesManifest::configured('commands')) {
         Route::prefix('command-history')
             ->name('commandHistory.')
             ->group(function () {
@@ -293,4 +332,5 @@ Route::prefix(Helpers::routePrefix() . '/api')
                     ->middleware(Helpers::getRateLimit('api', 30))
                     ->name('clear');
             });
-    });
+    }
+});

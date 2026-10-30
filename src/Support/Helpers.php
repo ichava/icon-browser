@@ -103,4 +103,83 @@ final class Helpers
     {
         return is_scalar($value) || $value === null || $value instanceof Stringable ? (string) $value : $default;
     }
+
+    /**
+     * An array with every key as a string, for APIs typed `array<string, mixed>`.
+     *
+     * Integer keys become their string form, which is what PHP would have
+     * produced for them as array keys anyway; values are untouched.
+     *
+     * @param array<array-key, mixed> $values
+     *
+     * @return array<string, mixed>
+     */
+    public static function stringKeyed(array $values): array
+    {
+        $keyed = [];
+
+        foreach ($values as $key => $value) {
+            $keyed[(string) $key] = $value;
+        }
+
+        return $keyed;
+    }
+
+    /**
+     * Middleware the host adds to every browser route group
+     * (`ichava.icon-browser.routes.middleware`): an array, or a
+     * `|`-separated string from the environment. Not commas: a middleware
+     * parameter list uses them (`throttle:60,1`).
+     *
+     * @return list<string>
+     */
+    public static function routeMiddleware(): array
+    {
+        $middleware = config('ichava.icon-browser.routes.middleware', []);
+
+        if (is_string($middleware)) {
+            $middleware = explode('|', $middleware);
+        }
+
+        return array_values(array_filter(
+            array_map(static fn (mixed $item): string => is_string($item) ? trim($item) : '', is_array($middleware) ? $middleware : []),
+            static fn (string $item): bool => $item !== '',
+        ));
+    }
+
+    /**
+     * The one domain the browser routes answer on
+     * (`ichava.icon-browser.routes.domain`), or null for every domain.
+     */
+    public static function routeDomain(): ?string
+    {
+        $domain = config('ichava.icon-browser.routes.domain');
+
+        return is_string($domain) && trim($domain) !== '' ? trim($domain) : null;
+    }
+
+    /**
+     * The attributes of a browser route group: its prefix, its middleware with
+     * the host's appended, and the configured domain when there is one.
+     *
+     * @param list<string> $middleware
+     *
+     * @return array{prefix: string, middleware: list<string>, as: string, domain?: string}
+     */
+    public static function routeGroup(string $prefix, array $middleware, string $as): array
+    {
+        $group = [
+            'prefix'     => $prefix,
+            'middleware' => [...$middleware, ...self::routeMiddleware()],
+            'as'         => $as,
+        ];
+
+        $domain = self::routeDomain();
+
+        if ($domain !== null) {
+            $group['domain'] = $domain;
+        }
+
+        return $group;
+    }
 }

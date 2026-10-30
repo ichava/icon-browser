@@ -48,8 +48,9 @@ return [
     'browser' => [
         'per_page'       => env('ICHAVA_BROWSER_PER_PAGE', IchavaConstants::BROWSER_PER_PAGE),
         'cache_duration' => env('ICHAVA_BROWSER_CACHE', IchavaConstants::DEFAULT_CACHE_TTL),
-        'theme_toggle'   => true,
-        'default_theme'  => 'light', // 'light' | 'dark'
+        // Whether the browser shows its theme control (`features.themeToggle`).
+        'theme_toggle'  => env('ICHAVA_BROWSER_THEME_TOGGLE', true),
+        'default_theme' => 'light', // 'light' | 'dark'
     ],
 
     /*
@@ -71,6 +72,73 @@ return [
         'links'    => [
             ['label' => 'simtabi.com', 'href' => 'https://simtabi.com'],
         ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | The host's sign-in
+    |--------------------------------------------------------------------------
+    | Ichava has no login of its own. The signed-in user comes from the host,
+    | through `ichava.ichava-core.auth.*` (the guard, the name and avatar
+    | attributes, the abilities sent to the browser). These name the host's
+    | routes the browser links to for signing in and out; a link is omitted
+    | when the host has no route by that name.
+    */
+    'auth' => [
+        'login_route'  => env('ICHAVA_LOGIN_ROUTE', 'login'),
+        'logout_route' => env('ICHAVA_LOGOUT_ROUTE', 'logout'),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Features
+    |--------------------------------------------------------------------------
+    | Which browser features this host offers. The browser receives a manifest
+    | (the `ichava.features` prop, `GET {prefix}/api/bootstrap`) saying, per
+    | feature, whether it is enabled, why not, and the URLs to call, and shows
+    | only what is enabled. A library feature turned off here is not mounted.
+    |
+    | `status` and `cache_admin` also need the signed-in user to hold the
+    | `ichava.admin` / `ichava.manage-cache` ability; `illustrations` needs at
+    | least one illustration seeded; `search_language` needs PostgreSQL.
+    |
+    | The last five are modules of the standalone demo with no backend here
+    | (presence, invites, sharing, notifications, workspaces). They stay off in
+    | a host app.
+    */
+    'features' => [
+        'favorites'       => env('ICHAVA_FEATURE_FAVORITES', true),
+        'collections'     => env('ICHAVA_FEATURE_COLLECTIONS', true),
+        'history'         => env('ICHAVA_FEATURE_HISTORY', true),
+        'commands'        => env('ICHAVA_FEATURE_COMMANDS', true),
+        'library'         => env('ICHAVA_FEATURE_LIBRARY', true),
+        'preferences'     => env('ICHAVA_FEATURE_PREFERENCES', true),
+        'status'          => env('ICHAVA_FEATURE_STATUS', true),
+        'cache_admin'     => env('ICHAVA_FEATURE_CACHE_ADMIN', true),
+        'illustrations'   => env('ICHAVA_FEATURE_ILLUSTRATIONS', true),
+        'search_language' => env('ICHAVA_FEATURE_SEARCH_LANGUAGE', true),
+        'export'          => env('ICHAVA_FEATURE_EXPORT', true),
+        'motion'          => env('ICHAVA_FEATURE_MOTION', true),
+
+        'presence'      => false,
+        'invites'       => false,
+        'sharing'       => false,
+        'notifications' => false,
+        'workspaces'    => false,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Where a signed-in user's library is kept
+    |--------------------------------------------------------------------------
+    | `database` (default) keeps a signed-in user's favourites, collections,
+    | history and preferences in `ichava_owner_preferences`, keyed by the host
+    | user, so they follow the user across devices; a guest's session data is
+    | merged in on sign-in. Until that table is migrated, signed-in users fall
+    | back to the session. `session` keeps everyone on the session store.
+    */
+    'library' => [
+        'store' => env('ICHAVA_LIBRARY_STORE', 'database'),
     ],
 
     /*
@@ -125,6 +193,24 @@ return [
     | Or pass a comma-separated string via ICHAVA_DOMAINS.
     */
     'domains' => env('ICHAVA_DOMAINS', []),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Route groups
+    |--------------------------------------------------------------------------
+    | `middleware` is appended to every browser route group (Inertia pages, the
+    | REST API and the /{prefix} redirect), after the package's own: e.g.
+    | ['auth', 'verified'] to put the whole browser behind the host's login.
+    | From the environment, separate them with `|` (commas belong to middleware
+    | parameters, as in `throttle:60,1`): ICHAVA_ROUTE_MIDDLEWARE="auth|verified".
+    |
+    | `domain` mounts the browser on one domain only (e.g. 'admin.example.com'),
+    | null for every domain. `domains` above registers extra copies per domain.
+    */
+    'routes' => [
+        'middleware' => env('ICHAVA_ROUTE_MIDDLEWARE', []),
+        'domain'     => env('ICHAVA_ROUTE_DOMAIN'),
+    ],
 
     /*
     |--------------------------------------------------------------------------

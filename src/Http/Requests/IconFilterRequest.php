@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\Ichava\IconBrowser\Http\Requests;
 
+use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
+use Simtabi\Laranail\Ichava\Enums\IconKind;
 use Simtabi\Laranail\Ichava\IconBrowser\Support\Helpers;
 
 /**
@@ -25,7 +27,7 @@ class IconFilterRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, array<int, string>>
+     * @return array<string, array<int, mixed>>
      */
     public function rules(): array
     {
@@ -40,6 +42,23 @@ class IconFilterRequest extends FormRequest
             'categories.*' => ['required', 'string', 'max:100'],
             'variants'     => ['nullable', 'array', 'max:20'],
             'variants.*'   => ['required', 'string', 'max:50'],
+
+            // What the SVG is: icons or illustrations. One kind at a time.
+            'kind' => ['nullable', 'string', Rule::enum(IconKind::class)],
+
+            // Nested categories, or variants within the selected category.
+            'subs'   => ['nullable', 'array', 'max:50'],
+            'subs.*' => ['required', 'string', 'max:100'],
+
+            // Tags and keywords an icon must carry.
+            'tags'       => ['nullable', 'array', 'max:20'],
+            'tags.*'     => ['required', 'string', 'max:100'],
+            'keywords'   => ['nullable', 'array', 'max:20'],
+            'keywords.*' => ['required', 'string', 'max:100'],
+
+            // Full-text search language, PostgreSQL only; core refuses any value
+            // outside its allow-list before it reaches SQL.
+            'language' => ['nullable', 'string', 'max:32', 'regex:/^[a-z_]+$/'],
 
             // Pagination
             'page'     => ['nullable', 'integer', 'min:1', 'max:10000'],
@@ -78,6 +97,11 @@ class IconFilterRequest extends FormRequest
             'packages'       => 'package filters',
             'categories'     => 'category filters',
             'variants'       => 'variant filters',
+            'kind'           => 'kind',
+            'subs'           => 'subcategory filters',
+            'tags'           => 'tag filters',
+            'keywords'       => 'keyword filters',
+            'language'       => 'search language',
             'page'           => 'page number',
             'per_page'       => 'results per page',
             'sort_by'        => 'sort field',
@@ -132,6 +156,91 @@ class IconFilterRequest extends FormRequest
     }
 
     /**
+     * Get the validated kind, `icon` or `illustration`, or null for both.
+     */
+    public function getKind(): ?string
+    {
+        $kind = $this->validated('kind');
+
+        return is_string($kind) && $kind !== '' ? $kind : null;
+    }
+
+    /**
+     * Get the validated subcategory filters
+     *
+     * @return list<string>
+     */
+    public function getSubs(): array
+    {
+        return $this->stringList('subs');
+    }
+
+    /**
+     * Get the validated tag filters
+     *
+     * @return list<string>
+     */
+    public function getTags(): array
+    {
+        return $this->stringList('tags');
+    }
+
+    /**
+     * Get the validated keyword filters
+     *
+     * @return list<string>
+     */
+    public function getKeywords(): array
+    {
+        return $this->stringList('keywords');
+    }
+
+    /**
+     * Get the validated search language, or null for the portable search.
+     */
+    public function getLanguage(): ?string
+    {
+        $language = $this->validated('language');
+
+        return is_string($language) && $language !== '' ? $language : null;
+    }
+
+    /**
+     * The filters as core's `IconBrowserService` takes them, for the grid, the
+     * facets and the tree alike. One builder, so the REST and Inertia listings
+     * cannot filter differently.
+     *
+     * @return array{search: string|null, language: string|null, packages: array<mixed>, kind: string|null, categories: array<mixed>, subs: list<string>, variants: array<mixed>, tags: list<string>, keywords: list<string>}
+     */
+    public function filters(): array
+    {
+        return [
+            'search'     => $this->getSearch(),
+            'language'   => $this->getLanguage(),
+            'packages'   => $this->getPackages(),
+            'kind'       => $this->getKind(),
+            'categories' => $this->getCategories(),
+            'subs'       => $this->getSubs(),
+            'variants'   => $this->getVariants(),
+            'tags'       => $this->getTags(),
+            'keywords'   => $this->getKeywords(),
+        ];
+    }
+
+    /**
+     * Why a listing is empty: `no_match` when a search or filter narrowed it
+     * away, `no_icons` when nothing is seeded to show. Null when it is not empty.
+     */
+    public function emptyReason(int $total): ?string
+    {
+        if ($total > 0) {
+            return null;
+        }
+
+        return $this->hasSearch() || $this->hasFilters() ? 'no_match' : 'no_icons';
+    }
+
+    /**
      * Get the validated page number
      */
     public function getPage(): int
@@ -182,6 +291,20 @@ class IconFilterRequest extends FormRequest
     {
         return ! empty($this->getPackages())
             || ! empty($this->getCategories())
-            || ! empty($this->getVariants());
+            || ! empty($this->getVariants())
+            || $this->getKind() !== null
+            || $this->getSubs() !== []
+            || $this->getTags() !== []
+            || $this->getKeywords() !== [];
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function stringList(string $key): array
+    {
+        $values = $this->validated($key, []);
+
+        return is_array($values) ? array_values(array_filter($values, is_string(...))) : [];
     }
 }

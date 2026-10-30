@@ -13,6 +13,9 @@ use Simtabi\Laranail\Ichava\Services\IchavaLogger;
 use Simtabi\Laranail\Ichava\Services\IconBrowserService;
 use Simtabi\Laranail\Ichava\Services\IconPreferenceService;
 use Simtabi\Laranail\Ichava\IconBrowser\Support\IconSnippets;
+use Simtabi\Laranail\Ichava\IconBrowser\Actions\Library\AddFavorite;
+use Simtabi\Laranail\Ichava\IconBrowser\Actions\Library\RemoveFavorite;
+use Simtabi\Laranail\Ichava\IconBrowser\Actions\Library\ToggleFavorite;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Controllers\Web\Concerns\ResolvesIconsForPages;
 
 final class FavoriteController extends BaseInertiaController
@@ -24,6 +27,9 @@ final class FavoriteController extends BaseInertiaController
         protected IconSnippets $iconSnippets,
         protected IconPreferenceService $preferenceService,
         IchavaLogger $logger,
+        private readonly AddFavorite $addFavorite,
+        private readonly RemoveFavorite $removeFavorite,
+        private readonly ToggleFavorite $toggleFavorite,
     ) {
         parent::__construct($logger);
     }
@@ -51,11 +57,13 @@ final class FavoriteController extends BaseInertiaController
 
     public function store(int $iconId): RedirectResponse
     {
-        if (! Icon::where('id', $iconId)->exists()) {
+        $icon = Icon::find($iconId);
+
+        if (! $icon instanceof Icon) {
             return redirect()->back()->with('error', "Icon [{$iconId}] not found.");
         }
 
-        $this->preferenceService->addFavorite($iconId);
+        $this->addFavorite->handle($icon);
         $this->logger->debug('Icon added to favorites from web', ['icon_id' => $iconId]);
 
         return redirect()->back()->with('success', 'Icon added to favorites.');
@@ -63,7 +71,7 @@ final class FavoriteController extends BaseInertiaController
 
     public function destroy(int $iconId): RedirectResponse
     {
-        $this->preferenceService->removeFavorite($iconId);
+        $this->removeFavorite->handle($iconId);
         $this->logger->debug('Icon removed from favorites from web', ['icon_id' => $iconId]);
 
         return redirect()->back()->with('success', 'Icon removed from favorites.');
@@ -71,11 +79,13 @@ final class FavoriteController extends BaseInertiaController
 
     public function toggle(int $iconId): RedirectResponse
     {
-        if (! Icon::where('id', $iconId)->exists()) {
+        $icon = Icon::find($iconId);
+
+        if (! $icon instanceof Icon) {
             return redirect()->back()->with('error', "Icon [{$iconId}] not found.");
         }
 
-        $isFavorite = $this->preferenceService->toggleFavorite($iconId);
+        $isFavorite = $this->toggleFavorite->handle($icon);
 
         $this->logger->debug('Favorite toggled from web', [
             'icon_id'     => $iconId,

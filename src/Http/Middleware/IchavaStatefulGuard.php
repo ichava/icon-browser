@@ -9,19 +9,28 @@ use Exception;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Simtabi\Laranail\Ichava\Services\IchavaLogger;
+use Simtabi\Laranail\Ichava\Support\Auth\HostUser;
 use Simtabi\Laranail\Ichava\Support\HostCapabilities;
 
 /**
  * Three-tier guard: browser localStorage (always available) -> Laravel session
  * (when started) -> host authentication (when present). Each tier is best-
  * effort; the middleware never aborts when a tier is unavailable.
+ *
+ * The user tier is read through core's `HostUser`, the same resolver the
+ * Inertia `auth` prop and `GET {prefix}/api/session` use, so it honours
+ * `ichava.ichava-core.auth.guard` and `Ichava::resolveUserUsing()` instead of
+ * looking the user up a second way. The session and browser tiers are
+ * unchanged: hosts without a session still keep guest data in the browser.
  */
 final class IchavaStatefulGuard
 {
     private HostCapabilities $capabilities;
 
-    public function __construct(private readonly IchavaLogger $logger)
-    {
+    public function __construct(
+        private readonly IchavaLogger $logger,
+        private readonly HostUser $users,
+    ) {
         $this->capabilities = HostCapabilities::getInstance();
     }
 
@@ -34,13 +43,16 @@ final class IchavaStatefulGuard
     }
 
     /**
-     * Get the authenticated user ID if available
+     * Get the authenticated user ID if available.
+     *
+     * An integer or a string: the guard stores `getAuthIdentifier()`, and a
+     * UUID or ULID user read back as null while it only answered integers.
      */
-    public static function getUserId(Request $request): ?int
+    public static function getUserId(Request $request): int|string|null
     {
         $id = $request->attributes->get('ichava_user_id');
 
-        return is_int($id) ? $id : null;
+        return is_int($id) || is_string($id) ? $id : null;
     }
 
     /**
@@ -115,25 +127,21 @@ final class IchavaStatefulGuard
         $request->attributes->set('ichava_user_id', null);
         $request->attributes->set('ichava_user', null);
 
-        // Check if host has authentication
-        if (! $this->capabilities->hasAuth()) {
-            return;
-        }
-
         try {
-            // Try to get authenticated user
-            $user = $request->user();
+            // The host's user, from the resolver every other surface uses. A
+            // host with no auth bound resolves no user rather than failing.
+            $user = $this->users->user();
 
             if ($user) {
                 // Success: User is authenticated
                 $request->attributes->set('ichava_authenticated', true);
-                $request->attributes->set('ichava_user_id', $user->id ?? $user->getAuthIdentifier());
+                $request->attributes->set('ichava_user_id', $user->getAuthIdentifier());
                 $request->attributes->set('ichava_user', $user);
 
+                // The identifier only: an email address does not belong in a log.
                 if (config('app.debug') && config('ichava.ichava-core.logging.auth_debug', false)) {
                     $this->logger->debug('Authenticated user detected', [
-                        'user_id' => $user->id ?? null,
-                        'email'   => $user->email ?? null,
+                        'user_id' => $user->getAuthIdentifier(),
                     ]);
                 }
             }

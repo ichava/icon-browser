@@ -9,18 +9,23 @@ use Inertia\Inertia;
 use Inertia\Response;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Http\RedirectResponse;
 use Simtabi\Laranail\Ichava\Models\Icon;
 use Illuminate\Database\Query\JoinClause;
 use Simtabi\Laranail\Ichava\Models\IconTerm;
 use Simtabi\Laranail\Ichava\Services\IchavaLogger;
 use Simtabi\Laranail\Ichava\Services\IconRegistry;
+use Simtabi\Laranail\Ichava\Support\Auth\HostUser;
+use Simtabi\Laranail\Ichava\Support\Auth\IchavaGates;
 use Simtabi\Laranail\Ichava\Services\IconCacheService;
 use Simtabi\Laranail\Ichava\Services\IconBrowserService;
+use Simtabi\Laranail\Ichava\Services\InformationService;
 use Simtabi\Laranail\Ichava\Services\IconPackUpdateChecker;
 use Simtabi\Laranail\Ichava\Services\IconPreferenceService;
 use Simtabi\Laranail\Ichava\IconBrowser\Support\IconSnippets;
 use Simtabi\Laranail\Ichava\IconBrowser\Support\CacheAdminGate;
+use Simtabi\Laranail\Ichava\Services\DatabaseOperationsService;
 use Simtabi\Laranail\Ichava\IconBrowser\Support\CacheStatsPayload;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Requests\IconFilterRequest;
 
@@ -34,6 +39,9 @@ final class InertiaBrowserController extends BaseInertiaController
         protected IconRegistry $registry,
         protected IconPackUpdateChecker $updateChecker,
         IchavaLogger $logger,
+        private readonly DatabaseOperationsService $databaseOperations,
+        private readonly InformationService $information,
+        private readonly HostUser $users,
     ) {
         parent::__construct($logger);
     }
@@ -45,14 +53,11 @@ final class InertiaBrowserController extends BaseInertiaController
         ]);
 
         try {
+            $filters = $request->filters();
+
             /** @var \Illuminate\Pagination\LengthAwarePaginator<int, Icon> $paginator */
             $paginator = $this->browserService->getIcons(
-                filters: [
-                    'search'     => $request->getSearch(),
-                    'packages'   => $request->getPackages(),
-                    'categories' => $request->getCategories(),
-                    'variants'   => $request->getVariants(),
-                ],
+                filters: $filters,
                 page: $request->getPage(),
                 perPage: $request->getPerPage(),
                 sortBy: $request->getSortBy(),
@@ -73,20 +78,27 @@ final class InertiaBrowserController extends BaseInertiaController
                     'last_page'    => $paginator->lastPage(),
                     'from'         => $paginator->firstItem(),
                     'to'           => $paginator->lastItem(),
+                    'empty_reason' => $request->emptyReason($paginator->total()),
                 ],
                 'appliedFilters' => [
                     'search'         => $request->getSearch(),
+                    'language'       => $request->getLanguage(),
                     'packages'       => $request->getPackages(),
+                    'kind'           => $request->getKind(),
                     'categories'     => $request->getCategories(),
+                    'subs'           => $request->getSubs(),
                     'variants'       => $request->getVariants(),
+                    'tags'           => $request->getTags(),
+                    'keywords'       => $request->getKeywords(),
                     'sort_by'        => $request->getSortBy(),
                     'sort_direction' => $request->getSortDirection(),
                     'page'           => $request->getPage(),
                     'per_page'       => $request->getPerPage(),
                 ],
-                'filterOptions'  => $this->browserService->getFilters(),
-                'statistics'     => $this->browserService->getStatistics(),
-                'tree'           => $this->browserService->buildIconTree(),
+                'filterOptions' => $this->browserService->getFilters($filters),
+                'statistics'    => $this->browserService->getStatistics(),
+                'tree'          => $this->browserService->buildIconTree($filters),
+                // Every installed pack, whatever is selected, for the pack picker.
                 'packages'       => $this->browserService->getFilters()['packages'] ?? [],
                 'favorites'      => $this->preferenceService->getFavorites(),
                 'collections'    => $this->preferenceService->getCollections(),
@@ -105,9 +117,10 @@ final class InertiaBrowserController extends BaseInertiaController
                     'last_page'    => 1,
                     'from'         => null,
                     'to'           => null,
+                    'empty_reason' => null,
                 ],
                 'appliedFilters' => [],
-                'filterOptions'  => ['packages' => [], 'categories' => [], 'variants' => []],
+                'filterOptions'  => ['packages' => [], 'categories' => [], 'variants' => [], 'kinds' => []],
                 'statistics'     => null,
                 'tree'           => [],
                 'packages'       => [],
@@ -173,9 +186,8 @@ final class InertiaBrowserController extends BaseInertiaController
 
             $packages = $this->registry->all();
 
-            $iconCounts = Icon::selectRaw('package, COUNT(*) as count')
-                ->groupBy('package')
-                ->pluck('count', 'package');
+            // Core's one grouped count, the same the package listing uses.
+            $iconCounts = $this->databaseOperations->getPackageStatistics();
 
             $termCounts = IconTerm::selectRaw('package, type, COUNT(*) as count')
                 ->whereIn('type', ['category', 'variant'])
@@ -223,6 +235,11 @@ final class InertiaBrowserController extends BaseInertiaController
                     : [],
                 'cacheHealthy' => $this->cacheService->isHealthy(),
                 'updateStatus' => $this->updateChecker->checkAll(),
+                // Core's StatusData (lifecycle, conflicts, orphans, watcher,
+                // logging, last rebuild), for administrators only.
+                'status' => Gate::forUser($this->users->user())->allows(IchavaGates::ADMIN)
+                    ? $this->information->status()->toArray()
+                    : null,
             ];
         } catch (Exception $e) {
             $this->logger->error('Failed to load Inertia statistics', $e);
@@ -240,6 +257,7 @@ final class InertiaBrowserController extends BaseInertiaController
                 'cacheStats'    => [],
                 'cacheHealthy'  => false,
                 'updateStatus'  => [],
+                'status'        => null,
             ];
         }
 

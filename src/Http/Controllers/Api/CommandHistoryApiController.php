@@ -10,6 +10,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\ValidationException;
 use Simtabi\Laranail\Ichava\Services\IchavaLogger;
 use Simtabi\Laranail\Ichava\Services\IconPreferenceService;
+use Simtabi\Laranail\Ichava\IconBrowser\Actions\Library\RecordCommand;
+use Simtabi\Laranail\Ichava\IconBrowser\Actions\Library\ClearCommandHistory;
 
 /**
  * CommandHistoryApiController - RESTful API for Command Palette History
@@ -19,6 +21,8 @@ final class CommandHistoryApiController extends BaseApiController
     public function __construct(
         IchavaLogger $logger,
         protected IconPreferenceService $preferenceService,
+        private readonly RecordCommand $recordCommand,
+        private readonly ClearCommandHistory $clearCommandHistory,
     ) {
         parent::__construct($logger);
     }
@@ -59,11 +63,11 @@ final class CommandHistoryApiController extends BaseApiController
         try {
             $validated = $request->validate([
                 'command'  => 'required|string|max:255',
-                'type'     => 'required|string|in:action,search,navigation',
+                'type'     => 'required|string|in:' . implode(',', RecordCommand::TYPES),
                 'metadata' => 'sometimes|array',
             ]);
             /** @var array{command: string, type: string, metadata?: array<mixed>} $validated */
-            $this->preferenceService->addCommandHistory(
+            $this->recordCommand->handle(
                 $validated['command'],
                 $validated['type'],
                 $validated['metadata'] ?? [],
@@ -91,7 +95,7 @@ final class CommandHistoryApiController extends BaseApiController
     public function clear(): JsonResponse
     {
         try {
-            $this->preferenceService->clearCommandHistory();
+            $this->clearCommandHistory->handle();
 
             $this->logDebug('Command history cleared');
 
