@@ -4,6 +4,11 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
 
 ## [Unreleased]
 
+### Removed
+
+- **The deprecated `ichava-assets` publish tag.** Publish the built assets with `--tag=ichava::icon-browser-assets` (`IconBrowserServiceProvider::ASSETS_TAG`), which has published the same paths since 0.1.1. `IconBrowserServiceProvider::DEPRECATED_ASSETS_TAG` is gone with it.
+- **The `ichava.api.security` middleware alias.** Use `ichava.security`, which names the same `IchavaApiSecurity` middleware.
+
 ### Changed
 
 - The changelog states the MIT-to-proprietary change as breaking under 0.1.1, and labels the archived pre-reset history as the record of the MIT, public releases.

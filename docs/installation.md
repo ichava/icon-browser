@@ -57,9 +57,6 @@ php artisan vendor:publish --tag=ichava::icon-browser-assets
 Copies the pre-built bundle (`assets/js/inertia-app.js`, `assets/css/inertia-app.css` and the
 Geist fonts) into `public/vendor/ichava/`. Do this after every `composer update` of the package.
 
-`--tag=ichava-assets` is the tag's previous name. It still publishes the same files, and is
-deprecated: it may be removed in 0.2.0.
-
 ## 4. Visit the browser
 
 ```

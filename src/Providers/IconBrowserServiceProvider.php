@@ -49,14 +49,6 @@ class IconBrowserServiceProvider extends PackageServiceProvider
     public const ASSETS_TAG = 'ichava::icon-browser-assets';
 
     /**
-     * The asset tag's previous, bare name. Publishes the same paths.
-     *
-     * @deprecated 0.1.x Use ASSETS_TAG (`ichava::icon-browser-assets`). The earliest
-     *             release that may stop registering it is 0.2.0.
-     */
-    public const DEPRECATED_ASSETS_TAG = 'ichava-assets';
-
-    /**
      * Declare the browser package metadata, assets, and commands.
      */
     public function configurePackage(Package $packager): void
@@ -129,12 +121,11 @@ class IconBrowserServiceProvider extends PackageServiceProvider
         // views and bookmarks keep working.
         //
         // The tag is `ichava::icon-browser-assets`, the vendor-scoped shape every
-        // other publish tag here takes. `ichava-assets` is the bare name it had
-        // before; it publishes the same paths and stays for one release.
+        // other publish tag here takes.
         if ($this->app->runningInConsole()) {
             $this->publishes([
                 $this->package->basePath('public') => public_path('vendor/ichava'),
-            ], [self::ASSETS_TAG, self::DEPRECATED_ASSETS_TAG, 'laravel-assets']);
+            ], [self::ASSETS_TAG, 'laravel-assets']);
         }
 
         // Register the browser's bundled `ui-icons` set with the core registry.
@@ -169,9 +160,6 @@ class IconBrowserServiceProvider extends PackageServiceProvider
         $router->aliasMiddleware('ichava.guard', IchavaStatefulGuard::class);
         $router->aliasMiddleware('ichava.cache-admin', AuthorizeCacheAdmin::class);
         $router->aliasMiddleware('ichava.handle-inertia', HandleInertiaRequests::class);
-
-        // Legacy alias for backward compatibility.
-        $router->aliasMiddleware('ichava.api.security', IchavaApiSecurity::class);
 
         // Detect host capabilities (Sanctum / session availability).
         $capabilities = HostCapabilities::getInstance();
