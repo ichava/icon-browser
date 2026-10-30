@@ -33,12 +33,12 @@ describe('SettingsController mutations', function () {
     it('no longer mounts the search and filter settings routes', function (string $name) {
         // Removed (wire-in plan): the browser syncs search and filters through the
         // URL, and nothing posted to these.
-        expect(\Illuminate\Support\Facades\Route::has($name))->toBeFalse();
+        expect(Illuminate\Support\Facades\Route::has($name))->toBeFalse();
     })->with(['ichava.inertia.settings.search', 'ichava.inertia.settings.filters']);
 
     it('keeps the library when preferences are reset', function () {
         $service = app(IconPreferenceService::class);
-        $icon = \Simtabi\Laranail\Ichava\Models\Icon::create(['package' => 'ichava/test-pack', 'name' => 'star', 'path' => '/fake/star.svg']);
+        $icon = Simtabi\Laranail\Ichava\Models\Icon::create(['package' => 'ichava/test-pack', 'name' => 'star', 'path' => '/fake/star.svg']);
 
         // A session first, so the writes below land in the request's session.
         test()->get(route('ichava.inertia.settings.index'));

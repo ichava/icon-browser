@@ -40,7 +40,7 @@ function filterFixture(): array
 }
 
 /** @return list<string> */
-function listedNames(\Illuminate\Testing\TestResponse $response): array
+function listedNames(Illuminate\Testing\TestResponse $response): array
 {
     $names = array_column($response->json('data') ?? [], 'name');
     sort($names);

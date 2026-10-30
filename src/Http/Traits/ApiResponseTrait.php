@@ -140,5 +140,4 @@ trait ApiResponseTrait
             Response::HTTP_OK,
         );
     }
-
 }
