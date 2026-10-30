@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\Ichava\IconBrowser\Support;
 
+use Stringable;
+
 /**
  * Browser-only HTTP helper utilities.
  *
@@ -53,8 +55,52 @@ final class Helpers
             return [];
         }
 
-        $limit = config("ichava.icon-browser.rate_limiting.{$type}", $default);
+        $limit = self::configString("ichava.icon-browser.rate_limiting.{$type}", (string) $default);
 
         return ["throttle:{$limit},1"];
+    }
+
+    /**
+     * A config value as an int, the way `(int) config($key, $default)` casts it.
+     *
+     * Every scalar and null casts exactly as the bare cast did; a value no cast
+     * can represent (an array, an object) falls back to the default.
+     */
+    public static function configInt(string $key, int $default): int
+    {
+        return self::intOf(config($key, $default), $default);
+    }
+
+    /**
+     * Any value as an int, the way an `(int)` cast renders it.
+     *
+     * Every scalar and null casts exactly as the bare cast did; any other value
+     * becomes the default.
+     */
+    public static function intOf(mixed $value, int $default = 0): int
+    {
+        return is_scalar($value) || $value === null ? (int) $value : $default;
+    }
+
+    /**
+     * A config value as a string, the way `(string) config($key, $default)` casts it.
+     *
+     * Every scalar, null and Stringable casts exactly as the bare cast did; any
+     * other value falls back to the default.
+     */
+    public static function configString(string $key, string $default): string
+    {
+        return self::stringOf(config($key, $default), $default);
+    }
+
+    /**
+     * Any value as a string, the way a `(string)` cast renders it.
+     *
+     * Every scalar, null and Stringable casts exactly as the bare cast did; any
+     * other value becomes the default.
+     */
+    public static function stringOf(mixed $value, string $default = ''): string
+    {
+        return is_scalar($value) || $value === null || $value instanceof Stringable ? (string) $value : $default;
     }
 }

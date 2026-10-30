@@ -49,7 +49,8 @@ class InjectNpmScriptsCommand extends Command
 
     public function handle(): int
     {
-        $path = $this->option('path') ?: base_path('package.json');
+        $option = $this->option('path');
+        $path = is_string($option) && (bool) $option ? $option : base_path('package.json');
 
         if (! File::exists($path)) {
             $this->line(StatusLine::make()->error(__('ichava/icon-browser::commands.inject_scripts.not_found', ['path' => $path])));
@@ -58,7 +59,7 @@ class InjectNpmScriptsCommand extends Command
         }
 
         $contents = File::get($path);
-        $data = json_decode($contents, true);
+        $data = json_decode($contents, true) ?? [];
 
         if (json_last_error() !== JSON_ERROR_NONE) {
             $this->line(StatusLine::make()->error(__('ichava/icon-browser::commands.inject_scripts.unparseable', ['error' => json_last_error_msg()])));
@@ -66,16 +67,22 @@ class InjectNpmScriptsCommand extends Command
             return self::FAILURE;
         }
 
-        if (! isset($data['scripts'])) {
-            $data['scripts'] = [];
+        // A package.json whose root, or whose "scripts", is not a JSON object cannot take
+        // the scripts. These used to reach an array operation on a scalar and throw.
+        if (! is_array($data) || (isset($data['scripts']) && ! is_array($data['scripts']))) {
+            $this->line(StatusLine::make()->error(__('ichava/icon-browser::commands.inject_scripts.unparseable', ['error' => 'expected a JSON object'])));
+
+            return self::FAILURE;
         }
+
+        $scripts = $data['scripts'] ?? [];
 
         $force = $this->option('force');
         $added = [];
 
         foreach (self::SCRIPTS as $key => $value) {
-            if ($force || ! array_key_exists($key, $data['scripts'])) {
-                $data['scripts'][$key] = $value;
+            if ($force || ! array_key_exists($key, $scripts)) {
+                $scripts[$key] = $value;
                 $added[] = $key;
             }
         }
@@ -85,6 +92,8 @@ class InjectNpmScriptsCommand extends Command
 
             return self::SUCCESS;
         }
+
+        $data['scripts'] = $scripts;
 
         File::put(
             $path,

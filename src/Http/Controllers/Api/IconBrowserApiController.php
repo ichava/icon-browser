@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Simtabi\Laranail\Ichava\Models\Icon;
+use Illuminate\Database\Query\JoinClause;
 use Symfony\Component\HttpFoundation\Response;
 use Simtabi\Laranail\Ichava\Services\IchavaLogger;
 use Simtabi\Laranail\Ichava\Services\IconRegistry;
@@ -108,6 +109,7 @@ final class IconBrowserApiController extends BaseApiController
         try {
             $this->logDebug('Fetching filter options');
 
+            /** @var array{packages?: array<mixed>, categories?: array<mixed>, variants?: array<mixed>} $filters */
             $filters = $this->browserService->getFilters();
 
             $this->logDebug('Filter options retrieved', [
@@ -132,6 +134,7 @@ final class IconBrowserApiController extends BaseApiController
         try {
             $this->logDebug('Fetching statistics');
 
+            /** @var array<string, mixed> $stats */
             $stats = $this->browserService->getStatistics();
 
             $this->logDebug('Statistics retrieved', $stats);
@@ -304,7 +307,9 @@ final class IconBrowserApiController extends BaseApiController
         try {
             $this->logDebug('Fetching packages list');
 
-            $packages = $this->browserService->getFilters()['packages'] ?? [];
+            /** @var array{packages?: array<mixed>} $filters */
+            $filters = $this->browserService->getFilters();
+            $packages = $filters['packages'] ?? [];
 
             return $this->successResponse(
                 $packages,
@@ -359,7 +364,7 @@ final class IconBrowserApiController extends BaseApiController
 
             // OPTIMIZED: Single query to get all term icon counts for this package
             $termIconCounts = DB::table('ichava_icon_termables')
-                ->join('ichava_icons', function ($join) use ($package, $iconMorphAlias) {
+                ->join('ichava_icons', function (JoinClause $join) use ($package, $iconMorphAlias) {
                     $join->on('ichava_icon_termables.termable_id', '=', 'ichava_icons.id')
                         ->where('ichava_icon_termables.termable_type', '=', $iconMorphAlias)
                         ->where('ichava_icons.package', '=', $package);
@@ -541,7 +546,7 @@ final class IconBrowserApiController extends BaseApiController
 
             // OPTIMIZED: Get all term icon counts in a single query
             $termIconCounts = DB::table('ichava_icon_termables')
-                ->join('ichava_icons', function ($join) use ($iconMorphType) {
+                ->join('ichava_icons', function (JoinClause $join) use ($iconMorphType) {
                     $join->on('ichava_icon_termables.termable_id', '=', 'ichava_icons.id')
                         ->where('ichava_icon_termables.termable_type', '=', $iconMorphType);
                 })
@@ -667,7 +672,8 @@ final class IconBrowserApiController extends BaseApiController
     public function updateSearch(PreferenceSearchRequest $request): JsonResponse
     {
         try {
-            $search = $request->validated('search') ?? '';
+            $search = $request->validated('search');
+            $search = is_string($search) ? $search : '';
 
             $this->logDebug('Updating search query', [
                 'search' => $search,
@@ -744,6 +750,7 @@ final class IconBrowserApiController extends BaseApiController
         try {
             $this->logInfo('Clearing cache via API');
 
+            /** @var array<string, mixed> $stats */
             $stats = $this->cacheService->clearAll();
             $this->browserService->clearCache();
 
@@ -769,6 +776,7 @@ final class IconBrowserApiController extends BaseApiController
         try {
             $this->logInfo('Rebuilding cache via API');
 
+            /** @var array<string, mixed> $stats */
             $stats = $this->cacheService->rebuild();
             $this->browserService->clearCache();
             $this->preferenceService->clear();
@@ -808,6 +816,8 @@ final class IconBrowserApiController extends BaseApiController
 
     /**
      * Return empty icon response
+     *
+     * @return array<string, mixed>
      */
     protected function emptyIconResponse(IconFilterRequest $request, string $error): array
     {
@@ -829,14 +839,24 @@ final class IconBrowserApiController extends BaseApiController
 
     /**
      * Build hierarchical tree structure from flat array
+     *
+     * @param array<mixed> $terms
+     *
+     * @return list<array<mixed>>
      */
     protected function buildTermTree(array $terms, ?int $parentId = null): array
     {
         $tree = [];
 
         foreach ($terms as $term) {
-            if ($term['parent_id'] === $parentId) {
-                $children = $this->buildTermTree($terms, $term['id']);
+            if (! is_array($term)) {
+                continue;
+            }
+
+            if (($term['parent_id'] ?? null) === $parentId) {
+                // Term ids are integers; a non-integer id has no children to look up.
+                $id = $term['id'];
+                $children = is_int($id) ? $this->buildTermTree($terms, $id) : [];
                 if (! empty($children)) {
                     $term['children'] = $children;
                 }

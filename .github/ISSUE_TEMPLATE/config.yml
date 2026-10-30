@@ -1,8 +1,8 @@
 blank_issues_enabled: false
 contact_links:
   - name: Security vulnerability
-    url: mailto:security@simtabi.com
-    about: Email security@simtabi.com. This repository is private and has no GitHub vulnerability reporting; never put a report in an issue.
+    url: https://github.com/ichava/icon-browser/security/advisories/new
+    about: Report it privately through GitHub. No GitHub account? Email security@simtabi.com. Never put a report in an issue.
   - name: Documentation
     url: https://github.com/ichava/icon-browser/tree/main/docs
-    about: The package docs, in this private repository. Read them before filing; your question may already be answered.
+    about: The package docs, in this repository. Read them before filing; your question may already be answered.

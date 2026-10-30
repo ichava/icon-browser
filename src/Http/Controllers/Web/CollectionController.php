@@ -46,6 +46,7 @@ final class CollectionController extends BaseInertiaController
 
     public function show(string $id): Response|RedirectResponse
     {
+        /** @var array<string, mixed>|null $collection */
         $collection = $this->preferenceService->getCollection($id);
 
         if (! $collection) {
@@ -54,7 +55,8 @@ final class CollectionController extends BaseInertiaController
                 ->with('error', "Collection [{$id}] not found.");
         }
 
-        $collection['icons'] = $this->pageIcons($collection['icon_ids'] ?? []);
+        $ids = $collection['icon_ids'] ?? [];
+        $collection['icons'] = $this->pageIcons(is_array($ids) ? $ids : []);
 
         return Inertia::render('Collections/Show', [
             'collection' => $collection,
@@ -67,7 +69,7 @@ final class CollectionController extends BaseInertiaController
             'name'  => 'required|string|max:100',
             'color' => 'nullable|string|regex:/^#[a-fA-F0-9]{6}$/',
         ]);
-
+        /** @var array{name: string, color?: string|null} $validated */
         $collection = $this->preferenceService->createCollection(
             $validated['name'],
             $validated['color'] ?? null,
@@ -92,7 +94,7 @@ final class CollectionController extends BaseInertiaController
             'name'  => 'sometimes|required|string|max:100',
             'color' => 'nullable|string|regex:/^#[a-fA-F0-9]{6}$/',
         ]);
-
+        /** @var array{name?: string, color?: string|null} $validated */
         $this->preferenceService->updateCollection($id, $validated);
         $this->logger->debug('Collection updated from web', ['collection_id' => $id]);
 
@@ -160,10 +162,12 @@ final class CollectionController extends BaseInertiaController
      */
     protected function collectionsWithIcons(): array
     {
+        /** @var array<int, array<string, mixed>> $collections */
         $collections = $this->preferenceService->getCollections();
 
         foreach ($collections as &$collection) {
-            $collection['icons'] = $this->pageIcons($collection['icon_ids'] ?? []);
+            $ids = $collection['icon_ids'] ?? [];
+            $collection['icons'] = $this->pageIcons(is_array($ids) ? $ids : []);
         }
 
         return $collections;

@@ -10,6 +10,7 @@ use Inertia\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\RedirectResponse;
 use Simtabi\Laranail\Ichava\Models\Icon;
+use Illuminate\Database\Query\JoinClause;
 use Simtabi\Laranail\Ichava\Services\IchavaLogger;
 use Simtabi\Laranail\Ichava\Services\IconRegistry;
 use Simtabi\Laranail\Ichava\Exceptions\IchavaException;
@@ -75,7 +76,7 @@ final class PackageController extends BaseInertiaController
         $iconMorphAlias = (new Icon)->getMorphClass();
 
         $termIconCounts = DB::table('ichava_icon_termables')
-            ->join('ichava_icons', function ($join) use ($package, $iconMorphAlias) {
+            ->join('ichava_icons', function (JoinClause $join) use ($package, $iconMorphAlias) {
                 $join->on('ichava_icon_termables.termable_id', '=', 'ichava_icons.id')
                     ->where('ichava_icon_termables.termable_type', '=', $iconMorphAlias)
                     ->where('ichava_icons.package', '=', $package);

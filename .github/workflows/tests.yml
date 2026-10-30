@@ -1,8 +1,9 @@
 name: Tests
 
-# Private repository: Actions minutes are billed. Linux only, superseded runs cancelled,
-# drafts skipped (mark a pull request ready to run the suite), a timeout on every job, and
-# one weekly run on main as the post-merge check.
+# Written while the repository was private and Actions minutes were billed; it is public
+# since 2026-10-30 and the policy is kept. Linux only, superseded runs cancelled, drafts
+# skipped (mark a pull request ready to run the suite), a timeout on every job, and one
+# weekly run on main as the post-merge check.
 on:
   pull_request:
     branches: [main]

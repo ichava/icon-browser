@@ -32,6 +32,7 @@ final class CollectionsApiController extends BaseApiController
         try {
             $this->logDebug('Fetching collections');
 
+            /** @var array<int, array<string, mixed>> $collections */
             $collections = $this->preferenceService->getCollections();
 
             foreach ($collections as &$collection) {
@@ -64,6 +65,7 @@ final class CollectionsApiController extends BaseApiController
     public function show(string $id): JsonResponse
     {
         try {
+            /** @var array<string, mixed>|null $collection */
             $collection = $this->preferenceService->getCollection($id);
 
             if (! $collection) {
@@ -97,7 +99,7 @@ final class CollectionsApiController extends BaseApiController
                 'name'  => 'required|string|max:100',
                 'color' => 'nullable|string|regex:/^#[a-fA-F0-9]{6}$/',
             ]);
-
+            /** @var array{name: string, color?: string|null} $validated */
             $collection = $this->preferenceService->createCollection(
                 $validated['name'],
                 $validated['color'] ?? null,
@@ -129,7 +131,7 @@ final class CollectionsApiController extends BaseApiController
                 'name'  => 'sometimes|required|string|max:100',
                 'color' => 'nullable|string|regex:/^#[a-fA-F0-9]{6}$/',
             ]);
-
+            /** @var array{name?: string, color?: string|null} $validated */
             $updated = $this->preferenceService->updateCollection($id, $validated);
 
             $this->logDebug('Collection updated', ['collection_id' => $id]);

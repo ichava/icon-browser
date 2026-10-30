@@ -58,7 +58,8 @@ final class SettingsController extends BaseInertiaController
 
     public function updateSearch(PreferenceSearchRequest $request): RedirectResponse
     {
-        $search = $request->validated('search') ?? '';
+        $search = $request->validated('search');
+        $search = is_string($search) ? $search : '';
         $this->preferenceService->setSearch($search);
 
         return redirect()->back()->with('success', 'Search query updated successfully.');

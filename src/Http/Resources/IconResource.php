@@ -59,9 +59,9 @@ class IconResource extends JsonResource
             ], false),
 
             // SVG Attributes (from JSON)
-            'viewbox' => $icon->viewbox,
-            'width'   => $icon->width,
-            'height'  => $icon->height,
+            'viewbox' => $icon->getAttribute('viewbox'),
+            'width'   => $icon->getAttribute('width'),
+            'height'  => $icon->getAttribute('height'),
 
             // Snippet strings: blade_clean, blade_generic, helper, and the host
             // resolver's `snippets` map when one is configured (IconSnippets).

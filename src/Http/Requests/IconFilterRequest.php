@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Simtabi\Laranail\Ichava\IconBrowser\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Simtabi\Laranail\Ichava\IconBrowser\Support\Helpers;
 
 /**
  * Icon Filter Request
@@ -23,6 +24,8 @@ class IconFilterRequest extends FormRequest
 
     /**
      * Get the validation rules that apply to the request.
+     *
+     * @return array<string, array<int, string>>
      */
     public function rules(): array
     {
@@ -87,31 +90,45 @@ class IconFilterRequest extends FormRequest
      */
     public function getSearch(): ?string
     {
-        return $this->validated('search') ? trim($this->validated('search')) : null;
+        $search = $this->validated('search');
+
+        return is_string($search) && (bool) $search ? trim($search) : null;
     }
 
     /**
      * Get the validated package filters
+     *
+     * @return array<mixed>
      */
     public function getPackages(): array
     {
-        return $this->validated('packages', []);
+        $packages = $this->validated('packages', []);
+
+        return is_array($packages) ? $packages : [];
     }
 
     /**
      * Get the validated category filters
+     *
+     * @return array<mixed>
      */
     public function getCategories(): array
     {
-        return $this->validated('categories', []);
+        $categories = $this->validated('categories', []);
+
+        return is_array($categories) ? $categories : [];
     }
 
     /**
      * Get the validated variant filters
+     *
+     * @return array<mixed>
      */
     public function getVariants(): array
     {
-        return $this->validated('variants', []);
+        $variants = $this->validated('variants', []);
+
+        return is_array($variants) ? $variants : [];
     }
 
     /**
@@ -119,7 +136,7 @@ class IconFilterRequest extends FormRequest
      */
     public function getPage(): int
     {
-        return (int) $this->validated('page', 1);
+        return Helpers::intOf($this->validated('page', 1), 1);
     }
 
     /**
@@ -127,7 +144,7 @@ class IconFilterRequest extends FormRequest
      */
     public function getPerPage(): int
     {
-        return (int) $this->validated('per_page', 60);
+        return Helpers::intOf($this->validated('per_page', 60), 60);
     }
 
     /**
@@ -135,7 +152,9 @@ class IconFilterRequest extends FormRequest
      */
     public function getSortBy(): string
     {
-        return $this->validated('sort_by', 'name');
+        $sortBy = $this->validated('sort_by', 'name');
+
+        return is_string($sortBy) ? $sortBy : 'name';
     }
 
     /**
@@ -143,7 +162,9 @@ class IconFilterRequest extends FormRequest
      */
     public function getSortDirection(): string
     {
-        return $this->validated('sort_direction', 'asc');
+        $direction = $this->validated('sort_direction', 'asc');
+
+        return is_string($direction) ? $direction : 'asc';
     }
 
     /**

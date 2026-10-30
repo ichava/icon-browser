@@ -4,15 +4,13 @@
 
 Do not open a public GitHub issue for a security report.
 
-**Email `security@simtabi.com`.** That is the only channel for this repository.
+**Report it privately through GitHub:**
+[Report a vulnerability](https://github.com/ichava/icon-browser/security/advisories/new). The
+report is visible only to the maintainers, and the fix is prepared in a draft advisory.
 
-GitHub private vulnerability reporting is a public-repository feature. This repository is
-private, so its Security tab offers no *Report a vulnerability* button and the API answers
-`404`. If this repository is ever made public, enable private vulnerability reporting and list
-it here first:
-
-```bash
-gh api -X PUT repos/ichava/icon-browser/private-vulnerability-reporting
-```
+**No GitHub account?** Email `security@simtabi.com`.
 
 Acknowledgement within 48 hours.
+
+This package is proprietary ([LICENSE](LICENSE)). Its repository is public so the source can be
+read and reported on; that grants no licence to use it.
