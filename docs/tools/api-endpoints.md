@@ -12,6 +12,18 @@ REST endpoints exposed by `ichava/icon-browser`. All endpoints sit under `/{pref
 /ichava/api
 ```
 
+### Host endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/session` | The signed-in host user (`UserData`, no email), storage tier, sign-in links, schema version |
+| GET | `/bootstrap` | Schema version, locale, mounted modes, the session and the features manifest |
+| GET | `/status` | Core's `StatusData`. Requires the `ichava.admin` ability (denied by default) |
+| GET | `/library` | The current owner's favourites, collections, history and command history |
+| DELETE | `/library` | Delete my library: every favourite and collection kept on the server |
+
+See [Host integration](host-integration.md) for the shapes, and [Payload schema](payload-schema.md) for the JSON Schema each one matches.
+
 ### Icon Endpoints
 
 | Method | Endpoint | Description |
@@ -22,6 +34,18 @@ REST endpoints exposed by `ichava/icon-browser`. All endpoints sit under `/{pref
 | GET | `/icons/filters` | Get filter options |
 | GET | `/icons/tree` | Get hierarchical tree |
 | GET | `/icons/statistics` | Get statistics |
+
+`/icons`, `/icons/filters` and `/icons/tree` take the same filters:
+
+| Parameter | Meaning |
+|-----------|---------|
+| `search`, `language` | Search text; `language` picks the PostgreSQL full-text language (ignored on other drivers) |
+| `packages[]`, `categories[]`, `variants[]` | As before |
+| `kind` | `icon` or `illustration` |
+| `subs[]` | Nested categories, or variants within the selected category |
+| `tags[]`, `keywords[]` | Tags and keywords an icon must carry |
+
+Facet counts in `/icons/filters` are counted over the other filters, and `/icons/tree` over the selection. The `/icons` `meta` block carries `has_search`, `has_filters` and `empty_reason` (`no_match`, `no_icons`, or null). Each icon carries `kind` and `themes`.
 
 ### Package Endpoints
 
