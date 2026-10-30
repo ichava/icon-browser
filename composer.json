@@ -29,7 +29,7 @@
     ],
     "require": {
         "php": "^8.4.1 || ^8.5",
-        "ichava/core": "^0.1.4",
+        "ichava/core": "^0.1",
         "illuminate/support": "^13.0",
         "illuminate/view": "^13.0",
         "inertiajs/inertia-laravel": "^3.3"
@@ -57,6 +57,7 @@
         }
     ],
     "require-dev": {
+        "composer/semver": "^3.4",
         "larastan/larastan": "^3.0",
         "laravel/pint": "^1.18",
         "opis/json-schema": "^2.4",
