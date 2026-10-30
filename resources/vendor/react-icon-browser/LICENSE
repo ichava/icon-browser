@@ -17,9 +17,11 @@ Untitled UI licence (https://www.untitledui.com/license). They live under:
 
 and each file opens with a comment saying so. That licence does not permit
 exposing their source code publicly or redistributing them as a UI kit or
-library. This repository must therefore remain private, and
-its source may be shared only with people who hold their own Untitled UI
-licence.
+library. Their source therefore stays in the private react-icon-browser
+repository and may be shared only with people who hold their own Untitled UI
+licence. This vendored copy holds only the compiled build, which may be used
+as part of Ichava products published by Simtabi LLC and may not be
+redistributed outside them.
 
 Third-party components
 ----------------------

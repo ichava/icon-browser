@@ -16,7 +16,7 @@ Relocated from the README, which is now a slim pointer.
 | Hybrid auth | `HostCapabilities` detects Sanctum and sessions, then adapts the stack. |
 | Blade views | `<x-ichava::layouts.app>` and `<x-ichava::layouts.browser>`, plus the `<x-ichava::ichava-test-icons>` and `<x-ichava::ichava-ui-icons>` demo components. |
 | `ui-icons` pack | The bundled icon set the browser pages use. |
-| Asset publish | `vendor:publish --tag=ichava::icon-browser-assets` copies the pre-built bundle into `public/vendor/ichava/`. `ichava-assets` is the deprecated previous name. |
+| Asset publish | `vendor:publish --tag=ichava::icon-browser-assets` copies the pre-built bundle into `public/vendor/ichava/`. |
 | `inject-npm-scripts` | Adds the `ichava:dev`, `ichava:build` and watch scripts to the host application's `package.json`. |
 
 ## The browser UI is react-icon-browser, vendored
