@@ -5,7 +5,7 @@
   "commit": "85d9dbd59cd825c4f5c3667fe44271b50e842425",
   "builtWith": "npm run build:lib",
   "files": {
-    "LICENSE": "6f0377a6a1b11718ffef8b80fd15ca62ea49385684c62d92d7acd7a3f03472ca",
+    "LICENSE": "6273cddcca1be62ff0d0df26d9234a69e0248735552ee3289967cf479de04a73",
     "fonts/Geist-Variable.woff2": "a369fcf5628ea2aa4e1b9e2ec6a5b3624e365bda588e1f0f2f12b564f728fbb8",
     "fonts/GeistMono-Variable.woff2": "fba8f577f38a2bbcbe818efa6348dd58f36303a10b8737c42fefad275be563ab",
     "fonts/LICENSE.txt": "930853ee1daa68554d9e35c8a9175affb74f699fad9a5da6ee5ebe76379d9137",

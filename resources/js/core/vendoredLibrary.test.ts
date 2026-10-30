@@ -53,4 +53,13 @@ describe('vendored react-icon-browser', () => {
   it('carries the library licence', () => {
     expect(readFileSync(join(dir, 'LICENSE'), 'utf8')).toContain('Untitled UI PRO');
   });
+
+  it('does not say the repository it ships in must stay private', () => {
+    // react-icon-browser's own LICENSE says its repository must remain private, which is
+    // true there and false here: ichava/icon-browser is public and carries only the compiled
+    // build. A re-sync copies that LICENSE back verbatim, so this fails until it is reworded.
+    const license = readFileSync(join(dir, 'LICENSE'), 'utf8').replace(/\s+/g, ' ');
+    expect(license).not.toMatch(/must (therefore )?remain private/i);
+    expect(license).toContain('may not be redistributed outside them');
+  });
 });
