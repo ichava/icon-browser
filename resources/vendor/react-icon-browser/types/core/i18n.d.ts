@@ -382,7 +382,7 @@ declare const EN: {
  * carrying a key English lacks, fails the typecheck (architecture 2.8).
  */
 export type MessageKey = keyof typeof EN;
-/** The bundled catalogs, by locale. Writable, for the deprecated `registerTranslations`. */
+/** The bundled catalogs, by locale. */
 export declare const MESSAGES: Record<Locale, Record<string, string>>;
 /**
  * A key built at run time, such as `variant.${id}` for a variant the data names. It is
@@ -395,8 +395,7 @@ export declare function translate(locale: Locale, key: string, vars?: Record<str
 /** Server overrides, per locale, as a mount's store holds them. */
 export type TranslationOverrides = Partial<Record<Locale, Record<string, string>>>;
 /**
- * A translator for one mount: the bundled catalogs (read live, so the deprecated global
- * `registerTranslations` still reaches it) under that mount's own server overrides, in
+ * A translator for one mount: the bundled catalogs under that mount's own server overrides, in
  * `locale`. The engine is @ichava/js-ui-kernel's `Translator`; lookup falls back through
  * the locale, then English, then the key, as `translate` does.
  */
