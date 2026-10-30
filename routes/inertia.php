@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use Simtabi\Laranail\Ichava\IconBrowser\Support\Helpers;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Controllers\Web\CacheController;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Controllers\Web\HistoryController;
+use Simtabi\Laranail\Ichava\IconBrowser\Http\Controllers\Web\LibraryController;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Controllers\Web\PackageController;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Controllers\Web\FavoriteController;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Controllers\Web\SettingsController;
@@ -86,6 +87,10 @@ Route::prefix(Helpers::routePrefix())
             ->name('collections.removeIcon')
             ->where('iconId', '[0-9]+');
 
+        // "Delete my library": every favourite and collection kept on the server.
+        Route::delete('/library', [LibraryController::class, 'destroy'])
+            ->name('library.destroy');
+
         // Activity history.
         Route::get('/history', [HistoryController::class, 'index'])
             ->name('history.index');
@@ -107,10 +112,6 @@ Route::prefix(Helpers::routePrefix())
             ->name('settings.index');
         Route::put('/settings', [SettingsController::class, 'update'])
             ->name('settings.update');
-        Route::post('/settings/search', [SettingsController::class, 'updateSearch'])
-            ->name('settings.search');
-        Route::post('/settings/filters', [SettingsController::class, 'updateFilters'])
-            ->name('settings.filters');
         Route::delete('/settings', [SettingsController::class, 'clear'])
             ->name('settings.clear');
 

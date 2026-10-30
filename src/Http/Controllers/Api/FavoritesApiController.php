@@ -8,18 +8,27 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Simtabi\Laranail\Ichava\Models\Icon;
 use Simtabi\Laranail\Ichava\Services\IchavaLogger;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Simtabi\Laranail\Ichava\Services\IconPreferenceService;
+use Simtabi\Laranail\Ichava\IconBrowser\Actions\Library\AddFavorite;
+use Simtabi\Laranail\Ichava\IconBrowser\Actions\Library\RemoveFavorite;
+use Simtabi\Laranail\Ichava\IconBrowser\Actions\Library\ToggleFavorite;
 
 /**
  * FavoritesApiController - RESTful API for User Favorites
  *
- * Handles favorites management using session-based storage.
+ * The REST twin of the Inertia FavoriteController: both call the same
+ * actions, so the two modes store the same thing. Kept by owner for a
+ * signed-in user and by session for a guest.
  */
 final class FavoritesApiController extends BaseApiController
 {
     public function __construct(
         IchavaLogger $logger,
         protected IconPreferenceService $preferenceService,
+        private readonly AddFavorite $addFavorite,
+        private readonly RemoveFavorite $removeFavorite,
+        private readonly ToggleFavorite $toggleFavorite,
     ) {
         parent::__construct($logger);
     }
@@ -60,17 +69,15 @@ final class FavoritesApiController extends BaseApiController
     public function store(int $iconId): JsonResponse
     {
         try {
-            if (! $this->iconExists($iconId)) {
-                return $this->notFoundResponse('Icon', $iconId);
-            }
-
-            $this->preferenceService->addFavorite($iconId);
+            $this->addFavorite->handle($this->findIconOrFail($iconId));
             $this->logDebug('Icon added to favorites', ['icon_id' => $iconId]);
 
             return $this->createdResponse([
                 'icon_id'     => $iconId,
                 'is_favorite' => true,
             ], 'Icon added to favorites');
+        } catch (ModelNotFoundException $e) {
+            return $this->handleNotFoundException($e, 'Icon');
         } catch (Exception $e) {
             return $this->handleException($e, 'Failed to add favorite');
         }
@@ -82,7 +89,7 @@ final class FavoritesApiController extends BaseApiController
     public function destroy(int $iconId): JsonResponse
     {
         try {
-            $this->preferenceService->removeFavorite($iconId);
+            $this->removeFavorite->handle($iconId);
             $this->logDebug('Icon removed from favorites', ['icon_id' => $iconId]);
 
             return $this->deletedResponse('Icon removed from favorites');
@@ -97,11 +104,7 @@ final class FavoritesApiController extends BaseApiController
     public function toggle(int $iconId): JsonResponse
     {
         try {
-            if (! $this->iconExists($iconId)) {
-                return $this->notFoundResponse('Icon', $iconId);
-            }
-
-            $isFavorite = $this->preferenceService->toggleFavorite($iconId);
+            $isFavorite = $this->toggleFavorite->handle($this->findIconOrFail($iconId));
 
             $this->logDebug('Favorite toggled', [
                 'icon_id'     => $iconId,
@@ -112,6 +115,8 @@ final class FavoritesApiController extends BaseApiController
                 'icon_id'     => $iconId,
                 'is_favorite' => $isFavorite,
             ], $isFavorite ? 'Icon added to favorites' : 'Icon removed from favorites');
+        } catch (ModelNotFoundException $e) {
+            return $this->handleNotFoundException($e, 'Icon');
         } catch (Exception $e) {
             return $this->handleException($e, 'Failed to toggle favorite');
         }

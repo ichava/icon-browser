@@ -10,16 +10,31 @@ use Illuminate\Http\JsonResponse;
 use Simtabi\Laranail\Ichava\Models\Icon;
 use Illuminate\Validation\ValidationException;
 use Simtabi\Laranail\Ichava\Services\IchavaLogger;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Simtabi\Laranail\Ichava\Services\IconPreferenceService;
+use Simtabi\Laranail\Ichava\IconBrowser\Exceptions\CollectionNotFound;
+use Simtabi\Laranail\Ichava\IconBrowser\Actions\Library\CreateCollection;
+use Simtabi\Laranail\Ichava\IconBrowser\Actions\Library\DeleteCollection;
+use Simtabi\Laranail\Ichava\IconBrowser\Actions\Library\UpdateCollection;
+use Simtabi\Laranail\Ichava\IconBrowser\Actions\Library\AddIconToCollection;
+use Simtabi\Laranail\Ichava\IconBrowser\Actions\Library\RemoveIconFromCollection;
 
 /**
  * CollectionsApiController - RESTful API for Icon Collections
+ *
+ * The REST twin of the Inertia CollectionController: every write goes
+ * through the same action, so the two modes behave identically.
  */
 final class CollectionsApiController extends BaseApiController
 {
     public function __construct(
         IchavaLogger $logger,
         protected IconPreferenceService $preferenceService,
+        private readonly CreateCollection $createCollection,
+        private readonly UpdateCollection $updateCollection,
+        private readonly DeleteCollection $deleteCollection,
+        private readonly AddIconToCollection $addIconToCollection,
+        private readonly RemoveIconFromCollection $removeIconFromCollection,
     ) {
         parent::__construct($logger);
     }
@@ -100,7 +115,7 @@ final class CollectionsApiController extends BaseApiController
                 'color' => 'nullable|string|regex:/^#[a-fA-F0-9]{6}$/',
             ]);
             /** @var array{name: string, color?: string|null} $validated */
-            $collection = $this->preferenceService->createCollection(
+            $collection = $this->createCollection->handle(
                 $validated['name'],
                 $validated['color'] ?? null,
             );
@@ -121,9 +136,7 @@ final class CollectionsApiController extends BaseApiController
     public function update(Request $request, string $id): JsonResponse
     {
         try {
-            $collection = $this->preferenceService->getCollection($id);
-
-            if (! $collection) {
+            if (! $this->preferenceService->getCollection($id)) {
                 return $this->notFoundResponse('Collection', $id);
             }
 
@@ -132,11 +145,13 @@ final class CollectionsApiController extends BaseApiController
                 'color' => 'nullable|string|regex:/^#[a-fA-F0-9]{6}$/',
             ]);
             /** @var array{name?: string, color?: string|null} $validated */
-            $updated = $this->preferenceService->updateCollection($id, $validated);
+            $updated = $this->updateCollection->handle($id, $validated);
 
             $this->logDebug('Collection updated', ['collection_id' => $id]);
 
             return $this->updatedResponse($updated, 'Collection updated successfully');
+        } catch (CollectionNotFound $e) {
+            return $this->notFoundResponse('Collection', $e->collectionId);
         } catch (ValidationException $e) {
             return $this->handleValidationException($e);
         } catch (Exception $e) {
@@ -150,17 +165,13 @@ final class CollectionsApiController extends BaseApiController
     public function destroy(string $id): JsonResponse
     {
         try {
-            $collection = $this->preferenceService->getCollection($id);
-
-            if (! $collection) {
-                return $this->notFoundResponse('Collection', $id);
-            }
-
-            $this->preferenceService->deleteCollection($id);
+            $this->deleteCollection->handle($id);
 
             $this->logDebug('Collection deleted', ['collection_id' => $id]);
 
             return $this->deletedResponse('Collection deleted successfully');
+        } catch (CollectionNotFound $e) {
+            return $this->notFoundResponse('Collection', $e->collectionId);
         } catch (Exception $e) {
             return $this->handleException($e, 'Failed to delete collection');
         }
@@ -172,17 +183,13 @@ final class CollectionsApiController extends BaseApiController
     public function addIcon(string $id, int $iconId): JsonResponse
     {
         try {
-            $collection = $this->preferenceService->getCollection($id);
-
-            if (! $collection) {
+            // The collection is checked first, as it always was: a missing
+            // collection answers 404 whether or not the icon exists.
+            if (! $this->preferenceService->getCollection($id)) {
                 return $this->notFoundResponse('Collection', $id);
             }
 
-            if (! $this->iconExists($iconId)) {
-                return $this->notFoundResponse('Icon', $iconId);
-            }
-
-            $this->preferenceService->addIconToCollection($id, $iconId);
+            $this->addIconToCollection->handle($id, $this->findIconOrFail($iconId));
 
             $this->logDebug('Icon added to collection', [
                 'collection_id' => $id,
@@ -193,6 +200,10 @@ final class CollectionsApiController extends BaseApiController
                 ['collection_id' => $id, 'icon_id' => $iconId],
                 'Icon added to collection',
             );
+        } catch (CollectionNotFound $e) {
+            return $this->notFoundResponse('Collection', $e->collectionId);
+        } catch (ModelNotFoundException $e) {
+            return $this->handleNotFoundException($e, 'Icon');
         } catch (Exception $e) {
             return $this->handleException($e, 'Failed to add icon to collection');
         }
@@ -204,13 +215,7 @@ final class CollectionsApiController extends BaseApiController
     public function removeIcon(string $id, int $iconId): JsonResponse
     {
         try {
-            $collection = $this->preferenceService->getCollection($id);
-
-            if (! $collection) {
-                return $this->notFoundResponse('Collection', $id);
-            }
-
-            $this->preferenceService->removeIconFromCollection($id, $iconId);
+            $this->removeIconFromCollection->handle($id, $iconId);
 
             $this->logDebug('Icon removed from collection', [
                 'collection_id' => $id,
@@ -221,6 +226,8 @@ final class CollectionsApiController extends BaseApiController
                 ['collection_id' => $id, 'icon_id' => $iconId],
                 'Icon removed from collection',
             );
+        } catch (CollectionNotFound $e) {
+            return $this->notFoundResponse('Collection', $e->collectionId);
         } catch (Exception $e) {
             return $this->handleException($e, 'Failed to remove icon from collection');
         }

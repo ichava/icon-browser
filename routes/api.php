@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Illuminate\Support\Facades\Route;
 use Simtabi\Laranail\Ichava\IconBrowser\Support\Helpers;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Controllers\Api\HistoryApiController;
+use Simtabi\Laranail\Ichava\IconBrowser\Http\Controllers\Api\LibraryApiController;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Controllers\Api\SessionApiController;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Controllers\Api\FavoritesApiController;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Controllers\Api\CollectionsApiController;
@@ -183,6 +184,17 @@ Route::prefix(Helpers::routePrefix() . '/api')
                 Route::post('/rebuild', [IconBrowserApiController::class, 'rebuildCache'])
                     ->name('rebuild');
             });
+
+        // =====================================================================
+        // LIBRARY API: everything the owner keeps, and "Delete my library"
+        // =====================================================================
+        Route::get('/library', [LibraryApiController::class, 'index'])
+            ->middleware(Helpers::getRateLimit('api', 60))
+            ->name('library.index');
+
+        Route::delete('/library', [LibraryApiController::class, 'destroy'])
+            ->middleware(Helpers::getRateLimit('api', 10))
+            ->name('library.destroy');
 
         // =====================================================================
         // FAVORITES API

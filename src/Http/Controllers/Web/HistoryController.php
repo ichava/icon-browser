@@ -13,6 +13,8 @@ use Simtabi\Laranail\Ichava\Models\Icon;
 use Simtabi\Laranail\Ichava\Services\IchavaLogger;
 use Simtabi\Laranail\Ichava\Services\IconBrowserService;
 use Simtabi\Laranail\Ichava\Services\IconPreferenceService;
+use Simtabi\Laranail\Ichava\IconBrowser\Actions\Library\ClearHistory;
+use Simtabi\Laranail\Ichava\IconBrowser\Actions\Library\RecordHistory;
 use Simtabi\Laranail\Ichava\IconBrowser\Support\IconSnippets;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Controllers\Web\Concerns\ResolvesIconsForPages;
 
@@ -25,6 +27,8 @@ final class HistoryController extends BaseInertiaController
         protected IconSnippets $iconSnippets,
         protected IconPreferenceService $preferenceService,
         IchavaLogger $logger,
+        private readonly RecordHistory $recordHistory,
+        private readonly ClearHistory $clearHistory,
     ) {
         parent::__construct($logger);
     }
@@ -64,21 +68,23 @@ final class HistoryController extends BaseInertiaController
     {
         $validated = $request->validate([
             'icon_id' => 'required|integer',
-            'action'  => 'required|string|in:view,copy,download',
+            'action'  => 'required|string|in:' . implode(',', RecordHistory::ACTIONS),
         ]);
         /** @var array{icon_id: int|string, action: string} $validated */
-        if (! Icon::where('id', $validated['icon_id'])->exists()) {
+        $icon = Icon::find((int) $validated['icon_id']);
+
+        if (! $icon instanceof Icon) {
             return redirect()->back()->with('error', "Icon [{$validated['icon_id']}] not found.");
         }
 
-        $this->preferenceService->addHistoryEntry((int) $validated['icon_id'], $validated['action']);
+        $this->recordHistory->handle($icon, $validated['action']);
 
         return redirect()->back();
     }
 
     public function clear(): RedirectResponse
     {
-        $this->preferenceService->clearHistory();
+        $this->clearHistory->handle();
         $this->logger->debug('History cleared from web');
 
         return redirect()->back()->with('success', 'History cleared successfully.');

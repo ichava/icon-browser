@@ -11,12 +11,16 @@ use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Simtabi\Laranail\Ichava\Services\IchavaLogger;
 use Simtabi\Laranail\Ichava\Services\IconPreferenceService;
+use Simtabi\Laranail\Ichava\IconBrowser\Actions\Library\RecordCommand;
+use Simtabi\Laranail\Ichava\IconBrowser\Actions\Library\ClearCommandHistory;
 
 final class CommandHistoryController extends BaseInertiaController
 {
     public function __construct(
         protected IconPreferenceService $preferenceService,
         IchavaLogger $logger,
+        private readonly RecordCommand $recordCommand,
+        private readonly ClearCommandHistory $clearCommandHistory,
     ) {
         parent::__construct($logger);
     }
@@ -49,11 +53,11 @@ final class CommandHistoryController extends BaseInertiaController
     {
         $validated = $request->validate([
             'command'  => 'required|string|max:255',
-            'type'     => 'required|string|in:action,search,navigation',
+            'type'     => 'required|string|in:' . implode(',', RecordCommand::TYPES),
             'metadata' => 'sometimes|array',
         ]);
         /** @var array{command: string, type: string, metadata?: array<mixed>} $validated */
-        $this->preferenceService->addCommandHistory(
+        $this->recordCommand->handle(
             $validated['command'],
             $validated['type'],
             $validated['metadata'] ?? [],
@@ -64,7 +68,7 @@ final class CommandHistoryController extends BaseInertiaController
 
     public function clear(): RedirectResponse
     {
-        $this->preferenceService->clearCommandHistory();
+        $this->clearCommandHistory->handle();
         $this->logger->debug('Command history cleared from web');
 
         return redirect()->back()->with('success', 'Command history cleared successfully.');

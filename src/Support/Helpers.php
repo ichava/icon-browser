@@ -103,4 +103,25 @@ final class Helpers
     {
         return is_scalar($value) || $value === null || $value instanceof Stringable ? (string) $value : $default;
     }
+
+    /**
+     * An array with every key as a string, for APIs typed `array<string, mixed>`.
+     *
+     * Integer keys become their string form, which is what PHP would have
+     * produced for them as array keys anyway; values are untouched.
+     *
+     * @param array<array-key, mixed> $values
+     *
+     * @return array<string, mixed>
+     */
+    public static function stringKeyed(array $values): array
+    {
+        $keyed = [];
+
+        foreach ($values as $key => $value) {
+            $keyed[(string) $key] = $value;
+        }
+
+        return $keyed;
+    }
 }

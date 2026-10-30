@@ -17,8 +17,11 @@ use Simtabi\Laranail\Ichava\Services\IconCacheService;
 use Simtabi\Laranail\Ichava\Exceptions\IchavaException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Simtabi\Laranail\Ichava\Services\IconBrowserService;
+use Simtabi\Laranail\Ichava\Actions\UpdatePreferences;
 use Simtabi\Laranail\Ichava\Services\IconPreferenceService;
+use Simtabi\Laranail\Ichava\IconBrowser\Support\Helpers;
 use Simtabi\Laranail\Ichava\IconBrowser\Support\CacheStatsPayload;
+use Simtabi\Laranail\Ichava\IconBrowser\Actions\Preferences\ResetPreferences;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Resources\IconResource;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Resources\IconCollection;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Requests\IconFilterRequest;
@@ -40,6 +43,8 @@ final class IconBrowserApiController extends BaseApiController
         protected IconBrowserService $browserService,
         protected IconCacheService $cacheService,
         protected IconPreferenceService $preferenceService,
+        private readonly UpdatePreferences $writePreferences,
+        private readonly ResetPreferences $resetToDefaults,
     ) {
         parent::__construct($logger);
     }
@@ -623,7 +628,7 @@ final class IconBrowserApiController extends BaseApiController
             $this->logDebug('Fetching preferences');
 
             $preferences = $this->preferenceService->getAll();
-            $validated = $this->preferenceService->validate($preferences);
+            $validated = $this->preferenceService->validate(Helpers::stringKeyed($preferences));
 
             if ($validated !== $preferences) {
                 $this->preferenceService->update($validated);
@@ -651,9 +656,7 @@ final class IconBrowserApiController extends BaseApiController
                 'data' => $request->validated(),
             ]);
 
-            $preferences = $this->preferenceService->update($request->validated());
-            $cleaned = $this->preferenceService->validate($preferences);
-            $this->preferenceService->update($cleaned);
+            $cleaned = $this->writePreferences->handle(Helpers::stringKeyed($request->validated()));
 
             $this->logInfo('Preferences updated successfully');
 
@@ -680,7 +683,7 @@ final class IconBrowserApiController extends BaseApiController
                 'search' => $search,
             ]);
 
-            $this->preferenceService->setSearch($search);
+            $this->writePreferences->handle(['search' => $search]);
 
             return response()->json([
                 'success' => true,
@@ -706,9 +709,17 @@ final class IconBrowserApiController extends BaseApiController
                 'filters' => $request->validated(),
             ]);
 
-            $filters = $this->preferenceService->getFilters();
-            $filters = array_merge($filters, $request->validated());
-            $this->preferenceService->setFilters($filters);
+            $validated = Helpers::stringKeyed($request->validated());
+            $this->writePreferences->handle($validated);
+
+            // Core's action owns packages and categories; variants have no setter
+            // of their own there, so they are merged into the filters as before.
+            if (array_key_exists('variants', $validated)) {
+                $this->preferenceService->setFilters(array_merge(
+                    $this->preferenceService->getFilters(),
+                    ['variants' => $validated['variants']],
+                ));
+            }
 
             $this->logInfo('Filters updated successfully');
 
@@ -731,7 +742,7 @@ final class IconBrowserApiController extends BaseApiController
         try {
             $this->logInfo('Clearing preferences');
 
-            $defaults = $this->preferenceService->clear();
+            $defaults = $this->resetToDefaults->handle();
 
             $this->logInfo('Preferences cleared successfully');
 
