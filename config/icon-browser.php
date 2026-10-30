@@ -49,8 +49,8 @@ return [
         'per_page'       => env('ICHAVA_BROWSER_PER_PAGE', IchavaConstants::BROWSER_PER_PAGE),
         'cache_duration' => env('ICHAVA_BROWSER_CACHE', IchavaConstants::DEFAULT_CACHE_TTL),
         // Whether the browser shows its theme control (`features.themeToggle`).
-        'theme_toggle'   => env('ICHAVA_BROWSER_THEME_TOGGLE', true),
-        'default_theme'  => 'light', // 'light' | 'dark'
+        'theme_toggle'  => env('ICHAVA_BROWSER_THEME_TOGGLE', true),
+        'default_theme' => 'light', // 'light' | 'dark'
     ],
 
     /*
@@ -193,6 +193,24 @@ return [
     | Or pass a comma-separated string via ICHAVA_DOMAINS.
     */
     'domains' => env('ICHAVA_DOMAINS', []),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Route groups
+    |--------------------------------------------------------------------------
+    | `middleware` is appended to every browser route group (Inertia pages, the
+    | REST API and the /{prefix} redirect), after the package's own: e.g.
+    | ['auth', 'verified'] to put the whole browser behind the host's login.
+    | From the environment, separate them with `|` (commas belong to middleware
+    | parameters, as in `throttle:60,1`): ICHAVA_ROUTE_MIDDLEWARE="auth|verified".
+    |
+    | `domain` mounts the browser on one domain only (e.g. 'admin.example.com'),
+    | null for every domain. `domains` above registers extra copies per domain.
+    */
+    'routes' => [
+        'middleware' => env('ICHAVA_ROUTE_MIDDLEWARE', []),
+        'domain'     => env('ICHAVA_ROUTE_DOMAIN'),
+    ],
 
     /*
     |--------------------------------------------------------------------------

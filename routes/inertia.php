@@ -33,108 +33,105 @@ use Simtabi\Laranail\Ichava\IconBrowser\Http\Controllers\Web\InertiaBrowserContr
 |
 */
 
-Route::prefix(Helpers::routePrefix())
-    ->middleware('ichava.inertia')
-    ->name('ichava.inertia.')
-    ->group(function () {
+Route::group(Helpers::routeGroup(Helpers::routePrefix(), ['ichava.inertia'], 'ichava.inertia.'), function () {
 
-        // Browser: filtered icon listing + detail + stats dashboard.
-        Route::get('/icons', [InertiaBrowserController::class, 'index'])
-            ->name('browser');
-        Route::get('/icons/{id}', [InertiaBrowserController::class, 'show'])
-            ->name('icons.show')
-            ->where('id', '[0-9]+');
-        Route::get('/stats', [InertiaBrowserController::class, 'stats'])
-            ->name('stats');
+    // Browser: filtered icon listing + detail + stats dashboard.
+    Route::get('/icons', [InertiaBrowserController::class, 'index'])
+        ->name('browser');
+    Route::get('/icons/{id}', [InertiaBrowserController::class, 'show'])
+        ->name('icons.show')
+        ->where('id', '[0-9]+');
+    Route::get('/stats', [InertiaBrowserController::class, 'stats'])
+        ->name('stats');
 
-        // Packages.
-        Route::get('/packages', [PackageController::class, 'index'])
-            ->name('packages.index');
-        // Loose constraint: the controller validates the vendor/package shape
-        // itself so malformed input redirects back with a flash message
-        // instead of falling through to a bare 404.
-        Route::get('/packages/{package}', [PackageController::class, 'show'])
-            ->name('packages.show')
-            ->where('package', '.*');
+    // Packages.
+    Route::get('/packages', [PackageController::class, 'index'])
+        ->name('packages.index');
+    // Loose constraint: the controller validates the vendor/package shape
+    // itself so malformed input redirects back with a flash message
+    // instead of falling through to a bare 404.
+    Route::get('/packages/{package}', [PackageController::class, 'show'])
+        ->name('packages.show')
+        ->where('package', '.*');
 
-        // Favorites.
-        if (FeaturesManifest::configured('favorites')) {
-            Route::get('/favorites', [FavoriteController::class, 'index'])
-                ->name('favorites.index');
-            Route::post('/favorites/{iconId}', [FavoriteController::class, 'store'])
-                ->name('favorites.store')
-                ->where('iconId', '[0-9]+');
-            Route::delete('/favorites/{iconId}', [FavoriteController::class, 'destroy'])
-                ->name('favorites.destroy')
-                ->where('iconId', '[0-9]+');
-            Route::post('/favorites/{iconId}/toggle', [FavoriteController::class, 'toggle'])
-                ->name('favorites.toggle')
-                ->where('iconId', '[0-9]+');
-        }
+    // Favorites.
+    if (FeaturesManifest::configured('favorites')) {
+        Route::get('/favorites', [FavoriteController::class, 'index'])
+            ->name('favorites.index');
+        Route::post('/favorites/{iconId}', [FavoriteController::class, 'store'])
+            ->name('favorites.store')
+            ->where('iconId', '[0-9]+');
+        Route::delete('/favorites/{iconId}', [FavoriteController::class, 'destroy'])
+            ->name('favorites.destroy')
+            ->where('iconId', '[0-9]+');
+        Route::post('/favorites/{iconId}/toggle', [FavoriteController::class, 'toggle'])
+            ->name('favorites.toggle')
+            ->where('iconId', '[0-9]+');
+    }
 
-        // Collections.
-        if (FeaturesManifest::configured('collections')) {
-            Route::get('/collections', [CollectionController::class, 'index'])
-                ->name('collections.index');
-            Route::post('/collections', [CollectionController::class, 'store'])
-                ->name('collections.store');
-            Route::get('/collections/{id}', [CollectionController::class, 'show'])
-                ->name('collections.show');
-            Route::put('/collections/{id}', [CollectionController::class, 'update'])
-                ->name('collections.update');
-            Route::delete('/collections/{id}', [CollectionController::class, 'destroy'])
-                ->name('collections.destroy');
-            Route::post('/collections/{id}/icons/{iconId}', [CollectionController::class, 'addIcon'])
-                ->name('collections.addIcon')
-                ->where('iconId', '[0-9]+');
-            Route::delete('/collections/{id}/icons/{iconId}', [CollectionController::class, 'removeIcon'])
-                ->name('collections.removeIcon')
-                ->where('iconId', '[0-9]+');
-        }
+    // Collections.
+    if (FeaturesManifest::configured('collections')) {
+        Route::get('/collections', [CollectionController::class, 'index'])
+            ->name('collections.index');
+        Route::post('/collections', [CollectionController::class, 'store'])
+            ->name('collections.store');
+        Route::get('/collections/{id}', [CollectionController::class, 'show'])
+            ->name('collections.show');
+        Route::put('/collections/{id}', [CollectionController::class, 'update'])
+            ->name('collections.update');
+        Route::delete('/collections/{id}', [CollectionController::class, 'destroy'])
+            ->name('collections.destroy');
+        Route::post('/collections/{id}/icons/{iconId}', [CollectionController::class, 'addIcon'])
+            ->name('collections.addIcon')
+            ->where('iconId', '[0-9]+');
+        Route::delete('/collections/{id}/icons/{iconId}', [CollectionController::class, 'removeIcon'])
+            ->name('collections.removeIcon')
+            ->where('iconId', '[0-9]+');
+    }
 
-        // "Delete my library": every favourite and collection kept on the server.
-        if (FeaturesManifest::configured('library')) {
-            Route::delete('/library', [LibraryController::class, 'destroy'])
-                ->name('library.destroy');
-        }
+    // "Delete my library": every favourite and collection kept on the server.
+    if (FeaturesManifest::configured('library')) {
+        Route::delete('/library', [LibraryController::class, 'destroy'])
+            ->name('library.destroy');
+    }
 
-        // Activity history.
-        if (FeaturesManifest::configured('history')) {
-            Route::get('/history', [HistoryController::class, 'index'])
-                ->name('history.index');
-            Route::post('/history', [HistoryController::class, 'store'])
-                ->name('history.store');
-            Route::delete('/history', [HistoryController::class, 'clear'])
-                ->name('history.clear');
-        }
+    // Activity history.
+    if (FeaturesManifest::configured('history')) {
+        Route::get('/history', [HistoryController::class, 'index'])
+            ->name('history.index');
+        Route::post('/history', [HistoryController::class, 'store'])
+            ->name('history.store');
+        Route::delete('/history', [HistoryController::class, 'clear'])
+            ->name('history.clear');
+    }
 
-        // Command palette history.
-        if (FeaturesManifest::configured('commands')) {
-            Route::get('/command-history', [CommandHistoryController::class, 'index'])
-                ->name('commandHistory.index');
-            Route::post('/command-history', [CommandHistoryController::class, 'store'])
-                ->name('commandHistory.store');
-            Route::delete('/command-history', [CommandHistoryController::class, 'clear'])
-                ->name('commandHistory.clear');
-        }
+    // Command palette history.
+    if (FeaturesManifest::configured('commands')) {
+        Route::get('/command-history', [CommandHistoryController::class, 'index'])
+            ->name('commandHistory.index');
+        Route::post('/command-history', [CommandHistoryController::class, 'store'])
+            ->name('commandHistory.store');
+        Route::delete('/command-history', [CommandHistoryController::class, 'clear'])
+            ->name('commandHistory.clear');
+    }
 
-        // Settings (preferences).
-        Route::get('/settings', [SettingsController::class, 'index'])
-            ->name('settings.index');
-        Route::put('/settings', [SettingsController::class, 'update'])
-            ->name('settings.update');
-        Route::delete('/settings', [SettingsController::class, 'clear'])
-            ->name('settings.clear');
+    // Settings (preferences).
+    Route::get('/settings', [SettingsController::class, 'index'])
+        ->name('settings.index');
+    Route::put('/settings', [SettingsController::class, 'update'])
+        ->name('settings.update');
+    Route::delete('/settings', [SettingsController::class, 'clear'])
+        ->name('settings.clear');
 
-        // Cache management. Same gate as the JSON API and the legacy web
-        // pair: destructive, fails closed unless the host grants the ability.
-        Route::prefix('cache')
-            ->name('cache.')
-            ->middleware('ichava.cache-admin')
-            ->group(function () {
-                Route::post('/clear', [CacheController::class, 'clear'])
-                    ->name('clear');
-                Route::post('/rebuild', [CacheController::class, 'rebuild'])
-                    ->name('rebuild');
-            });
-    });
+    // Cache management. Same gate as the JSON API and the legacy web
+    // pair: destructive, fails closed unless the host grants the ability.
+    Route::prefix('cache')
+        ->name('cache.')
+        ->middleware('ichava.cache-admin')
+        ->group(function () {
+            Route::post('/clear', [CacheController::class, 'clear'])
+                ->name('clear');
+            Route::post('/rebuild', [CacheController::class, 'rebuild'])
+                ->name('rebuild');
+        });
+});

@@ -124,7 +124,11 @@ class IconBrowserServiceProvider extends PackageServiceProvider
         $this->registerRoutesOnConfiguredDomains();
 
         // Browser-only shorthand Blade components for the bundled demo icons.
-        Blade::component('ichava::ichava-test-icons', IchavaTestIconComponent::class);
+        // `test_component_enabled` was read by nothing: the demo component was
+        // registered everywhere. It is honoured now (default on, as before).
+        if (filter_var(config('ichava.icon-browser.test_component_enabled', true), FILTER_VALIDATE_BOOL)) {
+            Blade::component('ichava::ichava-test-icons', IchavaTestIconComponent::class);
+        }
         Blade::component('ichava::ichava-ui-icons', IchavaUiIconComponent::class);
 
         // SRI-aware <script>/<link> emitter; reads the manifest configured at

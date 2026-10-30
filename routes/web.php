@@ -21,12 +21,12 @@ use Simtabi\Laranail\Ichava\IconBrowser\Support\Helpers;
 |
 */
 
-Route::prefix(Helpers::routePrefix())
-    ->middleware('ichava.web')
-    ->name('ichava.')
-    ->group(function () {
-
+// The redirect points at the Inertia browser, so it exists only when those
+// pages do: with ICHAVA_INERTIA_ENABLED=false, /{prefix} redirected to a 404.
+if (filter_var(config('ichava.icon-browser.inertia.enabled', true), FILTER_VALIDATE_BOOL)) {
+    Route::group(Helpers::routeGroup(Helpers::routePrefix(), ['ichava.web'], 'ichava.'), function () {
         // Redirect bare /{prefix} to the canonical (Inertia) browser URL.
         Route::redirect('/', '/' . Helpers::routePrefix() . '/icons')
             ->name('home');
     });
+}
