@@ -11,3 +11,8 @@ paths:
       # knows v3's inputs and the lint passes without them.
       - 'missing input "app-id" which is required by action "actions/create-github-app-token@v3"'
       - 'input "client-id" is not defined in action "actions/create-github-app-token@v3"'
+  .github/workflows/rebuild-bundle.yml:
+    ignore:
+      # The same create-github-app-token v3 false positive as release-please.yml above; delete with it.
+      - 'missing input "app-id" which is required by action "actions/create-github-app-token@v3"'
+      - 'input "client-id" is not defined in action "actions/create-github-app-token@v3"'

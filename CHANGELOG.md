@@ -8,6 +8,7 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
 
 - **PHPStan runs at `level: max` with Larastan**, up from level 0, with no baseline and no ignored errors. `larastan/larastan` (`^3.0`) joins `require-dev` so Eloquent, facades and the container are typed. The fixes are types only: docblocks for array shapes the validation rules already guarantee, typed `$next` closures in the middleware, and `Helpers::configInt()`, `configString()`, `intOf()` and `stringOf()`, which cast config and request values exactly as the bare `(int)` and `(string)` casts did. `StaticAnalysisLevelTest` fails if the level drops, a baseline appears or errors are ignored.
 - **A `Committed build` workflow fails a pull request whose committed bundle is stale** (I-F3, XR-7). It runs `npm install --no-package-lock` and `npm run build:prod`, then fails on any difference or untracked file under `public/assets`, with a message saying to rebuild and commit. It has no path filter, so it can be a required check, and it also runs weekly on `main`. A fresh build of `main` matches the committed bundle today.
+- **A weekly `Rebuild committed bundle` workflow keeps `public/assets` current.** No lock file is committed, so a fresh install can resolve newer dependencies than the bundle was built with. Each Monday it rebuilds `main` the way `Committed build` does and, when the output differs, opens or updates one pull request from `chore/rebuild-bundle` with a Refresh Bot token, so the change runs CI like any other. `Committed build` is unchanged.
 
 ### Removed
 
