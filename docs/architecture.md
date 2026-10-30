@@ -31,8 +31,9 @@ from and a hash of every file. `resources/js` is only the Inertia adapter around
 | `lib/browser.ts` | The one import point for the library, plus the type names the adapter derives from it |
 | `pages/Browser/Index.tsx` | Builds one browser per page with `browser().rest(...).config(...).persist(...)` and renders `IchavaBrowser` |
 | `core/InertiaCatalog.ts` | The library's `IconCatalog` port over Inertia: the first page is answered from the props, every other page is a partial reload of the same route |
+| `core/appConfig.ts` | The browser config: this package's version, licence, links and snippets (`appConfig`), merged with the host's user and features manifest through the library's `hostConfigFromProps` (`browserConfig`) |
 | `core/browserMount.ts` | Seeds the store from the server's applied filters and library state before the first render |
-| `hooks/useLibrarySync.ts`, `core/libraryDiff.ts` | Replays the browser's favourite, history and collection changes against the Inertia routes |
+| `hooks/useLibrarySync.ts`, `core/libraryDiff.ts` | Replays the browser's favourite, history, collection and command-palette changes, and "Delete my library", against the Inertia routes; the diff is the library's own `diffLibrary` |
 | `hooks/useInertiaCatalog.ts`, `hooks/useFilterSync.ts` | Fold each later visit's props back into the catalog, the store's library and its filters |
 | `pages/*` (the rest) | The simple library pages (favourites, collections, history, packages, settings, stats), which render icons with the library's `SvgFidelity` |
 
