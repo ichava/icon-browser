@@ -16,4 +16,15 @@ namespace Simtabi\Laranail\Ichava\IconBrowser\Support;
 final class PayloadSchema
 {
     public const string VERSION = '1.0.0';
+
+    /**
+     * The JSON Schema (draft 2020-12) for every payload: one file, one `$defs`
+     * entry per resource, document and Inertia page. react-icon-browser
+     * generates its types from it; the suite validates real responses
+     * against it, so the two cannot drift silently.
+     */
+    public static function path(): string
+    {
+        return dirname(__DIR__, 2) . '/resources/schema/icon-browser.schema.json';
+    }
 }
