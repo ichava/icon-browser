@@ -830,29 +830,6 @@ final class IconBrowserApiController extends BaseApiController
     }
 
     /**
-     * Return empty icon response
-     *
-     * @return array<string, mixed>
-     */
-    protected function emptyIconResponse(IconFilterRequest $request, string $error): array
-    {
-        return [
-            'data'    => [],
-            'grouped' => [],
-            'meta'    => [
-                'total'        => 0,
-                'per_page'     => $request->getPerPage(),
-                'current_page' => 1,
-                'last_page'    => 1,
-                'from'         => null,
-                'to'           => null,
-                'group_by'     => $request->getSortBy(),
-            ],
-            'error' => $error,
-        ];
-    }
-
-    /**
      * Build hierarchical tree structure from flat array
      *
      * @param array<mixed> $terms
