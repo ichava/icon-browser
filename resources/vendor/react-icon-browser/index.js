@@ -3704,7 +3704,7 @@ var Dn = {
 }, W = {
 	meta: {
 		version: "0.1.3",
-		author: "Imani Manyara",
+		author: "Simtabi LLC",
 		sets: 70,
 		license: "Proprietary",
 		url: "https://simtabi.com"
@@ -18658,7 +18658,7 @@ function ag() {
 								" ",
 								/* @__PURE__ */ w("b", {
 									className: "text-[var(--fg)] font-semibold",
-									children: n?.meta.author ?? "Imani Manyara"
+									children: n?.meta.author ?? "Simtabi LLC"
 								})
 							]
 						})
