@@ -16,6 +16,8 @@ REST endpoints exposed by `ichava/icon-browser`. All endpoints sit under `/{pref
 
 The path carries the API version, `v1`, and the route names carry it too (`ichava.api.v1.*`, for example `route('ichava.api.v1.icons.index')`). The payload contract has its own version: `GET /session` and `GET /bootstrap` return `schemaVersion`, the `version` of `resources/schema/icon-browser.schema.json`. A client compares that, not the path, to tell an added field from a breaking change. Nothing answers on the unversioned `/{prefix}/api/...` path.
 
+`GET /bootstrap` lists every endpoint below under `api.endpoints`, one key each, so a client reads URLs from there rather than building them; see [Host integration](host-integration.md#the-features-manifest).
+
 ### Host endpoints
 
 | Method | Endpoint | Description |

@@ -35,6 +35,9 @@ final readonly class FeaturesManifest
     /** Modules that exist only in the standalone demo; off in a host app unless turned on. */
     public const array DEMO_ONLY = ['presence', 'invites', 'sharing', 'notifications', 'workspaces'];
 
+    /** The REST API's version, the `/api/v1` path segment. */
+    public const string API_VERSION = 'v1';
+
     /** Library features: on/off by config, with their Inertia and REST routes. */
     private const array LIBRARY = [
         'favorites' => [
@@ -64,6 +67,58 @@ final readonly class FeaturesManifest
             'update' => ['ichava.inertia.settings.update', 'ichava.api.v1.preferences.update'],
             'reset'  => ['ichava.inertia.settings.clear', 'ichava.api.v1.preferences.clear'],
         ],
+    ];
+
+    /**
+     * Every REST endpoint, keyed `<area>.<action>` => [route name, the feature
+     * that gates it or null, placeholder renames]. Separate from the per-feature
+     * `endpoints`, which prefer the Inertia route: a REST client reads only
+     * these. Templated URLs keep `{collectionId}`, `{iconId}` and `{package}`
+     * for the client to fill.
+     */
+    private const array API = [
+        'session'                => ['ichava.api.v1.session', null, []],
+        'bootstrap'              => ['ichava.api.v1.bootstrap', null, []],
+        'status'                 => ['ichava.api.v1.status', 'status', []],
+        'icons.list'             => ['ichava.api.v1.icons.index', null, []],
+        'icons.show'             => ['ichava.api.v1.icons.show', null, ['id' => 'iconId']],
+        'icons.svg'              => ['ichava.api.v1.icons.svg', null, ['id' => 'iconId']],
+        'icons.filters'          => ['ichava.api.v1.icons.filters', null, []],
+        'icons.tree'             => ['ichava.api.v1.icons.tree', null, []],
+        'icons.statistics'       => ['ichava.api.v1.icons.statistics', null, []],
+        'icons.updateStatus'     => ['ichava.api.v1.icons.update-status', null, []],
+        'packages.list'          => ['ichava.api.v1.packages.index', null, []],
+        'packages.show'          => ['ichava.api.v1.packages.show', null, []],
+        'terms.categories'       => ['ichava.api.v1.terms.categories', null, []],
+        'terms.variants'         => ['ichava.api.v1.terms.variants', null, []],
+        'terms.hierarchy'        => ['ichava.api.v1.terms.hierarchy', null, []],
+        'library.show'           => ['ichava.api.v1.library.index', 'library', []],
+        'library.destroy'        => ['ichava.api.v1.library.destroy', 'library', []],
+        'favorites.list'         => ['ichava.api.v1.favorites.index', 'favorites', []],
+        'favorites.add'          => ['ichava.api.v1.favorites.store', 'favorites', []],
+        'favorites.remove'       => ['ichava.api.v1.favorites.destroy', 'favorites', []],
+        'favorites.toggle'       => ['ichava.api.v1.favorites.toggle', 'favorites', []],
+        'collections.list'       => ['ichava.api.v1.collections.index', 'collections', []],
+        'collections.create'     => ['ichava.api.v1.collections.store', 'collections', []],
+        'collections.show'       => ['ichava.api.v1.collections.show', 'collections', ['id' => 'collectionId']],
+        'collections.rename'     => ['ichava.api.v1.collections.update', 'collections', ['id' => 'collectionId']],
+        'collections.delete'     => ['ichava.api.v1.collections.destroy', 'collections', ['id' => 'collectionId']],
+        'collections.addIcon'    => ['ichava.api.v1.collections.addIcon', 'collections', ['id' => 'collectionId']],
+        'collections.removeIcon' => ['ichava.api.v1.collections.removeIcon', 'collections', ['id' => 'collectionId']],
+        'history.list'           => ['ichava.api.v1.history.index', 'history', []],
+        'history.log'            => ['ichava.api.v1.history.store', 'history', []],
+        'history.clear'          => ['ichava.api.v1.history.clear', 'history', []],
+        'commands.list'          => ['ichava.api.v1.commandHistory.index', 'commands', []],
+        'commands.log'           => ['ichava.api.v1.commandHistory.store', 'commands', []],
+        'commands.clear'         => ['ichava.api.v1.commandHistory.clear', 'commands', []],
+        'preferences.show'       => ['ichava.api.v1.preferences.index', 'preferences', []],
+        'preferences.update'     => ['ichava.api.v1.preferences.update', 'preferences', []],
+        'preferences.search'     => ['ichava.api.v1.preferences.search', 'preferences', []],
+        'preferences.filters'    => ['ichava.api.v1.preferences.filters', 'preferences', []],
+        'preferences.reset'      => ['ichava.api.v1.preferences.clear', 'preferences', []],
+        'cache.stats'            => ['ichava.api.v1.cache.stats', 'cacheAdmin', []],
+        'cache.clear'            => ['ichava.api.v1.cache.clear', 'cacheAdmin', []],
+        'cache.rebuild'          => ['ichava.api.v1.cache.rebuild', 'cacheAdmin', []],
     ];
 
     public function __construct(
@@ -127,6 +182,43 @@ final readonly class FeaturesManifest
         }
 
         return $features;
+    }
+
+    /**
+     * The REST endpoints a client may call, all under `{prefix}/api/v1`.
+     *
+     * A key appears only when its route is mounted (the API is on) and the
+     * feature gating it is enabled for this user, so a client never calls an
+     * endpoint the host turned off or the user may not use.
+     *
+     * @param array<string, array{enabled: bool, reason: string|null, endpoints: array<string, string>}>|null $features
+     *
+     * @return array{version: string, base: string|null, endpoints: array<string, string>}
+     */
+    public function api(?array $features = null): array
+    {
+        $features ??= $this->toArray();
+        $endpoints = [];
+
+        foreach (self::API as $key => [$name, $feature, $renames]) {
+            if (! Route::has($name) || ($feature !== null && ! ($features[$feature]['enabled'] ?? false))) {
+                continue;
+            }
+
+            $url = self::needsParameters($name) ? self::template($name) : route($name);
+
+            foreach ($renames as $from => $to) {
+                $url = str_replace('{' . $from . '}', '{' . $to . '}', $url);
+            }
+
+            $endpoints[$key] = $url;
+        }
+
+        return [
+            'version'   => self::API_VERSION,
+            'base'      => Route::has('ichava.api.v1.session') ? url(Helpers::routePrefix() . '/api/' . self::API_VERSION) : null,
+            'endpoints' => $endpoints,
+        ];
     }
 
     /**

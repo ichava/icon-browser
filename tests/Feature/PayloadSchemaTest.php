@@ -121,3 +121,23 @@ it('rejects a user carrying an email, so the guard can fail', function () {
 
     expect($result->isValid())->toBeFalse();
 });
+
+it('matches the bootstrap of an admin, whose REST map lists every endpoint', function () {
+    Gate::define('ichava.admin', fn (?object $user = null) => $user !== null);
+    Gate::define('ichava.manage-cache', fn (?object $user = null) => $user !== null);
+    $this->actingAs(new GenericUser(['id' => 5, 'name' => 'Root']));
+
+    $response = $this->getJson(route('ichava.api.v1.bootstrap'))->assertOk()->json();
+
+    expect($response['data']['api']['endpoints'])->toHaveCount(42);
+    assertMatchesSchema($response, 'bootstrapResponse');
+});
+
+it('rejects a REST map key the schema does not name, so the guard can fail', function () {
+    $result = payloadSchemaValidator()->validate(
+        (object) ['version' => 'v1', 'base' => null, 'endpoints' => (object) ['icons.list' => '/x', 'icons.unknown' => '/y']],
+        'https://github.com/ichava/icon-browser/resources/schema/icon-browser.schema.json#/$defs/apiManifest',
+    );
+
+    expect($result->isValid())->toBeFalse();
+});

@@ -2,8 +2,8 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/ichava/icon-browser/resources/schema/icon-browser.schema.json",
   "title": "ichava/icon-browser payloads",
-  "description": "Every REST resource, session and bootstrap document, and Inertia prop this package serves. Version 1.1.0, matching PayloadSchema::VERSION. react-icon-browser generates its types from this file.",
-  "version": "1.1.0",
+  "description": "Every REST resource, session and bootstrap document, and Inertia prop this package serves. Version 1.2.0, matching PayloadSchema::VERSION. react-icon-browser generates its types from this file.",
+  "version": "1.2.0",
   "$defs": {
     "user": {
       "type": "object",
@@ -728,6 +728,9 @@
         },
         "features": {
           "$ref": "#/$defs/features"
+        },
+        "api": {
+          "$ref": "#/$defs/apiManifest"
         }
       },
       "required": [
@@ -735,7 +738,8 @@
         "locale",
         "modes",
         "session",
-        "features"
+        "features",
+        "api"
       ],
       "additionalProperties": false,
       "description": "GET {prefix}/api/v1/bootstrap."
@@ -1563,6 +1567,164 @@
         "success",
         "data"
       ]
+    },
+    "apiManifest": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "const": "v1"
+        },
+        "base": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Absolute URL of {prefix}/api/v1, or null when the REST API is not mounted."
+        },
+        "endpoints": {
+          "type": [
+            "object",
+            "array"
+          ],
+          "properties": {
+            "session": {
+              "type": "string"
+            },
+            "bootstrap": {
+              "type": "string"
+            },
+            "status": {
+              "type": "string"
+            },
+            "icons.list": {
+              "type": "string"
+            },
+            "icons.show": {
+              "type": "string"
+            },
+            "icons.svg": {
+              "type": "string"
+            },
+            "icons.filters": {
+              "type": "string"
+            },
+            "icons.tree": {
+              "type": "string"
+            },
+            "icons.statistics": {
+              "type": "string"
+            },
+            "icons.updateStatus": {
+              "type": "string"
+            },
+            "packages.list": {
+              "type": "string"
+            },
+            "packages.show": {
+              "type": "string"
+            },
+            "terms.categories": {
+              "type": "string"
+            },
+            "terms.variants": {
+              "type": "string"
+            },
+            "terms.hierarchy": {
+              "type": "string"
+            },
+            "library.show": {
+              "type": "string"
+            },
+            "library.destroy": {
+              "type": "string"
+            },
+            "favorites.list": {
+              "type": "string"
+            },
+            "favorites.add": {
+              "type": "string"
+            },
+            "favorites.remove": {
+              "type": "string"
+            },
+            "favorites.toggle": {
+              "type": "string"
+            },
+            "collections.list": {
+              "type": "string"
+            },
+            "collections.create": {
+              "type": "string"
+            },
+            "collections.show": {
+              "type": "string"
+            },
+            "collections.rename": {
+              "type": "string"
+            },
+            "collections.delete": {
+              "type": "string"
+            },
+            "collections.addIcon": {
+              "type": "string"
+            },
+            "collections.removeIcon": {
+              "type": "string"
+            },
+            "history.list": {
+              "type": "string"
+            },
+            "history.log": {
+              "type": "string"
+            },
+            "history.clear": {
+              "type": "string"
+            },
+            "commands.list": {
+              "type": "string"
+            },
+            "commands.log": {
+              "type": "string"
+            },
+            "commands.clear": {
+              "type": "string"
+            },
+            "preferences.show": {
+              "type": "string"
+            },
+            "preferences.update": {
+              "type": "string"
+            },
+            "preferences.search": {
+              "type": "string"
+            },
+            "preferences.filters": {
+              "type": "string"
+            },
+            "preferences.reset": {
+              "type": "string"
+            },
+            "cache.stats": {
+              "type": "string"
+            },
+            "cache.clear": {
+              "type": "string"
+            },
+            "cache.rebuild": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "description": "Every REST endpoint the client may call, by its own key, as an absolute URL under {prefix}/api/v1. Templated URLs keep {iconId}, {collectionId} and {package}. A key is absent when its route is not mounted or the feature gating it is off."
+        }
+      },
+      "required": [
+        "version",
+        "base",
+        "endpoints"
+      ],
+      "additionalProperties": false,
+      "description": "The bootstrap document's REST map, separate from each feature's Inertia-first endpoints. Added in 1.2.0."
     }
   }
 }

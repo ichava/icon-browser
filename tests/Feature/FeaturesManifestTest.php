@@ -164,3 +164,52 @@ describe('the REST API lives under /api/v1', function () {
         $this->getJson(route('ichava.api.v1.bootstrap'))->assertJsonPath('data.schemaVersion', PayloadSchema::VERSION);
     });
 });
+
+describe('the REST map in /bootstrap', function () {
+    it('gives every REST endpoint its own key, all under /api/v1, apart from the Inertia endpoints', function () {
+        grantAdmin();
+        Gate::define('ichava.manage-cache', fn (?object $user = null) => $user !== null);
+        $v1 = url(Helpers_prefix() . '/api/v1');
+
+        $api = $this->getJson(route('ichava.api.v1.bootstrap'))->assertOk()->json('data.api');
+
+        expect($api['version'])->toBe('v1')
+            ->and($api['base'])->toBe($v1)
+            ->and(array_keys($api['endpoints']))->toEqualCanonicalizing([
+                'session', 'bootstrap', 'status',
+                'icons.list', 'icons.show', 'icons.svg', 'icons.filters', 'icons.tree', 'icons.statistics', 'icons.updateStatus',
+                'packages.list', 'packages.show', 'terms.categories', 'terms.variants', 'terms.hierarchy',
+                'library.show', 'library.destroy',
+                'favorites.list', 'favorites.add', 'favorites.remove', 'favorites.toggle',
+                'collections.list', 'collections.create', 'collections.show', 'collections.rename', 'collections.delete',
+                'collections.addIcon', 'collections.removeIcon',
+                'history.list', 'history.log', 'history.clear',
+                'commands.list', 'commands.log', 'commands.clear',
+                'preferences.show', 'preferences.update', 'preferences.search', 'preferences.filters', 'preferences.reset',
+                'cache.stats', 'cache.clear', 'cache.rebuild',
+            ]);
+
+        foreach ($api['endpoints'] as $key => $url) {
+            $this->assertStringStartsWith($v1 . '/', $url, "api.endpoints.{$key} is not under /api/v1");
+        }
+
+        expect($api['endpoints'])->toMatchArray([
+            'library.show'           => "{$v1}/library",
+            'collections.rename'     => "{$v1}/collections/{collectionId}",
+            'collections.addIcon'    => "{$v1}/collections/{collectionId}/icons/{iconId}",
+            'collections.removeIcon' => "{$v1}/collections/{collectionId}/icons/{iconId}",
+            'favorites.toggle'       => "{$v1}/favorites/{iconId}/toggle",
+            'icons.svg'              => "{$v1}/icons/{iconId}/svg",
+            'packages.show'          => "{$v1}/packages/{package}",
+        ]);
+    });
+
+    it('leaves out the endpoints of a feature that is off or gated', function () {
+        config()->set('ichava.icon-browser.features.collections', false);
+
+        $endpoints = $this->getJson(route('ichava.api.v1.bootstrap'))->json('data.api.endpoints');
+
+        expect(collect(array_keys($endpoints))->filter(fn (string $key): bool => str_starts_with($key, 'collections.') || in_array($key, ['status', 'cache.stats', 'cache.clear', 'cache.rebuild'], true))->all())->toBe([])
+            ->and($endpoints)->toHaveKeys(['session', 'bootstrap', 'icons.list', 'favorites.toggle']);
+    });
+});

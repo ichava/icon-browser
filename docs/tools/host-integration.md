@@ -54,6 +54,17 @@ Every write goes through one action shared by the Inertia route and its REST twi
 
 `reason` says why a feature is off: `config` (turned off in `features.*`), `gate` (the user lacks the ability), `driver` (the database cannot do it) or `empty` (nothing to show yet). Endpoints list only mounted routes; a parameter stays as a `{name}` placeholder.
 
+A feature's `endpoints` prefer the Inertia route where one exists. A REST client reads `api` instead, which `GET {prefix}/api/v1/bootstrap` carries beside `features`: `version` (`v1`), `base` (the absolute `{prefix}/api/v1` URL) and `endpoints`, one key per REST endpoint, every URL under `/api/v1`:
+
+```json
+"api": { "version": "v1", "base": "https://app.test/ichava/api/v1", "endpoints": {
+  "library.show": "https://app.test/ichava/api/v1/library",
+  "collections.addIcon": "https://app.test/ichava/api/v1/collections/{collectionId}/icons/{iconId}"
+} }
+```
+
+The keys are `session`, `bootstrap`, `status`; `icons.list`, `.show`, `.svg`, `.filters`, `.tree`, `.statistics`, `.updateStatus`; `packages.list`, `.show`; `terms.categories`, `.variants`, `.hierarchy`; `library.show`, `.destroy`; `favorites.list`, `.add`, `.remove`, `.toggle`; `collections.list`, `.create`, `.show`, `.rename`, `.delete`, `.addIcon`, `.removeIcon`; `history.list`, `.log`, `.clear`; `commands.list`, `.log`, `.clear`; `preferences.show`, `.update`, `.search`, `.filters`, `.reset`; `cache.stats`, `.clear`, `.rebuild`. Templates keep `{iconId}`, `{collectionId}` and `{package}`. A key is absent when its route is not mounted or the feature gating it is off for this user (`status` needs `ichava.admin`, `cache.*` the cache-admin ability).
+
 | Feature | Enabled when |
 |---------|--------------|
 | `favorites`, `collections`, `history`, `commands`, `library`, `preferences` | `features.*` is on; off also unmounts their routes |

@@ -23,6 +23,7 @@ Bump the major version for a removed or retyped field and the minor for an added
 
 | Version | Change |
 |---|---|
+| 1.2.0 | `bootstrap` gains `api` (`apiManifest`): every REST endpoint by its own key, under `/api/v1`. Additive. |
 | 1.1.0 | `icon` gains `sub`, the nested category below the top-level one, or null. Additive. |
 | 1.0.0 | First published contract. |
 
