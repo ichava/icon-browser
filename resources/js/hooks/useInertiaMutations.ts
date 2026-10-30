@@ -35,6 +35,8 @@ const LIBRARY_VISIT = { preserveState: true, preserveScroll: true, async: true }
 export function useInertiaMutations() {
   const { props } = usePage<{ ichava: IchavaShared }>();
   const routes = props.ichava.routes;
+  // "Delete my library" is a feature endpoint (Inertia route first), not one of `routes`.
+  const libraryDestroy = props.ichava.features?.library?.enabled ? props.ichava.features.library.endpoints.destroy ?? null : null;
 
   return {
     toggleFavorite: (id: IconId) =>
@@ -55,6 +57,17 @@ export function useInertiaMutations() {
 
     logCommand: (command: string, type: 'action' | 'search' | 'navigation', metadata: Record<string, string | number | boolean | null> = {}) =>
       router.post(routes.commands, { command, type, metadata }, { preserveState: true, only: ['commandHistory', ...WITH_FEEDBACK] }),
+
+    // The command palette's recents, cleared (`DELETE {prefix}/command-history`).
+    clearCommands: () =>
+      router.delete(routes.commands, { ...LIBRARY_VISIT, only: ['commandHistory', ...WITH_FEEDBACK] }),
+
+    // "Delete my library": every favourite and collection, as one request. Nothing to send
+    // when the host turned the library feature off.
+    deleteLibrary: () => {
+      if (!libraryDestroy) return;
+      router.delete(libraryDestroy, { ...LIBRARY_VISIT, only: ['favorites', 'collections', ...WITH_FEEDBACK] });
+    },
 
     // Was `preserveState: false`, which remounted the page and with it the browser and its
     // store. The reload of `collections` is all a new collection needs.
