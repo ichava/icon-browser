@@ -4,13 +4,17 @@
 
 *Reference.*
 
-REST endpoints exposed by `ichava/icon-browser`. All endpoints sit under `/{prefix}/api/...` where `{prefix}` defaults to `ichava` (set by `ICHAVA_BROWSER_PREFIX`).
+REST endpoints exposed by `ichava/icon-browser`. All endpoints sit under `/{prefix}/api/v1/...` where `{prefix}` defaults to `ichava` (set by `ICHAVA_BROWSER_PREFIX`).
 
 ### Base URL
 
 ```
-/ichava/api
+/ichava/api/v1
 ```
+
+### Versioning
+
+The path carries the API version, `v1`, and the route names carry it too (`ichava.api.v1.*`, for example `route('ichava.api.v1.icons.index')`). The payload contract has its own version: `GET /session` and `GET /bootstrap` return `schemaVersion`, the `version` of `resources/schema/icon-browser.schema.json`. A client compares that, not the path, to tell an added field from a breaking change. Nothing answers on the unversioned `/{prefix}/api/...` path.
 
 ### Host endpoints
 
@@ -66,16 +70,16 @@ Facet counts in `/icons/filters` are counted over the other filters, and `/icons
 
 ```bash
 # List icons with pagination
-curl "http://example.com/ichava/api/icons?page=1&per_page=60"
+curl "http://example.com/ichava/api/v1/icons?page=1&per_page=60"
 
 # Search icons
-curl "http://example.com/ichava/api/icons?search=home"
+curl "http://example.com/ichava/api/v1/icons?search=home"
 
 # Filter by package
-curl "http://example.com/ichava/api/icons?packages[]=vendor/your-icons"
+curl "http://example.com/ichava/api/v1/icons?packages[]=vendor/your-icons"
 
 # Get statistics
-curl "http://example.com/ichava/api/icons/statistics"
+curl "http://example.com/ichava/api/v1/icons/statistics"
 ```
 
 ### API Response Format

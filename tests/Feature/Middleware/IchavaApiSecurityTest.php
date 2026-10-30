@@ -17,7 +17,7 @@ use Simtabi\Laranail\Ichava\IconBrowser\Http\Middleware\IchavaApiSecurity;
  */
 describe('IchavaApiSecurity::handle', function () {
     it('emits the standard security response headers on a clean request', function () {
-        $response = test()->getJson(route('ichava.api.packages.index'));
+        $response = test()->getJson(route('ichava.api.v1.packages.index'));
 
         $response->assertOk();
         // Headers come from addSecurityHeaders() in the middleware.
@@ -28,7 +28,7 @@ describe('IchavaApiSecurity::handle', function () {
 
     it('rejects requests with SQL-injection patterns in query input', function () {
         $response = test()->getJson(
-            route('ichava.api.icons.index') . '?' . http_build_query(['search' => "' UNION SELECT * FROM users --"]),
+            route('ichava.api.v1.icons.index') . '?' . http_build_query(['search' => "' UNION SELECT * FROM users --"]),
         );
 
         $response->assertStatus(400);
@@ -36,7 +36,7 @@ describe('IchavaApiSecurity::handle', function () {
 
     it('rejects requests with XSS patterns in query input', function () {
         $response = test()->getJson(
-            route('ichava.api.icons.index') . '?' . http_build_query(['search' => '<script>alert(1)</script>']),
+            route('ichava.api.v1.icons.index') . '?' . http_build_query(['search' => '<script>alert(1)</script>']),
         );
 
         $response->assertStatus(400);
@@ -44,7 +44,7 @@ describe('IchavaApiSecurity::handle', function () {
 
     it('rejects requests carrying path-traversal patterns in inputs', function () {
         $response = test()->getJson(
-            route('ichava.api.icons.index') . '?' . http_build_query(['search' => '../../etc/passwd']),
+            route('ichava.api.v1.icons.index') . '?' . http_build_query(['search' => '../../etc/passwd']),
         );
 
         $response->assertStatus(400);
@@ -84,7 +84,7 @@ describe('IchavaApiSecurity::handle', function () {
              * request would legitimately return `must-revalidate` and this test
              * would be asserting the wrong contract.
              */
-            $response = test()->get(route('ichava.api.icons.svg', [
+            $response = test()->get(route('ichava.api.v1.icons.svg', [
                 'id' => $icon->id,
                 'v'  => $icon->render_version,
             ]));
@@ -105,7 +105,7 @@ describe('IchavaApiSecurity::handle', function () {
     });
 
     it('still applies its own headers to a route that claims nothing', function () {
-        $response = test()->getJson(route('ichava.api.packages.index'));
+        $response = test()->getJson(route('ichava.api.v1.packages.index'));
 
         $response->assertOk();
         // The JSON API must keep the no-store default: a claim is opt-in, per route.
@@ -113,7 +113,7 @@ describe('IchavaApiSecurity::handle', function () {
     });
 
     it('never leaks the ownership marker to the client', function () {
-        $response = test()->getJson(route('ichava.api.packages.index'));
+        $response = test()->getJson(route('ichava.api.v1.packages.index'));
 
         expect($response->headers->has('X-Ichava-Own-Headers'))->toBeFalse();
     });
@@ -121,7 +121,7 @@ describe('IchavaApiSecurity::handle', function () {
     it('returns 415 for non-JSON Content-Type on POST with body', function () {
         $response = test()
             ->withHeaders(['Content-Type' => 'application/xml', 'Accept' => 'application/json'])
-            ->call('POST', route('ichava.api.preferences.update'), [], [], [], [
+            ->call('POST', route('ichava.api.v1.preferences.update'), [], [], [], [
                 'CONTENT_TYPE' => 'application/xml',
             ], '<xml>foo</xml>');
 
@@ -142,7 +142,7 @@ describe('IchavaApiSecurity::claimHeaders', function () {
         ]);
         IchavaApiSecurity::claimHeaders($response, 'Cache-Control');
 
-        $out = (new IchavaApiSecurity)->handle(Request::create('/ichava/api/icons/1/svg'), fn () => $response);
+        $out = (new IchavaApiSecurity)->handle(Request::create('/ichava/api/v1/icons/1/svg'), fn () => $response);
 
         expect($out->headers->get('Cache-Control'))->toContain('immutable');
         expect($out->headers->has('X-Ichava-Own-Headers'))->toBeFalse();
@@ -153,7 +153,7 @@ describe('IchavaApiSecurity::claimHeaders', function () {
             'Cache-Control' => 'public, max-age=31536000, immutable',
         ]);
 
-        $out = (new IchavaApiSecurity)->handle(Request::create('/ichava/api/packages'), fn () => $response);
+        $out = (new IchavaApiSecurity)->handle(Request::create('/ichava/api/v1/packages'), fn () => $response);
 
         expect($out->headers->get('Cache-Control'))->toContain('no-store');
     });
@@ -176,7 +176,7 @@ describe('IchavaApiSecurity::claimHeaders', function () {
         $response = new SymfonyResponse('{}', 200);
         IchavaApiSecurity::claimHeaders($response, 'X-Frame-Options', 'X-Content-Type-Options');
 
-        $out = (new IchavaApiSecurity)->handle(Request::create('/ichava/api/packages'), fn () => $response);
+        $out = (new IchavaApiSecurity)->handle(Request::create('/ichava/api/v1/packages'), fn () => $response);
 
         expect($out->headers->get('X-Content-Type-Options'))->toBe('nosniff');
         expect($out->headers->get('X-Frame-Options'))->not->toBeNull();

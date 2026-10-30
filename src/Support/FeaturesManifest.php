@@ -28,7 +28,7 @@ use Simtabi\Laranail\Ichava\Support\Helpers as CoreHelpers;
  * - `endpoints`: name => absolute URL, for the routes actually mounted.
  *
  * Shared in the `ichava` Inertia prop and served at
- * `GET {prefix}/api/bootstrap`.
+ * `GET {prefix}/api/v1/bootstrap`.
  */
 final readonly class FeaturesManifest
 {
@@ -38,31 +38,31 @@ final readonly class FeaturesManifest
     /** Library features: on/off by config, with their Inertia and REST routes. */
     private const array LIBRARY = [
         'favorites' => [
-            'list'   => ['ichava.inertia.favorites.index', 'ichava.api.favorites.index'],
-            'toggle' => ['ichava.api.favorites.toggle'],
+            'list'   => ['ichava.inertia.favorites.index', 'ichava.api.v1.favorites.index'],
+            'toggle' => ['ichava.api.v1.favorites.toggle'],
         ],
         'collections' => [
-            'list'   => ['ichava.inertia.collections.index', 'ichava.api.collections.index'],
-            'create' => ['ichava.inertia.collections.store', 'ichava.api.collections.store'],
+            'list'   => ['ichava.inertia.collections.index', 'ichava.api.v1.collections.index'],
+            'create' => ['ichava.inertia.collections.store', 'ichava.api.v1.collections.store'],
         ],
         'history' => [
-            'list'  => ['ichava.inertia.history.index', 'ichava.api.history.index'],
-            'store' => ['ichava.inertia.history.store', 'ichava.api.history.store'],
-            'clear' => ['ichava.inertia.history.clear', 'ichava.api.history.clear'],
+            'list'  => ['ichava.inertia.history.index', 'ichava.api.v1.history.index'],
+            'store' => ['ichava.inertia.history.store', 'ichava.api.v1.history.store'],
+            'clear' => ['ichava.inertia.history.clear', 'ichava.api.v1.history.clear'],
         ],
         'commands' => [
-            'list'  => ['ichava.inertia.commandHistory.index', 'ichava.api.commandHistory.index'],
-            'store' => ['ichava.inertia.commandHistory.store', 'ichava.api.commandHistory.store'],
-            'clear' => ['ichava.inertia.commandHistory.clear', 'ichava.api.commandHistory.clear'],
+            'list'  => ['ichava.inertia.commandHistory.index', 'ichava.api.v1.commandHistory.index'],
+            'store' => ['ichava.inertia.commandHistory.store', 'ichava.api.v1.commandHistory.store'],
+            'clear' => ['ichava.inertia.commandHistory.clear', 'ichava.api.v1.commandHistory.clear'],
         ],
         'library' => [
-            'show'    => ['ichava.api.library.index'],
-            'destroy' => ['ichava.inertia.library.destroy', 'ichava.api.library.destroy'],
+            'show'    => ['ichava.api.v1.library.index'],
+            'destroy' => ['ichava.inertia.library.destroy', 'ichava.api.v1.library.destroy'],
         ],
         'preferences' => [
-            'show'   => ['ichava.inertia.settings.index', 'ichava.api.preferences.index'],
-            'update' => ['ichava.inertia.settings.update', 'ichava.api.preferences.update'],
-            'reset'  => ['ichava.inertia.settings.clear', 'ichava.api.preferences.clear'],
+            'show'   => ['ichava.inertia.settings.index', 'ichava.api.v1.preferences.index'],
+            'update' => ['ichava.inertia.settings.update', 'ichava.api.v1.preferences.update'],
+            'reset'  => ['ichava.inertia.settings.clear', 'ichava.api.v1.preferences.clear'],
         ],
     ];
 
@@ -99,14 +99,14 @@ final readonly class FeaturesManifest
 
         $features['status'] = $this->gated('status', IchavaGates::ADMIN, [
             'page'   => ['ichava.inertia.stats'],
-            'status' => ['ichava.api.status'],
+            'status' => ['ichava.api.v1.status'],
         ]);
 
         $features['cacheAdmin'] = self::configured('cache_admin')
             ? self::feature(CacheAdminGate::allows(), 'gate', [
-                'stats'   => ['ichava.api.cache.stats'],
-                'clear'   => ['ichava.inertia.cache.clear', 'ichava.api.cache.clear'],
-                'rebuild' => ['ichava.inertia.cache.rebuild', 'ichava.api.cache.rebuild'],
+                'stats'   => ['ichava.api.v1.cache.stats'],
+                'clear'   => ['ichava.inertia.cache.clear', 'ichava.api.v1.cache.clear'],
+                'rebuild' => ['ichava.inertia.cache.rebuild', 'ichava.api.v1.cache.rebuild'],
             ])
             : self::feature(false, 'config', []);
 

@@ -54,13 +54,13 @@ it('keeps a signed-in user\'s favourites in the owner table', function () {
 it('serves the library to the same user from a fresh session, as on another device', function () {
     $icon = storeIcon();
     $this->actingAs(libraryUser());
-    $this->postJson(route('ichava.api.favorites.store', ['iconId' => $icon->id]))->assertCreated();
+    $this->postJson(route('ichava.api.v1.favorites.store', ['iconId' => $icon->id]))->assertCreated();
 
     // A new device: no session cookie, the same host user.
     $this->flushSession();
     $this->actingAs(libraryUser());
 
-    $this->getJson(route('ichava.api.favorites.index'))
+    $this->getJson(route('ichava.api.v1.favorites.index'))
         ->assertOk()
         ->assertJsonPath('data.ids', [$icon->id]);
 });

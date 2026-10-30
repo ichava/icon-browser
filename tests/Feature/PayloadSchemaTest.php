@@ -44,10 +44,10 @@ function assertMatchesSchema(mixed $payload, string $def): void
 function seedSchemaFixture(): Icon
 {
     $icon = Icon::create(['package' => 'ichava/test-pack', 'name' => 'star', 'path' => '/fake/star.svg', 'tags' => ['shape']]);
-    test()->postJson(route('ichava.api.favorites.store', ['iconId' => $icon->id]));
-    test()->postJson(route('ichava.api.collections.store'), ['name' => 'Shapes']);
-    test()->postJson(route('ichava.api.history.store'), ['icon_id' => $icon->id, 'action' => 'copy']);
-    test()->postJson(route('ichava.api.commandHistory.store'), ['command' => 'Open', 'type' => 'action']);
+    test()->postJson(route('ichava.api.v1.favorites.store', ['iconId' => $icon->id]));
+    test()->postJson(route('ichava.api.v1.collections.store'), ['name' => 'Shapes']);
+    test()->postJson(route('ichava.api.v1.history.store'), ['icon_id' => $icon->id, 'action' => 'copy']);
+    test()->postJson(route('ichava.api.v1.commandHistory.store'), ['command' => 'Open', 'type' => 'action']);
 
     return $icon;
 }
@@ -66,43 +66,43 @@ it('matches every REST response', function (string $route, string $def) {
 
     assertMatchesSchema($response->json(), $def);
 })->with([
-    'session'         => ['ichava.api.session', 'sessionResponse'],
-    'bootstrap'       => ['ichava.api.bootstrap', 'bootstrapResponse'],
-    'library'         => ['ichava.api.library.index', 'libraryResponse'],
-    'icons'           => ['ichava.api.icons.index', 'iconList'],
-    'filters'         => ['ichava.api.icons.filters', 'filters'],
-    'statistics'      => ['ichava.api.icons.statistics', 'statisticsResponse'],
-    'packages'        => ['ichava.api.packages.index', 'packagesResponse'],
-    'favorites'       => ['ichava.api.favorites.index', 'favoritesResponse'],
-    'collections'     => ['ichava.api.collections.index', 'collectionsResponse'],
-    'history'         => ['ichava.api.history.index', 'historyResponse'],
-    'command history' => ['ichava.api.commandHistory.index', 'commandHistoryResponse'],
-    'preferences'     => ['ichava.api.preferences.index', 'preferencesResponse'],
+    'session'         => ['ichava.api.v1.session', 'sessionResponse'],
+    'bootstrap'       => ['ichava.api.v1.bootstrap', 'bootstrapResponse'],
+    'library'         => ['ichava.api.v1.library.index', 'libraryResponse'],
+    'icons'           => ['ichava.api.v1.icons.index', 'iconList'],
+    'filters'         => ['ichava.api.v1.icons.filters', 'filters'],
+    'statistics'      => ['ichava.api.v1.icons.statistics', 'statisticsResponse'],
+    'packages'        => ['ichava.api.v1.packages.index', 'packagesResponse'],
+    'favorites'       => ['ichava.api.v1.favorites.index', 'favoritesResponse'],
+    'collections'     => ['ichava.api.v1.collections.index', 'collectionsResponse'],
+    'history'         => ['ichava.api.v1.history.index', 'historyResponse'],
+    'command history' => ['ichava.api.v1.commandHistory.index', 'commandHistoryResponse'],
+    'preferences'     => ['ichava.api.v1.preferences.index', 'preferencesResponse'],
 ]);
 
 it('matches every icon in the listing and the single icon', function () {
     $icon = seedSchemaFixture();
 
-    foreach ($this->getJson(route('ichava.api.icons.index'))->json('data') as $key => $item) {
+    foreach ($this->getJson(route('ichava.api.v1.icons.index'))->json('data') as $key => $item) {
         if (is_int($key)) {
             assertMatchesSchema($item, 'iconResource');
         }
     }
 
-    assertMatchesSchema($this->getJson(route('ichava.api.icons.show', ['id' => $icon->id]))->json(), 'iconResponse');
+    assertMatchesSchema($this->getJson(route('ichava.api.v1.icons.show', ['id' => $icon->id]))->json(), 'iconResponse');
 });
 
 it('matches the session of a signed-in user', function () {
     $this->actingAs(new GenericUser(['id' => 5, 'name' => 'Ada', 'email' => 'ada@example.test']));
 
-    assertMatchesSchema($this->getJson(route('ichava.api.session'))->json(), 'sessionResponse');
+    assertMatchesSchema($this->getJson(route('ichava.api.v1.session'))->json(), 'sessionResponse');
 });
 
 it('matches the status document', function () {
     Gate::define('ichava.admin', fn (?object $user = null) => $user !== null);
     $this->actingAs(new GenericUser(['id' => 5, 'name' => 'Root']));
 
-    assertMatchesSchema($this->getJson(route('ichava.api.status'))->json(), 'statusResponse');
+    assertMatchesSchema($this->getJson(route('ichava.api.v1.status'))->json(), 'statusResponse');
 });
 
 it('matches the Inertia browser and stats pages', function () {

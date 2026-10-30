@@ -52,64 +52,64 @@ describe('the REST listing', function () {
     it('narrows by kind', function () {
         filterFixture();
 
-        expect(listedNames($this->getJson(route('ichava.api.icons.index', ['kind' => 'illustration']))->assertOk()))
+        expect(listedNames($this->getJson(route('ichava.api.v1.icons.index', ['kind' => 'illustration']))->assertOk()))
             ->toBe(['park-scene'])
-            ->and(listedNames($this->getJson(route('ichava.api.icons.index', ['kind' => 'icon']))))
+            ->and(listedNames($this->getJson(route('ichava.api.v1.icons.index', ['kind' => 'icon']))))
             ->toBe(['arrow-bend', 'arrow-left']);
     });
 
     it('refuses a kind that is not one', function () {
-        $this->getJson(route('ichava.api.icons.index', ['kind' => 'photo']))->assertUnprocessable();
+        $this->getJson(route('ichava.api.v1.icons.index', ['kind' => 'photo']))->assertUnprocessable();
     });
 
     it('narrows by subcategory', function () {
         filterFixture();
 
-        expect(listedNames($this->getJson(route('ichava.api.icons.index', ['subs' => ['curved']]))))
+        expect(listedNames($this->getJson(route('ichava.api.v1.icons.index', ['subs' => ['curved']]))))
             ->toBe(['arrow-bend']);
     });
 
     it('narrows by tag and keyword', function () {
         filterFixture();
 
-        expect(listedNames($this->getJson(route('ichava.api.icons.index', ['tags' => ['curve']]))))
+        expect(listedNames($this->getJson(route('ichava.api.v1.icons.index', ['tags' => ['curve']]))))
             ->toBe(['arrow-bend'])
-            ->and(listedNames($this->getJson(route('ichava.api.icons.index', ['keywords' => ['back']]))))
+            ->and(listedNames($this->getJson(route('ichava.api.v1.icons.index', ['keywords' => ['back']]))))
             ->toBe(['arrow-left']);
     });
 
     it('carries kind and theme twins on every icon', function () {
         filterFixture();
 
-        $icon = collect($this->getJson(route('ichava.api.icons.index', ['kind' => 'illustration']))->json('data'))->first();
+        $icon = collect($this->getJson(route('ichava.api.v1.icons.index', ['kind' => 'illustration']))->json('data'))->first();
 
         expect($icon['kind'])->toBe('illustration')
             ->and($icon['themes'])->toBe([]);
     });
 
     it('says why an empty page is empty', function () {
-        $this->getJson(route('ichava.api.icons.index'))
+        $this->getJson(route('ichava.api.v1.icons.index'))
             ->assertJsonPath('meta.empty_reason', 'no_icons')
             ->assertJsonPath('meta.has_filters', false);
 
         filterFixture();
 
-        $this->getJson(route('ichava.api.icons.index', ['tags' => ['missing']]))
+        $this->getJson(route('ichava.api.v1.icons.index', ['tags' => ['missing']]))
             ->assertJsonPath('meta.empty_reason', 'no_match')
             ->assertJsonPath('meta.has_filters', true);
 
-        $this->getJson(route('ichava.api.icons.index', ['search' => 'zzzz']))
+        $this->getJson(route('ichava.api.v1.icons.index', ['search' => 'zzzz']))
             ->assertJsonPath('meta.empty_reason', 'no_match')
             ->assertJsonPath('meta.has_search', true);
 
-        $this->getJson(route('ichava.api.icons.index'))->assertJsonPath('meta.empty_reason', null);
+        $this->getJson(route('ichava.api.v1.icons.index'))->assertJsonPath('meta.empty_reason', null);
     });
 
     it('counts the tree over the selection', function () {
         filterFixture();
 
-        $all = $this->getJson(route('ichava.api.icons.tree'))->assertOk()->json('data');
-        $illustrations = $this->getJson(route('ichava.api.icons.tree', ['kind' => 'illustration']))->assertOk()->json('data');
+        $all = $this->getJson(route('ichava.api.v1.icons.tree'))->assertOk()->json('data');
+        $illustrations = $this->getJson(route('ichava.api.v1.icons.tree', ['kind' => 'illustration']))->assertOk()->json('data');
 
         expect(json_encode($all))->not->toBe(json_encode($illustrations));
     });
@@ -117,7 +117,7 @@ describe('the REST listing', function () {
     it('counts the facets over the other filters', function () {
         filterFixture();
 
-        $kinds = collect($this->getJson(route('ichava.api.icons.filters'))->assertOk()->json('kinds'))
+        $kinds = collect($this->getJson(route('ichava.api.v1.icons.filters'))->assertOk()->json('kinds'))
             ->pluck('count', 'name')->all();
 
         expect($kinds)->toBe(['icon' => 2, 'illustration' => 1]);

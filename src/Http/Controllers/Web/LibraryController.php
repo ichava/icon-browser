@@ -10,7 +10,7 @@ use Simtabi\Laranail\Ichava\IconBrowser\Actions\Library\DeleteLibrary;
 
 /**
  * "Delete my library" for the Inertia browser: the twin of
- * `DELETE {prefix}/api/library`, through the same action.
+ * `DELETE {prefix}/api/v1/library`, through the same action.
  */
 final class LibraryController extends BaseInertiaController
 {

@@ -5,7 +5,7 @@ declare(strict_types=1);
 use Simtabi\Laranail\Ichava\Services\IconPackUpdateChecker;
 
 /**
- * Feature tests for the GET /{prefix}/api/icons/update-status endpoint.
+ * Feature tests for the GET /{prefix}/api/v1/icons/update-status endpoint.
  *
  * The underlying IconPackUpdateChecker is unit-tested in core; here we
  * pin (a) the JSON envelope shape, (b) the summary tallies, and (c)
@@ -64,7 +64,7 @@ beforeEach(function () {
 });
 
 it('returns rows + summary tallies for every registered pack', function () {
-    $response = test()->getJson(route('ichava.api.icons.update-status'));
+    $response = test()->getJson(route('ichava.api.v1.icons.update-status'));
 
     $response->assertOk()
         ->assertJsonStructure([
@@ -83,7 +83,7 @@ it('returns rows + summary tallies for every registered pack', function () {
 });
 
 it('forwards the ?package= filter into the checker', function () {
-    $response = test()->getJson(route('ichava.api.icons.update-status', ['package' => 'ichava/icon-sets-flag']));
+    $response = test()->getJson(route('ichava.api.v1.icons.update-status', ['package' => 'ichava/icon-sets-flag']));
 
     $response->assertOk()
         ->assertJsonPath('data.summary.total', 1)

@@ -19,8 +19,8 @@ use Simtabi\Laranail\Ichava\Services\IconPackUpdateChecker;
  *
  * Endpoint:
  *
- *   GET /{prefix}/api/icons/update-status              -- all packs
- *   GET /{prefix}/api/icons/update-status?package=...  -- single pack
+ *   GET /{prefix}/api/v1/icons/update-status              -- all packs
+ *   GET /{prefix}/api/v1/icons/update-status?package=...  -- single pack
  *
  * Cached per-pack for 12 hours by the underlying service; this endpoint
  * adds no caching of its own.

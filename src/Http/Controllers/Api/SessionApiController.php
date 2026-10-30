@@ -9,7 +9,7 @@ use Simtabi\Laranail\Ichava\Services\IchavaLogger;
 use Simtabi\Laranail\Ichava\IconBrowser\Support\HostSession;
 
 /**
- * `GET {prefix}/api/session`: who is signed in and where their library lives.
+ * `GET {prefix}/api/v1/session`: who is signed in and where their library lives.
  *
  * For REST hosts, which have no Inertia `auth` prop. The user is the same
  * `UserData` that prop carries, from the same resolver, so a client sees one

@@ -27,7 +27,7 @@ final class Helpers
 
     /**
      * The URL prefix every browser route mounts under (`/{prefix}/icons`,
-     * `/{prefix}/api/...`). One reader, so routes, shared props and
+     * `/{prefix}/api/v1/...`). One reader, so routes, shared props and
      * `ValidateIchavaRoute` cannot disagree.
      */
     public static function routePrefix(): string

@@ -16,7 +16,7 @@ it('does not mount the /{prefix} redirect without the Inertia pages', function (
 });
 
 it('keeps the REST API and its bootstrap', function () {
-    $this->getJson(route('ichava.api.bootstrap'))
+    $this->getJson(route('ichava.api.v1.bootstrap'))
         ->assertOk()
         ->assertJsonPath('data.modes', ['inertia' => false, 'api' => true]);
 });

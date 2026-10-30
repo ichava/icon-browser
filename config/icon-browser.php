@@ -42,7 +42,7 @@ return [
     | Browser UI
     |--------------------------------------------------------------------------
     | Mounted at /{prefix}/icons by default ({prefix} is the value below).
-    | The same prefix is used by core's API routes (/{prefix}/api/...) so
+    | The same prefix is used by core's API routes (/{prefix}/api/v1/...) so
     | the SPA and the REST API share a unified URL space.
     */
     'browser' => [
@@ -94,7 +94,7 @@ return [
     | Features
     |--------------------------------------------------------------------------
     | Which browser features this host offers. The browser receives a manifest
-    | (the `ichava.features` prop, `GET {prefix}/api/bootstrap`) saying, per
+    | (the `ichava.features` prop, `GET {prefix}/api/v1/bootstrap`) saying, per
     | feature, whether it is enabled, why not, and the URLs to call, and shows
     | only what is enabled. A library feature turned off here is not mounted.
     |
@@ -281,7 +281,7 @@ return [
         | Cache administration
         |----------------------------------------------------------------------
         |
-        | `POST ichava/api/cache/clear` and `.../rebuild` are destructive: clear
+        | `POST ichava/api/v1/cache/clear` and `.../rebuild` are destructive: clear
         | flushes the icon cache, and rebuild also resets every stored preference.
         | They previously carried only a rate limit, so any caller who could reach
         | the API could invoke them.

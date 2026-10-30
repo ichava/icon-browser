@@ -6,7 +6,7 @@ namespace Simtabi\Laranail\Ichava\IconBrowser\Support;
 
 /**
  * The document a browser client starts from: one shape for the Inertia
- * `ichava` prop's host fields and for `GET {prefix}/api/bootstrap`.
+ * `ichava` prop's host fields and for `GET {prefix}/api/v1/bootstrap`.
  */
 final readonly class BrowserBootstrap
 {

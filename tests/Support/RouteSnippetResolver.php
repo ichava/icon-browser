@@ -13,7 +13,7 @@ final class RouteSnippetResolver implements SnippetResolver
     public function snippets(Icon $icon): array
     {
         return [
-            'download' => route('ichava.api.icons.svg', ['id' => $icon->id]),
+            'download' => route('ichava.api.v1.icons.svg', ['id' => $icon->id]),
             'empty'    => '',
         ];
     }

@@ -247,7 +247,7 @@
         "data",
         "meta"
       ],
-      "description": "GET {prefix}/api/icons. data is the page of iconResource items (with a grouped map beside them)."
+      "description": "GET {prefix}/api/v1/icons. data is the page of iconResource items (with a grouped map beside them)."
     },
     "package": {
       "type": "object",
@@ -337,7 +337,7 @@
         "variants",
         "kinds"
       ],
-      "description": "GET {prefix}/api/icons/filters and the Inertia filterOptions prop; counts are scoped by the other filters."
+      "description": "GET {prefix}/api/v1/icons/filters and the Inertia filterOptions prop; counts are scoped by the other filters."
     },
     "statistics": {
       "type": "object",
@@ -506,7 +506,7 @@
         "history",
         "commandHistory"
       ],
-      "description": "GET {prefix}/api/library: everything the current owner keeps."
+      "description": "GET {prefix}/api/v1/library: everything the current owner keeps."
     },
     "links": {
       "type": "object",
@@ -572,7 +572,7 @@
         "links"
       ],
       "additionalProperties": false,
-      "description": "GET {prefix}/api/session."
+      "description": "GET {prefix}/api/v1/session."
     },
     "feature": {
       "type": "object",
@@ -730,7 +730,7 @@
         "features"
       ],
       "additionalProperties": false,
-      "description": "GET {prefix}/api/bootstrap."
+      "description": "GET {prefix}/api/v1/bootstrap."
     },
     "status": {
       "type": "object",
@@ -816,7 +816,7 @@
         "cache",
         "render"
       ],
-      "description": "GET {prefix}/api/status (ichava.admin) and the Stats page status prop: core's StatusData."
+      "description": "GET {prefix}/api/v1/status (ichava.admin) and the Stats page status prop: core's StatusData."
     },
     "preferences": {
       "type": "object",

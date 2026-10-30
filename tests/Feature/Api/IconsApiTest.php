@@ -7,7 +7,7 @@ use Simtabi\Laranail\Ichava\Models\Icon;
 
 /**
  * Active coverage for the icons API endpoints
- * (`/ichava/api/icons`, `/ichava/api/icons/{id}`, `/ichava/api/icons/{id}/svg`).
+ * (`/ichava/api/v1/icons`, `/ichava/api/v1/icons/{id}`, `/ichava/api/v1/icons/{id}/svg`).
  *
  * The original tests lived in tests/_pending/IconBrowserApiTest.php and were
  * quarantined because they used the dead Pest\Laravel\getJson import. This
@@ -57,26 +57,26 @@ describe('IconBrowserApiController::index', function () {
         // rows. Coverage of "the filter actually works" lives in the
         // IconBrowserService::getIcons unit-style assertion below; this test
         // pins the API contract (status + envelope shape).
-        $response = test()->getJson(route('ichava.api.icons.index'));
+        $response = test()->getJson(route('ichava.api.v1.icons.index'));
 
         $response->assertOk()->assertJsonStructure(['data']);
     });
 
     it('honours the per_page query parameter (>= 10)', function () {
         // Per IconFilterRequest validation rules, per_page must be >= 10.
-        $response = test()->getJson(route('ichava.api.icons.index', ['per_page' => 10]));
+        $response = test()->getJson(route('ichava.api.v1.icons.index', ['per_page' => 10]));
 
         $response->assertOk();
     });
 
     it('rejects per_page values below the minimum', function () {
-        $response = test()->getJson(route('ichava.api.icons.index', ['per_page' => 1]));
+        $response = test()->getJson(route('ichava.api.v1.icons.index', ['per_page' => 1]));
 
         $response->assertStatus(422);
     });
 
     it('returns an empty data array when no icons match the package filter', function () {
-        $response = test()->getJson(route('ichava.api.icons.index', [
+        $response = test()->getJson(route('ichava.api.v1.icons.index', [
             'packages' => ['nonexistent/' . bin2hex(random_bytes(4))],
         ]));
 
@@ -88,7 +88,7 @@ describe('IconBrowserApiController::index', function () {
 describe('IconBrowserApiController::show', function () {
     it('returns a single icon with the expected fields', function () {
         $icon = Icon::first();
-        $response = test()->getJson(route('ichava.api.icons.show', ['id' => $icon->id]));
+        $response = test()->getJson(route('ichava.api.v1.icons.show', ['id' => $icon->id]));
 
         $response->assertOk()
             ->assertJsonStructure(['success', 'data' => ['id', 'name', 'package']]);
@@ -98,7 +98,7 @@ describe('IconBrowserApiController::show', function () {
     });
 
     it('returns 404 for an unknown icon id', function () {
-        $response = test()->getJson(route('ichava.api.icons.show', ['id' => 999_999]));
+        $response = test()->getJson(route('ichava.api.v1.icons.show', ['id' => 999_999]));
 
         $response->assertNotFound();
     });
@@ -117,7 +117,7 @@ describe('IconBrowserApiController::svg', function () {
         // (file missing) - both are valid happy/error paths. What we care
         // about for THIS test is that when 200 is returned the headers are
         // correct.
-        $response = test()->getJson(route('ichava.api.icons.svg', ['id' => $icon->id]));
+        $response = test()->getJson(route('ichava.api.v1.icons.svg', ['id' => $icon->id]));
 
         if ($response->status() === 200) {
             expect($response->headers->get('Content-Type'))->toStartWith('image/svg+xml');
@@ -141,7 +141,7 @@ describe('IconBrowserApiController::svg', function () {
             'path'    => '/fake/evil.svg',
         ]);
 
-        $response = test()->getJson(route('ichava.api.icons.svg', ['id' => $icon->id]));
+        $response = test()->getJson(route('ichava.api.v1.icons.svg', ['id' => $icon->id]));
 
         // Whether the SVG body is served or 404'd, the response must NOT
         // carry an injected X-Bad header (which would prove header injection

@@ -4,7 +4,7 @@
 
 *Reference.*
 
-`resources/schema/icon-browser.schema.json` is a JSON Schema (draft 2020-12) for every payload this package serves, one `$defs` entry each. Its `version` equals `PayloadSchema::VERSION`, which `GET {prefix}/api/session`, `GET {prefix}/api/bootstrap` and the `ichava` Inertia prop carry as `schemaVersion`.
+`resources/schema/icon-browser.schema.json` is a JSON Schema (draft 2020-12) for every payload this package serves, one `$defs` entry each. Its `version` equals `PayloadSchema::VERSION`, which `GET {prefix}/api/v1/session`, `GET {prefix}/api/v1/bootstrap` and the `ichava` Inertia prop carry as `schemaVersion`.
 
 | `$defs` entry | Payload |
 |---------------|---------|

@@ -58,7 +58,7 @@ class IconResource extends JsonResource
              * year. Clients should use this URL as given rather than rebuilding
              * it from the id. (W1-7b / `B0-b`.)
              */
-            'svg_url' => route('ichava.api.icons.svg', [
+            'svg_url' => route('ichava.api.v1.icons.svg', [
                 'id' => $icon->id,
                 'v'  => $icon->render_version,
             ], false),

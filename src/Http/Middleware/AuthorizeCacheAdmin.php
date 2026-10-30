@@ -12,7 +12,7 @@ use Simtabi\Laranail\Ichava\IconBrowser\Support\CacheAdminGate;
 /**
  * Gate the destructive cache endpoints.
  *
- * `POST ichava/api/cache/clear` and `POST ichava/api/cache/rebuild` shipped with a rate
+ * `POST ichava/api/v1/cache/clear` and `POST ichava/api/v1/cache/rebuild` shipped with a rate
  * limit and nothing else. Anyone who could reach the API could flush the icon cache, and
  * `rebuildCache()` additionally calls `PreferenceService::clear()`, so a single
  * unauthenticated request also wiped every stored preference. On a 128,000-icon catalogue

@@ -50,7 +50,7 @@ final class FavoritesApiController extends BaseApiController
                     'id'      => $icon->id,
                     'name'    => $icon->name,
                     'package' => $icon->package,
-                    'svg_url' => route('ichava.api.icons.svg', ['id' => $icon->id], false),
+                    'svg_url' => route('ichava.api.v1.icons.svg', ['id' => $icon->id], false),
                 ]);
 
             return $this->successResponse([

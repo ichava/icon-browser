@@ -12,22 +12,22 @@ use Simtabi\Laranail\Ichava\IconBrowser\Tests\ConfiguredHostTestCase;
 it('does not mount the routes of a feature turned off', function (string $name) {
     expect(Route::has($name))->toBeFalse();
 })->with([
-    'ichava.api.favorites.index',
-    'ichava.api.favorites.toggle',
+    'ichava.api.v1.favorites.index',
+    'ichava.api.v1.favorites.toggle',
     'ichava.inertia.favorites.index',
-    'ichava.api.library.destroy',
+    'ichava.api.v1.library.destroy',
     'ichava.inertia.library.destroy',
 ]);
 
 it('keeps the routes of the features left on', function (string $name) {
     expect(Route::has($name))->toBeTrue();
-})->with(['ichava.api.collections.index', 'ichava.inertia.collections.index', 'ichava.inertia.browser']);
+})->with(['ichava.api.v1.collections.index', 'ichava.inertia.collections.index', 'ichava.inertia.browser']);
 
 it('appends the host middleware to every browser route group', function (string $name) {
     $middleware = Route::getRoutes()->getByName($name)?->gatherMiddleware() ?? [];
 
     expect($middleware)->toContain('throttle:1000,1')->toContain('ichava.log');
-})->with(['ichava.api.icons.index', 'ichava.inertia.browser', 'ichava.home']);
+})->with(['ichava.api.v1.icons.index', 'ichava.inertia.browser', 'ichava.home']);
 
 it('mounts the browser on the configured domain only', function () {
     expect(Route::getRoutes()->getByName('ichava.inertia.browser')?->getDomain())->toBe(ConfiguredHostTestCase::DOMAIN);

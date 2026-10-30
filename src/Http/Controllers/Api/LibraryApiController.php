@@ -13,11 +13,11 @@ use Simtabi\Laranail\Ichava\IconBrowser\Actions\Library\DeleteLibrary;
 /**
  * The current owner's whole library in one document, and "Delete my library".
  *
- * `GET {prefix}/api/library` is what a REST client hydrates from on load:
+ * `GET {prefix}/api/v1/library` is what a REST client hydrates from on load:
  * favourite ids, collections (with their icon ids), history and command
  * history, the same lists the Inertia browser receives as props.
  *
- * `DELETE {prefix}/api/library` removes every favourite and collection kept on
+ * `DELETE {prefix}/api/v1/library` removes every favourite and collection kept on
  * the server for the current owner. It is a separate, explicit action: a
  * factory reset in the browser clears local state and never calls it.
  */

@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Gate;
 Gate::define('ichava.admin', fn ($user) => $user->is_admin);
 ```
 
-`ichava.manage-cache` falls back to `ichava.admin`, so one Gate opens `GET /ichava/api/status`, the Stats page status, and cache stats, clear and rebuild. Define `ichava.manage-cache` yourself to give cache rights to a different group. Both are denied until you do.
+`ichava.manage-cache` falls back to `ichava.admin`, so one Gate opens `GET /ichava/api/v1/status`, the Stats page status, and cache stats, clear and rebuild. Define `ichava.manage-cache` yourself to give cache rights to a different group. Both are denied until you do.
 
 See [Host integration](../tools/host-integration.md#gates).
 

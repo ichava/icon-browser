@@ -12,9 +12,9 @@ declare(strict_types=1);
 it('leaves every JSON route unmounted by default', function () {
     $router = app('router');
 
-    expect($router->has('ichava.api.icons.index'))->toBeFalse()
-        ->and($router->has('ichava.api.favorites.toggle'))->toBeFalse()
-        ->and($router->has('ichava.api.cache.clear'))->toBeFalse();
+    expect($router->has('ichava.api.v1.icons.index'))->toBeFalse()
+        ->and($router->has('ichava.api.v1.favorites.toggle'))->toBeFalse()
+        ->and($router->has('ichava.api.v1.cache.clear'))->toBeFalse();
 });
 
 it('keeps Inertia pages mounted while the API is off', function () {
@@ -24,9 +24,9 @@ it('keeps Inertia pages mounted while the API is off', function () {
 });
 
 it('answers unknown JSON paths with 404 rather than Inertia pages', function () {
-    // No JSON route claims /ichava/api/*, so nothing matches: the request
+    // No JSON route claims /ichava/api/v1/*, so nothing matches: the request
     // must not fall through to an Inertia page or the home redirect.
-    $response = test()->get('/ichava/api/icons');
+    $response = test()->get('/ichava/api/v1/icons');
 
     $response->assertNotFound();
 });

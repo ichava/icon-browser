@@ -26,7 +26,7 @@ describe('Packages API - List Packages', function () {
     });
 
     it('returns list of all packages', function () {
-        $response = test()->getJson(route('ichava.api.packages.index'));
+        $response = test()->getJson(route('ichava.api.v1.packages.index'));
 
         $response->assertOk()
             ->assertJsonStructure([
@@ -47,7 +47,7 @@ describe('Packages API - List Packages', function () {
     });
 
     it('includes package metadata', function () {
-        $response = test()->getJson(route('ichava.api.packages.index'));
+        $response = test()->getJson(route('ichava.api.v1.packages.index'));
 
         $response->assertOk();
 
@@ -91,7 +91,7 @@ describe('Packages API - Single Package', function () {
     });
 
     it('returns single package details', function () {
-        $response = test()->getJson(route('ichava.api.packages.show', [
+        $response = test()->getJson(route('ichava.api.v1.packages.show', [
             'package' => $this->package,
         ]));
 
@@ -115,7 +115,7 @@ describe('Packages API - Single Package', function () {
     });
 
     it('includes categories with icon counts', function () {
-        $response = test()->getJson(route('ichava.api.packages.show', [
+        $response = test()->getJson(route('ichava.api.v1.packages.show', [
             'package' => $this->package,
         ]));
 
@@ -130,7 +130,7 @@ describe('Packages API - Single Package', function () {
     });
 
     it('includes variants with icon counts', function () {
-        $response = test()->getJson(route('ichava.api.packages.show', [
+        $response = test()->getJson(route('ichava.api.v1.packages.show', [
             'package' => $this->package,
         ]));
 
@@ -145,7 +145,7 @@ describe('Packages API - Single Package', function () {
     });
 
     it('returns 404 for non-existent package', function () {
-        $response = test()->getJson(route('ichava.api.packages.show', [
+        $response = test()->getJson(route('ichava.api.v1.packages.show', [
             'package' => 'non-existent/package',
         ]));
 
@@ -155,7 +155,7 @@ describe('Packages API - Single Package', function () {
     });
 
     it('validates package name format', function () {
-        $response = test()->getJson(route('ichava.api.packages.show', [
+        $response = test()->getJson(route('ichava.api.v1.packages.show', [
             'package' => 'invalid_package_name',
         ]));
 
@@ -186,7 +186,7 @@ describe('Terms API - Categories', function () {
     });
 
     it('returns all categories', function () {
-        $response = test()->getJson(route('ichava.api.terms.categories'));
+        $response = test()->getJson(route('ichava.api.v1.terms.categories'));
 
         $response->assertOk()
             ->assertJsonStructure([
@@ -205,7 +205,7 @@ describe('Terms API - Categories', function () {
     });
 
     it('includes icon counts for categories', function () {
-        $response = test()->getJson(route('ichava.api.terms.categories'));
+        $response = test()->getJson(route('ichava.api.v1.terms.categories'));
 
         $response->assertOk();
 
@@ -239,7 +239,7 @@ describe('Terms API - Variants', function () {
     });
 
     it('returns all variants', function () {
-        $response = test()->getJson(route('ichava.api.terms.variants'));
+        $response = test()->getJson(route('ichava.api.v1.terms.variants'));
 
         $response->assertOk()
             ->assertJsonStructure([
@@ -258,7 +258,7 @@ describe('Terms API - Variants', function () {
     });
 
     it('includes icon counts for variants', function () {
-        $response = test()->getJson(route('ichava.api.terms.variants'));
+        $response = test()->getJson(route('ichava.api.v1.terms.variants'));
 
         $response->assertOk();
 
@@ -314,7 +314,7 @@ describe('Terms API - Hierarchy', function () {
     });
 
     it('returns hierarchical term structure', function () {
-        $response = test()->getJson(route('ichava.api.terms.hierarchy'));
+        $response = test()->getJson(route('ichava.api.v1.terms.hierarchy'));
 
         $response->assertOk()
             ->assertJsonStructure([
@@ -331,7 +331,7 @@ describe('Terms API - Hierarchy', function () {
     });
 
     it('includes icon counts in hierarchy', function () {
-        $response = test()->getJson(route('ichava.api.terms.hierarchy'));
+        $response = test()->getJson(route('ichava.api.v1.terms.hierarchy'));
 
         $response->assertOk();
 
@@ -345,7 +345,7 @@ describe('Terms API - Hierarchy', function () {
     });
 
     it('includes children in category hierarchy', function () {
-        $response = test()->getJson(route('ichava.api.terms.hierarchy'));
+        $response = test()->getJson(route('ichava.api.v1.terms.hierarchy'));
 
         $response->assertOk();
 
@@ -358,7 +358,7 @@ describe('Terms API - Hierarchy', function () {
     });
 
     it('returns all variants in hierarchy', function () {
-        $response = test()->getJson(route('ichava.api.terms.hierarchy'));
+        $response = test()->getJson(route('ichava.api.v1.terms.hierarchy'));
 
         $response->assertOk();
 

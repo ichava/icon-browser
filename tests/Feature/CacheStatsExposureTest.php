@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Gate;
 /**
  * Cache statistics are for cache administrators, and carry no server paths.
  *
- * `GET ichava/api/cache/stats` had a rate limit and nothing else, and its payload
+ * `GET ichava/api/v1/cache/stats` had a rate limit and nothing else, and its payload
  * listed every watched icon directory as an absolute path on the server. The
  * Inertia stats page put the same payload in its props for any visitor. Both now
  * answer to the `ichava.cache-admin` decision the cache write routes use, and the
@@ -58,19 +58,19 @@ function absolutePathsIn(mixed $payload): array
 it('refuses cache stats when no ability is defined', function (): void {
     expect(Gate::has('ichava.manage-cache'))->toBeFalse();
 
-    $this->getJson('/ichava/api/cache/stats')->assertForbidden();
+    $this->getJson('/ichava/api/v1/cache/stats')->assertForbidden();
 });
 
 it('refuses cache stats when the ability denies', function (): void {
     Gate::define('ichava.manage-cache', fn (?object $user) => false);
 
-    $this->getJson('/ichava/api/cache/stats')->assertForbidden();
+    $this->getJson('/ichava/api/v1/cache/stats')->assertForbidden();
 });
 
 it('returns cache stats without absolute paths when the ability grants', function (): void {
     Gate::define('ichava.manage-cache', fn (?object $user) => true);
 
-    $response = $this->getJson('/ichava/api/cache/stats')->assertOk();
+    $response = $this->getJson('/ichava/api/v1/cache/stats')->assertOk();
 
     // Non-vacuous: the watched directory is still reported, relative to the app.
     expect($response->json('stats.watcher.directories'))->toBe(['vendor/ichava/test-pack/resources/svg'])

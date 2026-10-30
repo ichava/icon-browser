@@ -28,12 +28,12 @@ it('mounts the Inertia browser and the home redirect under the custom prefix', f
 });
 
 it('mounts the REST API under the custom prefix', function (): void {
-    $uri = app('router')->getRoutes()->getByName('ichava.api.icons.index')?->uri();
+    $uri = app('router')->getRoutes()->getByName('ichava.api.v1.icons.index')?->uri();
 
-    expect($uri)->toStartWith('custom/api/');
+    expect($uri)->toStartWith('custom/api/v1/');
 
-    $this->getJson('/custom/api/icons')->assertOk();
-    $this->getJson('/ichava/api/icons')->assertNotFound();
+    $this->getJson('/custom/api/v1/icons')->assertOk();
+    $this->getJson('/ichava/api/v1/icons')->assertNotFound();
 });
 
 it('shares the custom prefix with the Inertia pages', function (): void {
