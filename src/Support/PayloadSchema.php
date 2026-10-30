@@ -15,7 +15,7 @@ namespace Simtabi\Laranail\Ichava\IconBrowser\Support;
  */
 final class PayloadSchema
 {
-    public const string VERSION = '1.2.0';
+    public const string VERSION = '1.3.0';
 
     /**
      * The JSON Schema (draft 2020-12) for every payload: one file, one `$defs`

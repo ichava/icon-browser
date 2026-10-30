@@ -2,8 +2,8 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/ichava/icon-browser/resources/schema/icon-browser.schema.json",
   "title": "ichava/icon-browser payloads",
-  "description": "Every REST resource, session and bootstrap document, and Inertia prop this package serves. Version 1.2.0, matching PayloadSchema::VERSION. react-icon-browser generates its types from this file.",
-  "version": "1.2.0",
+  "description": "Every REST resource, session and bootstrap document, and Inertia prop this package serves. Version 1.3.0, matching PayloadSchema::VERSION. react-icon-browser generates its types from this file.",
+  "version": "1.3.0",
   "$defs": {
     "user": {
       "type": "object",
@@ -306,6 +306,30 @@
         "count"
       ]
     },
+    "variantMeta": {
+      "type": "object",
+      "properties": {
+        "slug": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "default": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "slug",
+        "label",
+        "description",
+        "default"
+      ],
+      "description": "One of a pack's variants as the variant picker shows it (core's VariantData): the translated label and description. Added in 1.3.0."
+    },
     "filters": {
       "type": "object",
       "properties": {
@@ -324,9 +348,22 @@
           "items": {}
         },
         "variants_by_package": {
-          "type": [
-            "array",
-            "object"
+          "description": "Each pack's variants, keyed by pack name, in display order. PHP sends an empty map as []. Typed in 1.3.0.",
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/variantMeta"
+                }
+              }
+            },
+            {
+              "enum": [
+                []
+              ]
+            }
           ]
         },
         "kinds": {
@@ -1182,13 +1219,15 @@
             },
             "tree": {
               "type": "array",
-              "items": {}
+              "items": {},
+              "description": "The category tree counted over the applied filters less the category selection (as GET /api/v1/icons/tree is asked by the browser). Reloaded with every listing visit since 1.3.0."
             },
             "packages": {
               "type": "array",
               "items": {
                 "$ref": "#/$defs/package"
-              }
+              },
+              "description": "Every installed pack, whatever is selected, with the one the browser opens on marked default; the Inertia catalog's getCatalogMeta reads it with filterOptions.variants_by_package."
             },
             "favorites": {
               "type": "array",

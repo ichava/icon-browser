@@ -65,6 +65,34 @@ describe('CollectionController mutations', function () {
         expect($response->getTargetUrl())->toContain('/ichava/collections/');
     });
 
+    it('creates a collection holding the icons it was made from, skipping unknown ones', function () {
+        $star = Icon::create(['package' => 'ichava/test-pack', 'name' => 'star', 'path' => '/fake/star.svg']);
+        $moon = Icon::create(['package' => 'ichava/test-pack', 'name' => 'moon', 'path' => '/fake/moon.svg']);
+
+        test()->post(route('ichava.inertia.collections.store'), [
+            'name'     => 'Sky',
+            'icon_ids' => [$moon->id, 999999, $star->id, $moon->id],
+        ])->assertSessionHas('success');
+
+        $created = collect(app(IconPreferenceService::class)->getCollections())->firstWhere('name', 'Sky');
+        expect($created['icon_ids'] ?? null)->toBe([$moon->id, $star->id]);
+    });
+
+    it('stays on the browser when the browser creates one with a partial reload', function () {
+        test()->from('/ichava/icons')->post(
+            route('ichava.inertia.collections.store'),
+            ['name' => 'Sky'],
+            ['X-Inertia' => 'true', 'X-Inertia-Partial-Component' => 'Browser/Index', 'X-Inertia-Partial-Data' => 'collections'],
+        )->assertRedirect('/ichava/icons');
+    });
+
+    it('rejects icon ids that are not integers', function () {
+        test()->from('/ichava/collections')->post(
+            route('ichava.inertia.collections.store'),
+            ['name' => 'Sky', 'icon_ids' => ['moon']],
+        )->assertSessionHasErrors('icon_ids.0');
+    });
+
     it('rejects an invalid colour with errors', function () {
         $response = test()->from('/ichava/collections')->post(
             route('ichava.inertia.collections.store'),

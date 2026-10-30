@@ -70,9 +70,14 @@ export function useInertiaMutations() {
     },
 
     // Was `preserveState: false`, which remounted the page and with it the browser and its
-    // store. The reload of `collections` is all a new collection needs.
-    createCollection: (name: string) =>
-      router.post(routes.collections, { name }, { ...LIBRARY_VISIT, only: ['collections', ...WITH_FEEDBACK] }),
+    // store. The reload of `collections` is all a new collection needs. The icons it was
+    // made from go with it, since its id is only known once the server answers.
+    createCollection: (name: string, icons: readonly IconId[] = []) =>
+      router.post(
+        routes.collections,
+        icons.length ? { name, icon_ids: [...icons] } : { name },
+        { ...LIBRARY_VISIT, only: ['collections', ...WITH_FEEDBACK] },
+      ),
 
     updateCollection: (id: string, data: { name?: string; color?: string | null }) =>
       router.put(`${routes.collections}/${id}`, data, { ...LIBRARY_VISIT, only: ['collections', ...WITH_FEEDBACK] }),

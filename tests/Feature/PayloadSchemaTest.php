@@ -113,6 +113,27 @@ it('matches the Inertia browser and stats pages', function () {
     assertMatchesSchema($this->get(route('ichava.inertia.stats'))->viewData('page')['props'], 'statsPage');
 });
 
+it('matches the Inertia browser page of a pack that describes its variants', function () {
+    app(Simtabi\Laranail\Ichava\Services\IconRegistry::class)->fromDirectory(dirname(__DIR__) . '/fixtures/VariantPack');
+    app(Simtabi\Laranail\Ichava\Services\IconBrowserService::class)->clearCache();
+    Icon::create(['package' => 'ichava-fixtures/variant-pack', 'name' => 'home', 'path' => '/fake/home.svg']);
+
+    $props = $this->get(route('ichava.inertia.browser'))->viewData('page')['props'];
+
+    expect($props['filterOptions']['variants_by_package'])->toHaveKey('ichava-fixtures/variant-pack');
+    assertMatchesSchema($props, 'browserPage');
+    assertMatchesSchema($this->getJson(route('ichava.api.v1.icons.filters'))->json(), 'filters');
+});
+
+it('rejects a variant without its description, so the guard can fail', function () {
+    $result = payloadSchemaValidator()->validate(
+        json_decode('{"packages":[],"categories":[],"variants":[],"kinds":[],"variants_by_package":{"a/b":[{"slug":"outline","label":"Outline","default":true}]}}'),
+        'https://github.com/ichava/icon-browser/resources/schema/icon-browser.schema.json#/$defs/filters',
+    );
+
+    expect($result->isValid())->toBeFalse();
+});
+
 it('rejects a user carrying an email, so the guard can fail', function () {
     $result = payloadSchemaValidator()->validate(
         (object) ['id' => '1', 'name' => 'Ada', 'avatarUrl' => null, 'abilities' => (object) [], 'email' => 'ada@example.test'],

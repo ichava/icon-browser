@@ -83,6 +83,7 @@ declare const EN: {
     'toolbar.treatment': string;
     'toolbar.export': string;
     'toolbar.copyNames': string;
+    'toolbar.newCollection': string;
     'toolbar.selected': string;
     'appearance.title': string;
     'appearance.subtitle': string;
@@ -229,6 +230,7 @@ declare const EN: {
     'library.emptyCollections': string;
     'library.clearHistory': string;
     'library.newCollectionPlaceholder': string;
+    'library.seededWith': string;
     'library.iconCount': string;
     'library.teamBadge': string;
     'library.viewerBadge': string;

@@ -42,6 +42,8 @@ Favourites, collections, history, command history and preferences live in core's
 
 The table's migration loads with the package (`php artisan migrate`). Until it has run, signed-in users fall back to the session. `library.store = session` keeps everyone on the session.
 
+Creating a collection takes the icons it starts with: `icon_ids` (up to 500 integers) on `POST {prefix}/collections` and `POST {prefix}/api/v1/collections`. Ids no icon has are skipped, and the REST answer's `data.icon_ids` lists what was kept. The browser sends the icon or selection a collection was made from this way, because the collection's id is only known once the server answers. A browser create made with a partial reload of `Browser/Index` is redirected back to the browser rather than to the collection's page.
+
 Every write goes through one action shared by the Inertia route and its REST twin (`Actions\Library\*`, core's `Actions\UpdatePreferences`, `Actions\Preferences\ResetPreferences`). Resetting preferences keeps the library. **Delete my library** (`DELETE {prefix}/api/v1/library`, `DELETE {prefix}/library`) removes every favourite and collection, one at a time, so `FavoriteToggled` and `CollectionChanged` fire for each.
 
 ## The features manifest

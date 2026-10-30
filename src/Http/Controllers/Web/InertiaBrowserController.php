@@ -97,7 +97,8 @@ final class InertiaBrowserController extends BaseInertiaController
                 ],
                 'filterOptions' => $this->browserService->getFilters($filters),
                 'statistics'    => $this->browserService->getStatistics(),
-                'tree'          => $this->browserService->buildIconTree($filters),
+                // Counted over the selection less its categories, as the REST tree is.
+                'tree' => $this->browserService->buildIconTree($request->treeFilters()),
                 // Every installed pack, whatever is selected, for the pack picker.
                 'packages'       => $this->browserService->getFilters()['packages'] ?? [],
                 'favorites'      => $this->preferenceService->getFavorites(),

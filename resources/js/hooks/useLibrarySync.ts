@@ -22,7 +22,7 @@ export function runLibraryOp(m: Mutations, op: LibraryOp): void {
       m.clearHistory();
       return;
     case 'collection.create':
-      m.createCollection(op.name);
+      m.createCollection(op.name, op.icons);
       return;
     case 'collection.rename':
       m.updateCollection(op.id, { name: op.name });
@@ -50,8 +50,9 @@ export function runLibraryOp(m: Mutations, op: LibraryOp): void {
 
 /**
  * The operations to send for one store change. A collection created in this change has
- * only the browser's provisional id until the reload brings the server's, so the icons the
- * diff adds to it are not sent: the collection is created empty, as it always was here.
+ * only the browser's provisional id until the reload brings the server's, so its icons
+ * travel with the create (`icon_ids`); an add or remove the diff names against that
+ * provisional id could not reach the server and is not sent.
  */
 export function libraryOps(prev: LibraryView, next: LibraryView): LibraryOp[] {
   const ops = diffLibrary(prev, next);

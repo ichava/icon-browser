@@ -48,8 +48,11 @@ export declare class Library {
     /** Record `action` on `id` at `ts`: newest first, one entry per icon and action, capped. */
     record(id: IconId, action: string, ts: number): Library;
     clearHistory(): Library;
-    /** A new, empty collection; a blank name changes nothing. `newId` is only called when one is made. */
-    createCollection(name: string, newId: () => string): Library;
+    /**
+     * A new collection holding `icons` (none by default, each once, in order); a blank name
+     * changes nothing. `newId` is only called when one is made.
+     */
+    createCollection(name: string, newId: () => string, icons?: readonly IconId[]): Library;
     /** Rename; a blank name keeps the old one. */
     renameCollection(id: string, name: string): Library;
     removeCollection(id: string): Library;

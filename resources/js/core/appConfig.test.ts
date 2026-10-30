@@ -32,7 +32,7 @@ describe('browserConfig', () => {
     export: on(), motion: on(), themeToggle: off, presence: off, invites: off, sharing: off, notifications: off, workspaces: off,
   };
   const ichava = {
-    schemaVersion: '1.2.0', locale: 'fr', modes: { inertia: true, api: false }, features,
+    schemaVersion: '1.3.0', locale: 'fr', modes: { inertia: true, api: false }, features,
     account: { login: 'https://app.test/login', logout: 'https://app.test/logout' }, storage: { tier: 'database', persistent: true },
     prefix: 'ichava', perPage: 48, defaultTheme: 'dark', ui, snippets: { className: 'size-5' },
   };

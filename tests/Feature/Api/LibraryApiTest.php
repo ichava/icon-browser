@@ -58,6 +58,19 @@ describe('collections', function () {
         expect(app(IconPreferenceService::class)->getCollection($id)['icon_ids'] ?? null)->toBe([]);
     });
 
+    it('creates a collection holding the icons it was made from', function () {
+        $icon = libraryIcon();
+
+        $this->postJson(route('ichava.api.v1.collections.store'), ['name' => 'Arrows', 'icon_ids' => [$icon->id, 999999]])
+            ->assertCreated()
+            ->assertJsonPath('data.icon_ids', [$icon->id]);
+    });
+
+    it('refuses more icons than one create may carry', function () {
+        $this->postJson(route('ichava.api.v1.collections.store'), ['name' => 'Arrows', 'icon_ids' => range(1, 501)])
+            ->assertUnprocessable();
+    });
+
     it('answers a missing collection before a missing icon', function () {
         $this->postJson(route('ichava.api.v1.collections.addIcon', ['id' => 'nope', 'iconId' => 999999]))
             ->assertNotFound()
