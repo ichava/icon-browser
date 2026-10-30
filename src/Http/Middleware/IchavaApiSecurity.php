@@ -12,6 +12,7 @@ use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Simtabi\Laranail\Ichava\Support\AuditLogger;
 use Simtabi\Laranail\Ichava\Support\SecurityNonce;
+use Simtabi\Laranail\Ichava\IconBrowser\Support\Helpers;
 
 /**
  * Hardens Ichava API responses: CORS, request-size limits, SQL/XSS/path-traversal
@@ -126,6 +127,8 @@ final class IchavaApiSecurity
 
     /**
      * Handle an incoming request.
+     *
+     * @param Closure(Request): Response $next
      */
     public function handle(Request $request, Closure $next): Response
     {
@@ -145,7 +148,7 @@ final class IchavaApiSecurity
         }
 
         // 2. Check request size
-        $maxSize = (int) config('ichava.icon-browser.max_request_size', 1048576); // 1MB default
+        $maxSize = Helpers::configInt('ichava.icon-browser.max_request_size', 1048576); // 1MB default
         if ($request->header('Content-Length') && (int) $request->header('Content-Length') > $maxSize) {
             $this->audit('http.request_too_large', AuditLogger::SEVERITY_WARNING, [
                 'content_length' => (int) $request->header('Content-Length'),
@@ -208,6 +211,25 @@ final class IchavaApiSecurity
         }
 
         return $response;
+    }
+
+    /**
+     * A header value in the shape the header bag takes: a string, a list of
+     * strings, or null. Config-sourced values are strings in practice.
+     *
+     * @return array<string>|string|null
+     */
+    private static function headerValue(mixed $value): array|string|null
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        if (is_array($value)) {
+            return array_map(Helpers::stringOf(...), $value);
+        }
+
+        return Helpers::stringOf($value);
     }
 
     /**
@@ -303,13 +325,15 @@ final class IchavaApiSecurity
 
     /**
      * Get all input values (query, body, headers)
+     *
+     * @return array<mixed>
      */
     private function getAllInputs(Request $request): array
     {
         return array_merge(
             $request->query(),
             $request->post(),
-            $request->input() ?? [],
+            (array) ($request->input() ?? []),
         );
     }
 
@@ -329,25 +353,22 @@ final class IchavaApiSecurity
         // some configurations. CSP supersedes it; see security-model.md.
         $headers = [
             'X-Content-Type-Options' => 'nosniff',
-            'X-Frame-Options'        => (string) config('ichava.icon-browser.security.frame_options', 'DENY'),
-            'Referrer-Policy'        => (string) config(
+            'X-Frame-Options'        => Helpers::configString('ichava.icon-browser.security.frame_options', 'DENY'),
+            'Referrer-Policy'        => Helpers::configString(
                 'ichava.icon-browser.security.referrer_policy',
                 'strict-origin-when-cross-origin',
             ),
             'Cache-Control'        => 'no-store, no-cache, must-revalidate, max-age=0',
             'Pragma'               => 'no-cache',
             'X-Ichava-API-Version' => '1.0',
-            'Permissions-Policy'   => (string) config(
+            'Permissions-Policy'   => Helpers::configString(
                 'ichava.icon-browser.security.permissions_policy',
                 'camera=(), microphone=(), geolocation=(), payment=(), usb=()',
             ),
         ];
 
-        $cspHeader = $this->buildCspHeader();
-        if ($cspHeader !== null) {
-            [$cspName, $cspValue] = $cspHeader;
-            $headers[$cspName] = $cspValue;
-        }
+        [$cspName, $cspValue] = $this->buildCspHeader();
+        $headers[$cspName] = $cspValue;
 
         $hsts = $this->buildHstsHeader();
         if ($hsts !== null) {
@@ -383,7 +404,7 @@ final class IchavaApiSecurity
                 continue;
             }
 
-            $response->headers->set($key, $value);
+            $response->headers->set($key, self::headerValue($value));
         }
 
         return $response;
@@ -418,11 +439,11 @@ final class IchavaApiSecurity
     /**
      * Build the CSP header value for the configured mode.
      *
-     * @return array{0:string,1:string}|null [header-name, header-value]
+     * @return array{0:string,1:string} [header-name, header-value]
      */
-    private function buildCspHeader(): ?array
+    private function buildCspHeader(): array
     {
-        $mode = (string) config('ichava.icon-browser.security.csp.mode', 'strict');
+        $mode = Helpers::configString('ichava.icon-browser.security.csp.mode', 'strict');
         $extra = (array) config('ichava.icon-browser.security.csp.extra_directives', []);
 
         $directives = match ($mode) {
@@ -444,7 +465,7 @@ final class IchavaApiSecurity
 
         $value = '';
         foreach ($directives as $name => $directive) {
-            $value .= $name . ' ' . $directive . '; ';
+            $value .= $name . ' ' . Helpers::stringOf($directive) . '; ';
         }
         $value = rtrim($value, '; ');
 
@@ -483,8 +504,8 @@ final class IchavaApiSecurity
     private function cspHashDirectives(): array
     {
         $hashes = (array) config('ichava.icon-browser.security.csp.hashes', []);
-        $script = isset($hashes['script-src']) ? implode(' ', (array) $hashes['script-src']) : '';
-        $style = isset($hashes['style-src']) ? implode(' ', (array) $hashes['style-src']) : '';
+        $script = isset($hashes['script-src']) ? implode(' ', array_map(Helpers::stringOf(...), (array) $hashes['script-src'])) : '';
+        $style = isset($hashes['style-src']) ? implode(' ', array_map(Helpers::stringOf(...), (array) $hashes['style-src'])) : '';
 
         return [
             'default-src'     => "'self'",
@@ -516,7 +537,7 @@ final class IchavaApiSecurity
             return null;
         }
 
-        $maxAge = (int) config('ichava.icon-browser.security.hsts.max_age', 31536000);
+        $maxAge = Helpers::configInt('ichava.icon-browser.security.hsts.max_age', 31536000);
         $value = "max-age={$maxAge}";
 
         if ((bool) config('ichava.icon-browser.security.hsts.include_subdomains', true)) {
@@ -529,6 +550,9 @@ final class IchavaApiSecurity
         return $value;
     }
 
+    /**
+     * @param array<string, mixed> $context
+     */
     private function audit(string $event, int $severity, array $context = []): void
     {
         try {
@@ -542,6 +566,8 @@ final class IchavaApiSecurity
 
     /**
      * Get CORS headers
+     *
+     * @return array<string, mixed>
      */
     private function getCorsHeaders(): array
     {
@@ -550,7 +576,7 @@ final class IchavaApiSecurity
         $allowedHeaders = config('ichava.icon-browser.api.cors.allowed_headers', 'Content-Type, Authorization, X-Requested-With, Accept');
 
         return [
-            'Access-Control-Allow-Origin'  => is_array($allowedOrigins) ? implode(', ', $allowedOrigins) : $allowedOrigins,
+            'Access-Control-Allow-Origin'  => is_array($allowedOrigins) ? implode(', ', array_map(Helpers::stringOf(...), $allowedOrigins)) : $allowedOrigins,
             'Access-Control-Allow-Methods' => $allowedMethods,
             'Access-Control-Allow-Headers' => $allowedHeaders,
             'Access-Control-Max-Age'       => '86400',
@@ -576,7 +602,7 @@ final class IchavaApiSecurity
         }
 
         // Pretty print is enabled by default (configurable)
-        return config('ichava.icon-browser.api.pretty_print', true);
+        return (bool) config('ichava.icon-browser.api.pretty_print', true);
     }
 
     /**

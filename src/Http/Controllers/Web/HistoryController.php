@@ -34,17 +34,19 @@ final class HistoryController extends BaseInertiaController
         $this->logger->debug('Inertia history page accessed');
 
         try {
+            /** @var array<int, array<string, mixed>> $history */
             $history = $this->preferenceService->getHistory();
 
             $iconIds = collect($history)->pluck('icon_id')->filter()->unique()->values()->toArray();
             $iconsById = collect($this->pageIcons($iconIds))->keyBy('id');
 
             foreach ($history as &$entry) {
-                if (isset($entry['timestamp'])) {
+                if (isset($entry['timestamp']) && is_string($entry['timestamp'])) {
                     $entry['formatted_time'] = $this->formatTimeAgo($entry['timestamp']);
                 }
-                if (isset($entry['icon_id']) && $iconsById->has($entry['icon_id'])) {
-                    $entry['icon'] = $iconsById->get($entry['icon_id']);
+                $iconId = $entry['icon_id'] ?? null;
+                if ((is_int($iconId) || is_string($iconId)) && $iconsById->has($iconId)) {
+                    $entry['icon'] = $iconsById->get($iconId);
                 }
             }
 
@@ -64,7 +66,7 @@ final class HistoryController extends BaseInertiaController
             'icon_id' => 'required|integer',
             'action'  => 'required|string|in:view,copy,download',
         ]);
-
+        /** @var array{icon_id: int|string, action: string} $validated */
         if (! Icon::where('id', $validated['icon_id'])->exists()) {
             return redirect()->back()->with('error', "Icon [{$validated['icon_id']}] not found.");
         }

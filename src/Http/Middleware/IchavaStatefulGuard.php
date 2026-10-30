@@ -30,7 +30,7 @@ final class IchavaStatefulGuard
      */
     public static function isAuthenticated(Request $request): bool
     {
-        return $request->attributes->get('ichava_authenticated', false);
+        return $request->attributes->get('ichava_authenticated', false) === true;
     }
 
     /**
@@ -38,7 +38,9 @@ final class IchavaStatefulGuard
      */
     public static function getUserId(Request $request): ?int
     {
-        return $request->attributes->get('ichava_user_id');
+        $id = $request->attributes->get('ichava_user_id');
+
+        return is_int($id) ? $id : null;
     }
 
     /**
@@ -46,7 +48,9 @@ final class IchavaStatefulGuard
      */
     public static function getUser(Request $request): ?object
     {
-        return $request->attributes->get('ichava_user');
+        $user = $request->attributes->get('ichava_user');
+
+        return is_object($user) ? $user : null;
     }
 
     /**
@@ -54,7 +58,7 @@ final class IchavaStatefulGuard
      */
     public static function hasSession(Request $request): bool
     {
-        return $request->attributes->get('ichava_session_available', false);
+        return $request->attributes->get('ichava_session_available', false) === true;
     }
 
     /**
@@ -64,13 +68,17 @@ final class IchavaStatefulGuard
      */
     public static function getTier(Request $request): string
     {
-        return $request->attributes->get('ichava_tier', 'basic');
+        $tier = $request->attributes->get('ichava_tier', 'basic');
+
+        return is_string($tier) ? $tier : 'basic';
     }
 
     /**
      * Handle an incoming request
      *
      * Detects available features and adds context, but NEVER blocks requests.
+     *
+     * @param Closure(Request): Response $next
      */
     public function handle(Request $request, Closure $next): Response
     {

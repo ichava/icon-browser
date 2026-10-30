@@ -6,11 +6,12 @@ namespace Simtabi\Laranail\Ichava\IconBrowser\View\Components;
 
 use Throwable;
 use RuntimeException;
-use Illuminate\View\View;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
 use Illuminate\View\Component;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\File;
+use Simtabi\Laranail\Ichava\IconBrowser\Support\Helpers;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 
 /**
@@ -59,7 +60,7 @@ final class SriAsset extends Component
 
     public function render(): View
     {
-        return view('ichava/icon-browser::components.sri-asset');
+        return $this->view('ichava/icon-browser::components.sri-asset');
     }
 
     private function resolveUrl(string $path): string
@@ -76,10 +77,10 @@ final class SriAsset extends Component
 
     private function computeIntegrity(string $path): string
     {
-        $algo = (string) config('ichava.icon-browser.security.sri.algorithm', 'sha384');
+        $algo = Helpers::configString('ichava.icon-browser.security.sri.algorithm', 'sha384');
 
         if ($manifestPath = config('ichava.icon-browser.security.sri.manifest')) {
-            $hash = $this->lookupManifest((string) $manifestPath, $path);
+            $hash = $this->lookupManifest(Helpers::stringOf($manifestPath), $path);
             if ($hash !== null) {
                 return $hash;
             }

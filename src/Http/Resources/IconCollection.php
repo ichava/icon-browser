@@ -6,6 +6,7 @@ namespace Simtabi\Laranail\Ichava\IconBrowser\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
+use Simtabi\Laranail\Ichava\IconBrowser\Support\Helpers;
 
 /**
  * IconCollection - Transform Icon collections with metadata
@@ -39,11 +40,13 @@ class IconCollection extends ResourceCollection
     /**
      * Transform the resource collection into an array.
      *
-     * @return array<string, mixed>
+     * @return array<mixed>
      */
     public function toArray(Request $request): array
     {
+        // A resource collection always transforms to an array.
         $data = parent::toArray($request);
+        $data = is_array($data) ? $data : [];
 
         // Add grouped data if grouping is enabled
         if ($this->groupBy && ! empty($data)) {
@@ -55,6 +58,10 @@ class IconCollection extends ResourceCollection
 
     /**
      * Group icons by a specific key
+     *
+     * @param array<mixed> $data
+     *
+     * @return array<array-key, list<array<mixed>>>
      */
     protected function groupIcons(array $data, string $groupBy): array
     {
@@ -65,11 +72,11 @@ class IconCollection extends ResourceCollection
                 continue;
             }
 
-            $key = match ($groupBy) {
+            $key = Helpers::stringOf(match ($groupBy) {
                 'package'  => $icon['package'] ?? 'Unknown',
                 'category' => $icon['category'] ?? 'Uncategorized',
                 default    => $icon['package'] ?? 'Unknown',
-            };
+            });
 
             $grouped[$key][] = $icon;
         }

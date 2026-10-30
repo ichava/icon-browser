@@ -31,10 +31,11 @@ final class CommandHistoryApiController extends BaseApiController
         try {
             $this->logDebug('Fetching command history');
 
+            /** @var array<int, array<string, mixed>> $history */
             $history = $this->preferenceService->getCommandHistory();
 
             foreach ($history as &$entry) {
-                if (isset($entry['timestamp'])) {
+                if (isset($entry['timestamp']) && is_string($entry['timestamp'])) {
                     $entry['formatted_time'] = $this->formatTimeAgo($entry['timestamp']);
                 }
             }
@@ -61,7 +62,7 @@ final class CommandHistoryApiController extends BaseApiController
                 'type'     => 'required|string|in:action,search,navigation',
                 'metadata' => 'sometimes|array',
             ]);
-
+            /** @var array{command: string, type: string, metadata?: array<mixed>} $validated */
             $this->preferenceService->addCommandHistory(
                 $validated['command'],
                 $validated['type'],

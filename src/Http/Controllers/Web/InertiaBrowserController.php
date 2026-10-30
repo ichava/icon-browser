@@ -7,9 +7,11 @@ namespace Simtabi\Laranail\Ichava\IconBrowser\Http\Controllers\Web;
 use Exception;
 use Inertia\Inertia;
 use Inertia\Response;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\RedirectResponse;
 use Simtabi\Laranail\Ichava\Models\Icon;
+use Illuminate\Database\Query\JoinClause;
 use Simtabi\Laranail\Ichava\Models\IconTerm;
 use Simtabi\Laranail\Ichava\Services\IchavaLogger;
 use Simtabi\Laranail\Ichava\Services\IconRegistry;
@@ -41,6 +43,7 @@ final class InertiaBrowserController extends BaseInertiaController
         ]);
 
         try {
+            /** @var \Illuminate\Pagination\LengthAwarePaginator<int, Icon> $paginator */
             $paginator = $this->browserService->getIcons(
                 filters: [
                     'search'     => $request->getSearch(),
@@ -186,16 +189,16 @@ final class InertiaBrowserController extends BaseInertiaController
                     'label'          => $packageData['name'] ?? $packageKey,
                     'description'    => $packageData['description'] ?? '',
                     'vendor'         => $packageData['vendor'] ?? '',
-                    'icon_count'     => (int) ($iconCounts[$packageKey] ?? 0),
-                    'category_count' => (int) ($terms->firstWhere('type', 'category')->count ?? 0),
-                    'variant_count'  => (int) ($terms->firstWhere('type', 'variant')->count ?? 0),
+                    'icon_count'     => self::intOf($iconCounts[$packageKey] ?? 0),
+                    'category_count' => self::countOf($terms, 'category'),
+                    'variant_count'  => self::countOf($terms, 'variant'),
                 ];
             }
 
             $iconMorphAlias = (new Icon)->getMorphClass();
             $topCategories = DB::table('ichava_icon_termables')
                 ->join('ichava_icon_terms', 'ichava_icon_termables.term_id', '=', 'ichava_icon_terms.id')
-                ->join('ichava_icons', function ($join) use ($iconMorphAlias) {
+                ->join('ichava_icons', function (JoinClause $join) use ($iconMorphAlias) {
                     $join->on('ichava_icon_termables.termable_id', '=', 'ichava_icons.id')
                         ->where('ichava_icon_termables.termable_type', '=', $iconMorphAlias);
                 })
@@ -235,5 +238,24 @@ final class InertiaBrowserController extends BaseInertiaController
         }
 
         return Inertia::render('Stats/Index', $props);
+    }
+
+    /**
+     * A count read from a raw query row, as an integer. COUNT(*) comes back as an
+     * int or a numeric string depending on the driver.
+     */
+    private static function intOf(mixed $value): int
+    {
+        return is_numeric($value) ? (int) $value : 0;
+    }
+
+    /**
+     * The `count` of the row of the given term type in a package's term counts.
+     */
+    private static function countOf(mixed $terms, string $type): int
+    {
+        $row = $terms instanceof Collection ? $terms->firstWhere('type', $type) : null;
+
+        return self::intOf(is_object($row) && isset($row->count) ? $row->count : 0);
     }
 }

@@ -32,10 +32,11 @@ final class HistoryApiController extends BaseApiController
         try {
             $this->logDebug('Fetching history');
 
+            /** @var array<int, array<string, mixed>> $history */
             $history = $this->preferenceService->getHistory();
 
             foreach ($history as &$entry) {
-                if (isset($entry['timestamp'])) {
+                if (isset($entry['timestamp']) && is_string($entry['timestamp'])) {
                     $entry['formatted_time'] = $this->formatTimeAgo($entry['timestamp']);
                 }
             }
@@ -61,8 +62,8 @@ final class HistoryApiController extends BaseApiController
                 'icon_id' => 'required|integer',
                 'action'  => 'required|string|in:view,copy,download',
             ]);
-
-            if (! $this->iconExists($validated['icon_id'])) {
+            /** @var array{icon_id: int|string, action: string} $validated */
+            if (! $this->iconExists((int) $validated['icon_id'])) {
                 return $this->notFoundResponse('Icon', $validated['icon_id']);
             }
 

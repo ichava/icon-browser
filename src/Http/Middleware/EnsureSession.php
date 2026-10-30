@@ -28,6 +28,8 @@ final class EnsureSession
      * Handle an incoming request
      *
      * Try to start session if available, but don't fail if not.
+     *
+     * @param Closure(Request): Response $next
      */
     public function handle(Request $request, Closure $next): Response
     {

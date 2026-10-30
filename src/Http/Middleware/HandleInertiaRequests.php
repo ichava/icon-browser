@@ -37,7 +37,7 @@ final class HandleInertiaRequests extends Middleware
 
             'ichava' => fn () => [
                 'prefix'       => Helpers::routePrefix(),
-                'perPage'      => (int) config('ichava.icon-browser.browser.per_page', 24),
+                'perPage'      => Helpers::configInt('ichava.icon-browser.browser.per_page', 24),
                 'defaultTheme' => config('ichava.icon-browser.browser.default_theme', 'light'),
                 'ui'           => $this->ui(),
                 'snippets'     => $this->snippets->clientConfig(),
@@ -86,7 +86,7 @@ final class HandleInertiaRequests extends Middleware
 
         return [
             'version' => $this->packageVersion(),
-            'license' => (string) config('ichava.icon-browser.ui.license', 'Proprietary'),
+            'license' => Helpers::configString('ichava.icon-browser.ui.license', 'Proprietary'),
             'docsUrl' => is_string($docs) && $docs !== '' ? $docs : null,
             'links'   => $links,
         ];

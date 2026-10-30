@@ -95,6 +95,8 @@ abstract class BaseApiController extends Controller
 
     /**
      * Log debug message with context
+     *
+     * @param array<string, mixed> $context
      */
     protected function logDebug(string $message, array $context = []): void
     {
@@ -103,6 +105,8 @@ abstract class BaseApiController extends Controller
 
     /**
      * Log info message with context
+     *
+     * @param array<string, mixed> $context
      */
     protected function logInfo(string $message, array $context = []): void
     {
@@ -111,6 +115,8 @@ abstract class BaseApiController extends Controller
 
     /**
      * Log error with exception
+     *
+     * @param array<string, mixed> $context
      */
     protected function logError(string $message, Throwable $exception, array $context = []): void
     {
@@ -119,6 +125,8 @@ abstract class BaseApiController extends Controller
 
     /**
      * Log warning message
+     *
+     * @param array<string, mixed> $context
      */
     protected function logWarning(string $message, array $context = []): void
     {
@@ -137,6 +145,8 @@ abstract class BaseApiController extends Controller
 
     /**
      * Handle common not found exceptions
+     *
+     * @param ModelNotFoundException<\Illuminate\Database\Eloquent\Model> $e
      */
     protected function handleNotFoundException(ModelNotFoundException $e, string $resource = 'Resource'): JsonResponse
     {

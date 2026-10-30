@@ -4,6 +4,10 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
 
 ## [Unreleased]
 
+### Added
+
+- **PHPStan runs at `level: max` with Larastan**, up from level 0, with no baseline and no ignored errors. `larastan/larastan` (`^3.0`) joins `require-dev` so Eloquent, facades and the container are typed. The fixes are types only: docblocks for array shapes the validation rules already guarantee, typed `$next` closures in the middleware, and `Helpers::configInt()`, `configString()`, `intOf()` and `stringOf()`, which cast config and request values exactly as the bare `(int)` and `(string)` casts did. `StaticAnalysisLevelTest` fails if the level drops, a baseline appears or errors are ignored.
+
 ### Removed
 
 - **The deprecated `ichava-assets` publish tag.** Publish the built assets with `--tag=ichava::icon-browser-assets` (`IconBrowserServiceProvider::ASSETS_TAG`), which has published the same paths since 0.1.1. `IconBrowserServiceProvider::DEPRECATED_ASSETS_TAG` is gone with it.
@@ -20,6 +24,7 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
 
 ### Fixed
 
+- **Inputs that used to throw a `TypeError` now take their documented default**, found while typing the code for PHPStan. A null `packages`, `categories`, `variants`, `sort_by` or `sort_direction` (all `nullable` in `IconFilterRequest`) reached a typed return and failed with a 500; they now read as empty or as the default sort. A numeric-string `icon_id` posted to the history endpoints reached `iconExists(int)` and failed the same way; it is now cast. `ichava::icon-browser.inject-scripts` reports a `package.json` whose root or `scripts` is not a JSON object as unparseable instead of throwing. Every valid input behaves as before.
 - **`ICHAVA_BROWSER_PREFIX` moves the routes again** (I-F1). The web, API and Inertia route files and the shared Inertia `prefix` prop read `ichava.core.prefix`, a key core no longer sets (its config merges at `ichava.ichava-core.*`), so they stayed on `/ichava` while `ValidateIchavaRoute` followed the new prefix and refused them. All six reads now go through `Helpers::routePrefix()`, which reads `ichava.ichava-core.prefix` (`Helpers::ROUTE_PREFIX_KEY`). A test boots with a custom prefix and asserts the routes and the shared prop follow it, and a scan fails on any remaining `ichava.core.` read.
 - Vendored `@ichava/react-icon-browser` 0.1.3 (`85d9dbd`): the browser renders in Geist again (since 0.1.1 it fell back to the system font), tooltips show their shortcut on one line with no leftover bubble, a tile's copy action reads "Copy Raw SVG" and its permalink keeps the host URL, related icons are ranked by shared words and pack, selects align to their trigger, and Arabic layout reaches selects, menus and sliders.
 - Vendored `@ichava/react-icon-browser` 0.1.2 (`733f5ba`): selected collection chips, the favourite button and active icon buttons now draw their label in a colour that meets WCAG AA contrast on the accent tint. It measured 2.78:1 in dark mode before.

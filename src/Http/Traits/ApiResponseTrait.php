@@ -6,6 +6,7 @@ namespace Simtabi\Laranail\Ichava\IconBrowser\Http\Traits;
 
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Simtabi\Laranail\Ichava\IconBrowser\Support\Helpers;
 
 /**
  * ApiResponseTrait
@@ -16,6 +17,8 @@ trait ApiResponseTrait
 {
     /**
      * Return successful response with data
+     *
+     * @param array<string, mixed> $meta
      */
     protected function successResponse(
         mixed $data = null,
@@ -38,6 +41,9 @@ trait ApiResponseTrait
 
     /**
      * Return error response
+     *
+     * @param array<mixed> $errors
+     * @param array<string, mixed> $meta
      */
     protected function errorResponse(
         string $error,
@@ -63,6 +69,8 @@ trait ApiResponseTrait
 
     /**
      * Return validation error response
+     *
+     * @param array<mixed> $errors
      */
     protected function validationErrorResponse(
         array $errors,
@@ -83,7 +91,7 @@ trait ApiResponseTrait
         mixed $identifier = null,
     ): JsonResponse {
         $message = $identifier
-            ? "{$resource} '{$identifier}' not found"
+            ? "{$resource} '" . Helpers::stringOf($identifier) . "' not found"
             : "{$resource} not found";
 
         return $this->errorResponse(
@@ -118,6 +126,9 @@ trait ApiResponseTrait
 
     /**
      * Return paginated response
+     *
+     * @param \Illuminate\Contracts\Pagination\LengthAwarePaginator<array-key, mixed> $paginator
+     * @param array<string, mixed> $additionalMeta
      */
     protected function paginatedResponse(
         $paginator,

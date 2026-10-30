@@ -27,6 +27,7 @@ final class CacheController extends BaseInertiaController
         try {
             $this->logger->info('Cache clear initiated from Inertia page');
 
+            /** @var array<string, mixed> $stats */
             $stats = $this->cacheService->clearAll();
             $this->browserService->clearCache();
 
@@ -49,6 +50,7 @@ final class CacheController extends BaseInertiaController
         try {
             $this->logger->info('Cache rebuild initiated from Inertia page');
 
+            /** @var array<string, mixed> $stats */
             $stats = $this->cacheService->rebuild();
             $this->browserService->clearCache();
             $this->preferenceService->clear();

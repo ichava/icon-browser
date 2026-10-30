@@ -26,10 +26,11 @@ final class CommandHistoryController extends BaseInertiaController
         $this->logger->debug('Inertia command history page accessed');
 
         try {
+            /** @var array<int, array<string, mixed>> $history */
             $history = $this->preferenceService->getCommandHistory();
 
             foreach ($history as &$entry) {
-                if (isset($entry['timestamp'])) {
+                if (isset($entry['timestamp']) && is_string($entry['timestamp'])) {
                     $entry['formatted_time'] = $this->formatTimeAgo($entry['timestamp']);
                 }
             }
@@ -51,7 +52,7 @@ final class CommandHistoryController extends BaseInertiaController
             'type'     => 'required|string|in:action,search,navigation',
             'metadata' => 'sometimes|array',
         ]);
-
+        /** @var array{command: string, type: string, metadata?: array<mixed>} $validated */
         $this->preferenceService->addCommandHistory(
             $validated['command'],
             $validated['type'],

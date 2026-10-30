@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\Ichava\IconBrowser\Providers;
 
+use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Blade;
 use Simtabi\Laranail\Package\Tools\Package;
 use Illuminate\Session\Middleware\StartSession;
 use Simtabi\Laranail\Ichava\Services\IchavaLogger;
 use Simtabi\Laranail\Ichava\Services\IconRegistry;
 use Simtabi\Laranail\Ichava\Support\HostCapabilities;
+use Simtabi\Laranail\Ichava\IconBrowser\Support\Helpers;
 use Simtabi\Laranail\Ichava\IconBrowser\Support\IconSnippets;
 use Simtabi\Laranail\Ichava\IconBrowser\View\Components\Prepaint;
 use Simtabi\Laranail\Ichava\IconBrowser\View\Components\SriAsset;
@@ -149,7 +151,7 @@ class IconBrowserServiceProvider extends PackageServiceProvider
      */
     protected function registerMiddleware(): void
     {
-        $router = $this->app['router'];
+        $router = $this->app->make(Router::class);
 
         // Per-middleware aliases.
         $router->aliasMiddleware('ichava.session', EnsureSession::class);
@@ -188,7 +190,7 @@ class IconBrowserServiceProvider extends PackageServiceProvider
             'ichava.security',
             'ichava.json',
             'ichava.log',
-            'throttle:' . (int) config('ichava.icon-browser.rate_limiting.api_floor', 300) . ',1',
+            'throttle:' . Helpers::configInt('ichava.icon-browser.rate_limiting.api_floor', 300) . ',1',
         ]);
 
         $router->middlewareGroup('ichava.api', $apiMiddleware);
@@ -231,13 +233,13 @@ class IconBrowserServiceProvider extends PackageServiceProvider
             return;
         }
 
-        $router = $this->app['router'];
+        $router = $this->app->make(Router::class);
         $webRouteFile = $this->package->basePath('routes/web.php');
         $apiRouteFile = $this->package->basePath('routes/api.php');
         $inertiaRouteFile = $this->package->basePath('routes/inertia.php');
 
         foreach ((array) $domains as $domain) {
-            if ($domain !== '') {
+            if (is_string($domain) && $domain !== '') {
                 $router->domain($domain)->group($webRouteFile);
                 if (config('ichava.icon-browser.api.enabled', false)) {
                     $router->domain($domain)->group($apiRouteFile);

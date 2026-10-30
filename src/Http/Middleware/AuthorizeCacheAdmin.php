@@ -36,9 +36,13 @@ use Symfony\Component\HttpFoundation\Response;
  */
 final class AuthorizeCacheAdmin
 {
+    /**
+     * @param Closure(Request): Response $next
+     */
     public function handle(Request $request, Closure $next): Response
     {
         $config = config('ichava.icon-browser.security.cache_admin', []);
+        $config = is_array($config) ? $config : [];
 
         // The deliberate escape hatch. Off by default: the point of this middleware is
         // that reaching the endpoint is not the same as being allowed to use it.
@@ -46,7 +50,7 @@ final class AuthorizeCacheAdmin
             return $next($request);
         }
 
-        $ability = $config['ability'] ?? 'ichava.manage-cache';
+        $ability = is_string($config['ability'] ?? null) ? $config['ability'] : 'ichava.manage-cache';
 
         // `Gate::has()` first: without it an undefined ability resolves to a plain denial,
         // which is indistinguishable from a defined ability that said no. The two

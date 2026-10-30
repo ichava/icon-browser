@@ -53,21 +53,33 @@ abstract class BaseInertiaController extends Controller
         }
     }
 
+    /**
+     * @param array<string, mixed> $context
+     */
     protected function logDebug(string $message, array $context = []): void
     {
         $this->logger->debug($message, $context);
     }
 
+    /**
+     * @param array<string, mixed> $context
+     */
     protected function logInfo(string $message, array $context = []): void
     {
         $this->logger->info($message, $context);
     }
 
+    /**
+     * @param array<string, mixed> $context
+     */
     protected function logWarning(string $message, array $context = []): void
     {
         $this->logger->warning($message, $context);
     }
 
+    /**
+     * @param array<string, mixed> $context
+     */
     protected function logError(string $message, Throwable $exception, array $context = []): void
     {
         $this->logger->error($message, $exception, $context);

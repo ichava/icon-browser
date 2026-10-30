@@ -22,7 +22,7 @@ trait ResolvesIconsForPages
      * Order follows the database, not the input ids; callers that need
      * input order re-sort from the returned `id` fields.
      *
-     * @param array<int> $ids
+     * @param array<mixed> $ids
      *
      * @return array<int, array<string, mixed>>
      */
@@ -36,6 +36,6 @@ trait ResolvesIconsForPages
             ->get()
             ->map(fn (Icon $icon) => $this->iconSnippets->transform($icon))
             ->values()
-            ->toArray();
+            ->all();
     }
 }

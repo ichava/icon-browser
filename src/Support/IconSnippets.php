@@ -36,7 +36,10 @@ final class IconSnippets
      */
     public function transform(Icon $icon): array
     {
-        return array_merge($this->browser->transformIcon($icon), $this->forIcon($icon));
+        /** @var array<string, mixed> $row */
+        $row = $this->browser->transformIcon($icon);
+
+        return array_merge($row, $this->forIcon($icon));
     }
 
     /**
