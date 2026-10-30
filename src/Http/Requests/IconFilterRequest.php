@@ -228,6 +228,19 @@ class IconFilterRequest extends FormRequest
     }
 
     /**
+     * The selection the category tree is counted over: the filters less the
+     * category and subcategory selection, so every category stays visible to
+     * pick while the counts agree with the grid. The REST tree is asked the same
+     * way (react-icon-browser's `getTreeFor` leaves the categories out).
+     *
+     * @return array<string, mixed>
+     */
+    public function treeFilters(): array
+    {
+        return array_diff_key($this->filters(), ['categories' => true, 'subs' => true]);
+    }
+
+    /**
      * Why a listing is empty: `no_match` when a search or filter narrowed it
      * away, `no_icons` when nothing is seeded to show. Null when it is not empty.
      */

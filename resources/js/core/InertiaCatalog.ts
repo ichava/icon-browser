@@ -1,6 +1,6 @@
 import { router } from '@inertiajs/react';
 import { toIcon, type Filters, type Icon, type IconCatalog, type IconId, type ListParams, type PageResult } from '@/lib/browser';
-import type { CategoryGroup } from '@/lib/browser';
+import type { CatalogMeta, CategoryGroup } from '@/lib/browser';
 import { normalizeRawIcon, toCategoryGroups, toIconPackage, type ServerIcon, type ServerPackage } from '@/core/propsToCatalog';
 import { echoToQuery, listParamsToQuery, queryKey, type AppliedFilters, type QueryParams } from '@/hooks/useFilterSync';
 
@@ -31,8 +31,11 @@ export interface BrowserSnapshot {
  */
 export type VisitFn = (url: string, query: QueryParams, signal?: AbortSignal) => Promise<Partial<BrowserSnapshot>>;
 
-/** The props a listing visit reloads. Library props ride along, as they always did. */
-export const LISTING_PROPS = ['icons', 'pagination', 'appliedFilters', 'favorites', 'collections', 'history', 'commandHistory'];
+/**
+ * The props a listing visit reloads. Library props ride along, as they always did, and so
+ * does the tree, which the server counts over the same selection less its categories.
+ */
+export const LISTING_PROPS = ['icons', 'pagination', 'appliedFilters', 'tree', 'favorites', 'collections', 'history', 'commandHistory'];
 
 const abortError = () => new DOMException('The visit was cancelled.', 'AbortError');
 
@@ -87,6 +90,50 @@ function toPage(s: BrowserSnapshot): PageResult<Icon> {
 }
 
 type Term = Filters['categories'][number];
+type PackageMeta = CatalogMeta['packages'][number];
+type VariantMeta = CatalogMeta['variantsByPackage'][string][number];
+
+/**
+ * A query as the tree is counted over it: everything but the category selection, paging
+ * and sort, the same scope as react-icon-browser's `RestCatalog.getTreeFor`.
+ */
+function treeKey(query: QueryParams | null): string {
+  if (!query) return '';
+  const { categories: _c, subs: _s, page: _p, per_page: _pp, sort_by: _sb, sort_direction: _sd, ...rest } = query;
+  return queryKey(rest);
+}
+
+/** A `Browser/Index` pack row (`IconBrowserService::getFilters()`), with the host's default. */
+function toPackageMeta(pkg: ServerPackage): PackageMeta {
+  return {
+    ...toIconPackage(pkg),
+    ...(pkg.kind === 'icon' || pkg.kind === 'illustration' ? { kind: pkg.kind } : {}),
+    ...(pkg.default === true ? { default: true } : {}),
+  };
+}
+
+/** `variants_by_package`: each pack's variants (core's `VariantData`). PHP sends an empty map as []. */
+function toVariantMap(raw: unknown): Record<string, VariantMeta[]> {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return {};
+  const out: Record<string, VariantMeta[]> = {};
+  for (const [pack, list] of Object.entries(raw as Record<string, unknown>)) {
+    if (!Array.isArray(list)) continue;
+    out[pack] = list.flatMap((v): VariantMeta[] => {
+      if (!v || typeof v !== 'object') return [];
+      const row = v as Record<string, unknown>;
+      if (typeof row.slug !== 'string') return [];
+      return [
+        {
+          slug: row.slug,
+          label: typeof row.label === 'string' && row.label ? row.label : row.slug,
+          description: typeof row.description === 'string' ? row.description : '',
+          default: row.default === true,
+        },
+      ];
+    });
+  }
+  return out;
+}
 
 /** `IconBrowserService::getFilters()` term rows, whatever spelling they arrive in. */
 function toTerms(input: unknown): Term[] {
@@ -126,6 +173,8 @@ export class InertiaCatalog implements IconCatalog {
   readonly #visit: VisitFn;
   #snapshot: BrowserSnapshot;
   readonly #seen = new Map<IconId, Icon>();
+  /** The visit in flight, so the grid and the tree asking for one selection share it. */
+  #pending: { key: string; promise: Promise<void> } | null = null;
 
   constructor(snapshot: BrowserSnapshot, opts: { url: string; visit?: VisitFn }) {
     this.#url = opts.url;
@@ -154,11 +203,30 @@ export class InertiaCatalog implements IconCatalog {
     return queryKey(Array.isArray(applied) ? null : echoToQuery(applied));
   }
 
-  async listIcons(params: ListParams, signal?: AbortSignal): Promise<PageResult<Icon>> {
-    const query = listParamsToQuery(params);
-    if (queryKey(query) !== this.#appliedKey()) {
-      this.update(await this.#visit(this.#url, query, signal));
+  /** Bring the snapshot to `query`: nothing when it is already there, else one visit. */
+  async #load(query: QueryParams, signal?: AbortSignal): Promise<void> {
+    const key = queryKey(query);
+    if (key === this.#appliedKey()) return;
+    const pending = this.#pending;
+    if (pending?.key === key) {
+      try {
+        await pending.promise;
+      } catch (e) {
+        if (signal?.aborted) throw e;
+      }
+      if (key === this.#appliedKey()) return;
     }
+    const promise = this.#visit(this.#url, query, signal).then((props) => this.update(props));
+    this.#pending = { key, promise };
+    try {
+      await promise;
+    } finally {
+      if (this.#pending?.promise === promise) this.#pending = null;
+    }
+  }
+
+  async listIcons(params: ListParams, signal?: AbortSignal): Promise<PageResult<Icon>> {
+    await this.#load(listParamsToQuery(params), signal);
     if (signal?.aborted) throw abortError();
     return toPage(this.#snapshot);
   }
@@ -191,6 +259,35 @@ export class InertiaCatalog implements IconCatalog {
 
   async getTree(): Promise<CategoryGroup[]> {
     return toCategoryGroups(this.#snapshot.tree);
+  }
+
+  /**
+   * The tree counted over `params` less its categories, paging and sort, so it agrees with
+   * the grid. The `tree` prop is that already when the selection matches what was applied;
+   * otherwise it comes with the listing visit for `params`, the one the grid makes too.
+   */
+  async getTreeFor(params: ListParams, signal?: AbortSignal): Promise<CategoryGroup[]> {
+    const query = listParamsToQuery(params);
+    const applied = this.#snapshot.appliedFilters;
+    if (treeKey(query) !== treeKey(Array.isArray(applied) ? null : echoToQuery(applied))) {
+      await this.#load(query, signal);
+    }
+    if (signal?.aborted) throw abortError();
+    return toCategoryGroups(this.#snapshot.tree);
+  }
+
+  /**
+   * The installed packs, with the one the host opens on (`default`), and each pack's
+   * variants with their labels and descriptions, from the page's `packages` and
+   * `filterOptions.variants_by_package` props: what `RestCatalog` reads from `/icons/filters`.
+   */
+  async getCatalogMeta(): Promise<CatalogMeta> {
+    const opts = (this.#snapshot.filterOptions ?? {}) as Record<string, unknown>;
+    const packages = this.#snapshot.packages ?? (Array.isArray(opts.packages) ? (opts.packages as ServerPackage[]) : []);
+    return {
+      packages: packages.filter((p) => p && typeof p.name === 'string').map(toPackageMeta),
+      variantsByPackage: toVariantMap(opts.variants_by_package),
+    };
   }
 
   async getRelated(icon: Icon, limit = 6): Promise<Icon[]> {

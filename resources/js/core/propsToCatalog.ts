@@ -29,6 +29,9 @@ export interface ServerPackage {
   description?: string;
   count?: number;
   vendor?: string;
+  kind?: string;
+  /** The pack the browser opens on (core's default set). */
+  default?: boolean;
 }
 
 export function normalizeRawIcon(input: ServerIcon): RawIcon {

@@ -27,3 +27,6 @@ export type HistoryEntry = BrowserStore['history'][number];
 
 /** The package -> category -> subcategory tree the sidebar renders. */
 export type CategoryGroup = Awaited<ReturnType<IconCatalog['getTree']>>[number];
+
+/** The installed packs (with the host's default) and each pack's variants: `getCatalogMeta`. */
+export type CatalogMeta = Awaited<ReturnType<NonNullable<IconCatalog['getCatalogMeta']>>>;

@@ -113,3 +113,79 @@ describe('InertiaCatalog, the rest of the port', () => {
     expect((await catalog.getRelated(one!)).map((i) => i.id)).toEqual([2]);
   });
 });
+
+describe('InertiaCatalog catalog metadata', () => {
+  it('lists the packs with the host default and each pack’s variant descriptions', async () => {
+    const catalog = new InertiaCatalog(
+      snapshot({
+        packages: [
+          { name: 'ichava/icon-sets-tabler', label: 'Tabler', count: 300, kind: 'icon', default: true },
+          { name: 'ichava/icon-sets-flag', label: 'Flags', count: 40 },
+        ],
+        filterOptions: {
+          variants_by_package: {
+            'ichava/icon-sets-tabler': [
+              { slug: 'outline', label: 'Outline', description: 'Stroked shapes', default: true },
+              { slug: 'filled', label: '', description: 'Solid shapes', default: false },
+              { label: 'no slug' },
+            ],
+          },
+        },
+      }),
+      { url: '/ichava/icons', visit: vi.fn<VisitFn>() },
+    );
+
+    const meta = await catalog.getCatalogMeta();
+
+    expect(meta.packages.map((p) => [p.id, p.default ?? false])).toEqual([
+      ['ichava/icon-sets-tabler', true],
+      ['ichava/icon-sets-flag', false],
+    ]);
+    expect(meta.packages[0]).toMatchObject({ label: 'Tabler', count: 300, kind: 'icon' });
+    expect(meta.variantsByPackage).toEqual({
+      'ichava/icon-sets-tabler': [
+        { slug: 'outline', label: 'Outline', description: 'Stroked shapes', default: true },
+        { slug: 'filled', label: 'filled', description: 'Solid shapes', default: false },
+      ],
+    });
+  });
+
+  it('reads an empty variant map sent as [] as none', async () => {
+    const catalog = new InertiaCatalog(snapshot({ filterOptions: { variants_by_package: [] } }), { url: '/ichava/icons', visit: vi.fn<VisitFn>() });
+    expect((await catalog.getCatalogMeta()).variantsByPackage).toEqual({});
+  });
+});
+
+describe('InertiaCatalog.getTreeFor', () => {
+  const treeOf = (cat: string) => [{ id: 'ichava/icon-sets-tabler', title: 'Tabler', icon_count: 1, children: [{ name: cat, icon_count: 1 }] }];
+
+  it('answers from the tree prop while only the categories, page or sort differ', async () => {
+    const visit = vi.fn<VisitFn>();
+    const catalog = new InertiaCatalog(snapshot(), { url: '/ichava/icons', visit });
+
+    const tree = await catalog.getTreeFor({ ...defaults, categories: ['arrows'], page: 3, sortDirection: 'desc' });
+
+    expect(visit).not.toHaveBeenCalled();
+    expect(tree[0]?.cats.map((c) => c.name)).toEqual(['arrows']);
+  });
+
+  it('shares one visit with the grid for a new selection, and returns its tree', async () => {
+    let resolve!: (p: Partial<BrowserSnapshot>) => void;
+    const visit = vi.fn<VisitFn>(() => new Promise((r) => (resolve = r)));
+    const catalog = new InertiaCatalog(snapshot(), { url: '/ichava/icons', visit });
+
+    const params = { ...defaults, search: 'arrow' };
+    const tree = catalog.getTreeFor(params);
+    const page = catalog.listIcons(params);
+    resolve(snapshot({ appliedFilters: { ...echo, search: 'arrow' }, tree: treeOf('curved') }));
+
+    expect((await tree)[0]?.cats.map((c) => c.name)).toEqual(['curved']);
+    expect((await page).items).toHaveLength(3);
+    expect(visit).toHaveBeenCalledTimes(1);
+  });
+
+  it('reloads the tree with every listing visit', async () => {
+    const { LISTING_PROPS } = await import('./InertiaCatalog');
+    expect(LISTING_PROPS).toContain('tree');
+  });
+});

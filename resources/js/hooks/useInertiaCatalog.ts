@@ -16,11 +16,11 @@ export type { ServerPagination } from '@/core/InertiaCatalog';
  * would clobber in-flight edits.
  */
 export function useInertiaCatalog(mount: BrowserMount, props: BrowserPageProps): void {
-  const { icons, pagination, appliedFilters, favorites, collections, history } = props;
+  const { icons, pagination, appliedFilters, tree, favorites, collections, history } = props;
 
   useEffect(() => {
-    mount.client.update({ icons, pagination, appliedFilters });
-  }, [mount, icons, pagination, appliedFilters]);
+    mount.client.update({ icons, pagination, appliedFilters, tree });
+  }, [mount, icons, pagination, appliedFilters, tree]);
 
   useEffect(() => {
     hydrateLibrary(mount.store, { favorites, collections, history });
