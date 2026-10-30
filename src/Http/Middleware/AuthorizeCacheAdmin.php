@@ -6,8 +6,8 @@ namespace Simtabi\Laranail\Ichava\IconBrowser\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Gate;
 use Symfony\Component\HttpFoundation\Response;
+use Simtabi\Laranail\Ichava\IconBrowser\Support\CacheAdminGate;
 
 /**
  * Gate the destructive cache endpoints.
@@ -41,31 +41,10 @@ final class AuthorizeCacheAdmin
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $config = config('ichava.icon-browser.security.cache_admin', []);
-        $config = is_array($config) ? $config : [];
+        $refusal = CacheAdminGate::refusal();
 
-        // The deliberate escape hatch. Off by default: the point of this middleware is
-        // that reaching the endpoint is not the same as being allowed to use it.
-        if (($config['allow_without_gate'] ?? false) === true) {
-            return $next($request);
-        }
-
-        $ability = is_string($config['ability'] ?? null) ? $config['ability'] : 'ichava.manage-cache';
-
-        // `Gate::has()` first: without it an undefined ability resolves to a plain denial,
-        // which is indistinguishable from a defined ability that said no. The two
-        // situations need different messages, because one is a misconfiguration the
-        // operator can fix and the other is a decision their own policy made.
-        if (! Gate::has($ability)) {
-            abort(403, sprintf(
-                'Ichava cache administration is not configured. Define the "%s" ability, '
-                . 'or set ichava.icon-browser.security.cache_admin.allow_without_gate to true.',
-                $ability,
-            ));
-        }
-
-        if (Gate::denies($ability)) {
-            abort(403, 'You are not authorised to administer the Ichava icon cache.');
+        if ($refusal !== null) {
+            abort(403, $refusal);
         }
 
         return $next($request);

@@ -153,8 +153,11 @@ Route::prefix(Helpers::routePrefix() . '/api')
         // =====================================================================
         // CACHE MANAGEMENT API
         // =====================================================================
-        // Get cache statistics
+        // Get cache statistics. Read-only, but it describes the server's cache
+        // configuration and watched directories, so it answers to the same
+        // fail-closed `ichava.cache-admin` decision as the write routes below.
         Route::get('/cache/stats', [IconBrowserApiController::class, 'cacheStats'])
+            ->middleware('ichava.cache-admin')
             ->middleware(Helpers::getRateLimit('api', 60))
             ->name('cache.stats');
 
