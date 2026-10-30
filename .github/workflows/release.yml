@@ -41,18 +41,6 @@ jobs:
             exit 1
           fi
 
-      # The bundle and the vendored browser library contain Untitled UI PRO components,
-      # whose licence forbids exposing them publicly (LICENSE). A release of a private
-      # repository is private; one cut after the repository went public would publish them.
-      - name: Refuse to publish from a public repository
-        env:
-          REPO_PRIVATE: ${{ github.event.repository.private }}
-        run: |
-          if [ "${REPO_PRIVATE}" != 'true' ]; then
-            echo "::error::ichava/icon-browser must be private to release: it ships Untitled UI PRO components. See LICENSE."
-            exit 1
-          fi
-
       - name: Checkout
         uses: actions/checkout@v7
 

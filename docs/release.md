@@ -72,7 +72,7 @@ npm install && npm run typecheck:inertia && npm run test:js && npm run build:pro
 
 The sync refuses a checkout with uncommitted source or a `dist/lib` older than its commit, and writes `resources/vendor/react-icon-browser/VENDORED.json`. `vendoredLibrary.test.ts` fails on any file that does not match it, so never edit the vendored files by hand. Name the library commit in the changelog entry.
 
-The vendored build and the committed bundle both contain compiled Untitled UI PRO components, used under the Untitled UI licence ([LICENSE](../LICENSE)). The repository is public (decided 2026-10-30) and the package stays proprietary. `release.yml` still carries the guard written while the repository was private, which refuses to publish from a public repository, so a release cannot be cut until that guard is changed.
+The vendored build and the committed bundle both contain compiled Untitled UI PRO components, used under the Untitled UI licence ([LICENSE](../LICENSE)). The repository is public (decided 2026-10-30) and the package stays proprietary. A release tag on the public repository publishes normally: `release.yml` does not gate on repository visibility. Its other safeguards stand, namely the tag-only trigger, the refusal of any ref that is not a `vX.Y.Z` tag, and the changelog section it extracts and fails closed without.
 
 There is no `version` field in `composer.json` — the version comes from the git tag. No lock file is committed.
 

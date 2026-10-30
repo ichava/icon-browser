@@ -13,6 +13,8 @@ declare(strict_types=1);
  * stale MIT badge or licence field is a licensing misstatement, not a cosmetic one, and nothing
  * else reads these files. The disclosure channels have to match the repository: a public one
  * has GitHub private vulnerability reporting, so it is offered first and email is the fallback.
+ * Releases publish from the public repository (decided 2026-10-30), so release.yml must not
+ * gate on repository visibility.
  *
  * PHPUnit assertions rather than `expect()`, for the diagnostic messages.
  */
@@ -74,9 +76,20 @@ it('describes the repository as public nowhere it says private', function (strin
     );
 })->with(['README.md', 'SECURITY.md', 'CONTRIBUTING.md', 'docs/installation.md', 'docs/release.md']);
 
-it('refuses to cut a release from a public repository', function (): void {
+it('publishes a release from the public repository without gating on visibility', function (): void {
     $release = proprietaryFile('.github/workflows/release.yml');
 
-    $this->assertStringContainsString('github.event.repository.private', $release);
-    $this->assertStringContainsString('Refuse to publish from a public repository', $release);
+    $this->assertDoesNotMatchRegularExpression(
+        '/github\.event\.repository\.(private|visibility)|repository\.private|REPO_PRIVATE|Refuse to publish from a public repository/',
+        $release,
+        'release.yml still refuses to publish from a public repository.',
+    );
+
+    // The safeguards that stay: tag-only trigger, refusal of any non-vX.Y.Z ref, fail-closed notes.
+    $this->assertMatchesRegularExpression('/^on:\n  push:\n    tags:\n/m', $release, 'release.yml must trigger on tag pushes only.');
+    $this->assertDoesNotMatchRegularExpression('/^    branches:/m', $release, 'release.yml must not trigger on a branch push.');
+    $this->assertStringContainsString('Refuse a ref that is not a release tag', $release);
+    $this->assertStringContainsString('^v[0-9]+\.[0-9]+\.[0-9]+', $release);
+    $this->assertStringContainsString('Extract the changelog section', $release);
+    $this->assertStringContainsString('Refusing to publish $GITHUB_REF_NAME', $release);
 });
