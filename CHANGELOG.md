@@ -11,6 +11,7 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
 
 ### Changed
 
+- **The vendored browser UI is react-icon-browser's `main` at `cdd5892`**, re-vendored under the consumer rule after react-icon-browser#184. It brings the role contact address in the boot splash (`ichava@simtabi.com`), the reworded motion snippet (`@ichava/js-motion`) and the documented `legacyStorage()` migration. The vendored LICENSE keeps the distribution wording from #93; the sync script still copies the repository LICENSE, so it was restored by hand and its hash updated in `VENDORED.json`. `public/assets/js/inertia-app.js` was rebuilt; a second build is byte-identical.
 - The changelog states the MIT-to-proprietary change as breaking under 0.1.1, and labels the archived pre-reset history as the record of the MIT, public releases.
 - The vendored react-icon-browser `LICENSE` no longer says the repository it ships in must remain private, since this repository is public. It still states the build is proprietary, that it contains Untitled UI React PRO components used under the Untitled UI licence, and that it may not be redistributed outside Ichava products. A test fails if a re-sync brings the old clause back.
 - `public/assets/js/inertia-app.js` is rebuilt so it matches a fresh `npm run build:prod` (three minifier-only differences); a second clean build is byte-identical.
