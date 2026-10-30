@@ -22,6 +22,7 @@ use Simtabi\Laranail\Ichava\IconBrowser\Http\Middleware\LogRequests;
 use Simtabi\Laranail\Package\Tools\Providers\PackageServiceProvider;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Middleware\EnsureSession;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Middleware\AuthorizeAdmin;
+use Simtabi\Laranail\Ichava\IconBrowser\Commands\InstallCommand;
 use Simtabi\Laranail\Ichava\IconBrowser\Commands\InjectNpmScriptsCommand;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Middleware\ForceJsonResponse;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Middleware\IchavaApiSecurity;
@@ -80,6 +81,7 @@ class IconBrowserServiceProvider extends PackageServiceProvider
             ->hasRoutesWhen('ichava.icon-browser.api.enabled', 'api', false)
             ->hasCommands([
                 InjectNpmScriptsCommand::class,
+                InstallCommand::class,
             ]);
     }
 
