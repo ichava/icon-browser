@@ -1,4 +1,5 @@
-import type { Catalog, Filters, Icon, IconId, ListParams, PageResult } from '@ichava/js-ui-kernel';
+import type { Catalog, Filters, Icon, IconId, IconKind, PageResult } from '@ichava/js-ui-kernel';
+import type { ListParams } from './listParams';
 /** Bundled static catalog shape (StaticCatalog input): the kernel's type. */
 export type { Catalog };
 /**
@@ -23,6 +24,11 @@ export declare class CatalogIndex {
     related(icon: Icon, limit?: number): Icon[];
     /** Bare `filters` contract: packages + category terms + variant terms with counts. */
     filters(): Filters;
+    /**
+     * Icons per kind over everything else the user chose (the kind filter itself
+     * ignored), so the Icons | Illustrations switch can show both counts at once.
+     */
+    kindCounts(p: ListParams): Record<IconKind, number>;
     /** Variant term counts over the current package/search scope (ignores the variant filter). */
     variantCounts(p: ListParams): Map<string, number>;
     /**

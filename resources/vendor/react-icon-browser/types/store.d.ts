@@ -2,7 +2,7 @@ import type { Scale, Density } from './core/types';
 import type { ListParams } from './core/api/ApiClient';
 import type { AppConfig } from './core/config';
 import { type DevBus } from './modules/telemetry';
-import { type IdentityProvider } from './modules/identity';
+import type { IdentityProvider } from './modules/identity';
 import { type StorageDriver } from './core/storage';
 import { type Locale } from './core/i18n';
 import type { BrowserStore, FilterState } from './state/types';
@@ -28,8 +28,9 @@ export interface CreateStoreOptions {
      */
     devBus?: DevBus;
     /**
-     * Who signs in. Omit it for the frontend-only demo (`DemoIdentity`), which is what the
-     * store has always done; a host with real accounts passes its own provider.
+     * Who signs in. Omit it and the store decides from its config: inside a host app
+     * (`config.host`) the host's signed-in user through `HostIdentity`, otherwise the
+     * frontend-only demo (`DemoIdentity`). A host with another arrangement passes its own.
      */
     identity?: IdentityProvider;
 }

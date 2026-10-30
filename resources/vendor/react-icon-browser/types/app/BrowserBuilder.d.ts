@@ -49,7 +49,7 @@ export declare class BrowserBuilder {
     constructor(ports: BrowserBuilderPorts, state?: State);
     /** A pre-loaded static catalog. Replaces any `rest()` client. */
     catalog(catalog: Catalog): BrowserBuilder;
-    /** A live data client, e.g. `RestCatalog.at('/admin/ichava/api').csrf('cookie')`. Replaces any `catalog()`. */
+    /** A live data client, e.g. `RestCatalog.at('/admin/ichava/api/v1').csrf('cookie')`. Replaces any `catalog()`. */
     rest(client: IconCatalog): BrowserBuilder;
     config(config: AppConfig | null): BrowserBuilder;
     /** Keep this mount's preferences under its own storage key. */

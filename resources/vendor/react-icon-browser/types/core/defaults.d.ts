@@ -1,4 +1,5 @@
 import type { CopyFormat, Scale, Density, SizeUnit, SortKey, SortOrder, Theme, Treatment } from './types';
+import type { IconKind } from '@ichava/js-ui-kernel';
 export interface FilterDefaults {
     search: string;
     packages: string[];
@@ -9,6 +10,9 @@ export interface FilterDefaults {
     sortOrder: SortOrder;
     page: number;
     perPage: number;
+    kind: IconKind;
+    tags: string[];
+    keywords: string[];
 }
 export declare const DEFAULT_FILTERS: FilterDefaults;
 export declare const DEFAULT_APPEARANCE: {

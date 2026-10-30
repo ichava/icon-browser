@@ -52,7 +52,7 @@ export interface MountOptions {
  */
 export declare function mountIchavaBrowser(el: HTMLElement, opts: MountOptions): Root;
 /**
- * The fluent way to mount: `browser().rest(RestCatalog.at('/admin/ichava/api')).persist('ichava.admin').mount(el)`.
+ * The fluent way to mount: `browser().rest(RestCatalog.at('/admin/ichava/api/v1')).persist('ichava.admin').mount(el)`.
  * `.mount(el)` is `mountIchavaBrowser(el, builder.toOptions())` and returns a
  * `BrowserHandle` (`store`, `unmount()`, `Symbol.dispose`). `.toProps()` feeds
  * `<IchavaBrowser>`. Both existing paths are unchanged.

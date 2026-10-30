@@ -39,6 +39,12 @@ export interface SnippetConfig {
     className: string;
     /** Origin for the API tab's absolute URL; the page's own origin when empty. */
     apiOrigin: string;
+    /**
+     * The API tab's SVG route for an icon that carries no `svg_url`, as a template with
+     * `{iconId}`: a REST host's `icons.svg` from its bootstrap map (`hostConfig` sets it).
+     * `/ichava/api/v1/icons/{iconId}/svg` when unset.
+     */
+    svgEndpoint?: string;
 }
 export type Treatment = 'default' | 'solid' | 'duotone' | 'midtone' | 'halftone';
 /** Icon-label scale (drives base font size). XS added for full appearance parity. */
