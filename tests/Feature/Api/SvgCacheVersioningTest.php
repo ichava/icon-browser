@@ -41,7 +41,7 @@ describe('SVG cache versioning', function () {
         [$icon, $file] = makeIconWithFile();
 
         try {
-            $response = test()->get(route('ichava.api.icons.svg', [
+            $response = test()->get(route('ichava.api.v1.icons.svg', [
                 'id' => $icon->id,
                 'v'  => $icon->render_version,
             ]));
@@ -58,7 +58,7 @@ describe('SVG cache versioning', function () {
         [$icon, $file] = makeIconWithFile();
 
         try {
-            $response = test()->get(route('ichava.api.icons.svg', ['id' => $icon->id]));
+            $response = test()->get(route('ichava.api.v1.icons.svg', ['id' => $icon->id]));
 
             $response->assertOk();
             expect($response->headers->get('Cache-Control'))->not->toContain('immutable')
@@ -72,7 +72,7 @@ describe('SVG cache versioning', function () {
         [$icon, $file] = makeIconWithFile();
 
         try {
-            $response = test()->get(route('ichava.api.icons.svg', [
+            $response = test()->get(route('ichava.api.v1.icons.svg', [
                 'id' => $icon->id,
                 'v'  => 'deadbeefdeadbeef',
             ]));
@@ -91,7 +91,7 @@ describe('SVG cache versioning', function () {
         [$icon, $file] = makeIconWithFile();
 
         try {
-            $response = test()->get(route('ichava.api.icons.svg', ['id' => $icon->id]));
+            $response = test()->get(route('ichava.api.v1.icons.svg', ['id' => $icon->id]));
 
             expect($response->headers->get('ETag'))->not->toBeNull();
         } finally {
@@ -103,7 +103,7 @@ describe('SVG cache versioning', function () {
         [$icon, $file] = makeIconWithFile();
 
         try {
-            $response = test()->getJson(route('ichava.api.icons.show', ['id' => $icon->id]));
+            $response = test()->getJson(route('ichava.api.v1.icons.show', ['id' => $icon->id]));
 
             $response->assertOk();
             $url = $response->json('data.svg_url');

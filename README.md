@@ -42,7 +42,7 @@ ICHAVA_API_ENABLED=true
 ```
 
 ```bash
-curl "https://example.test/ichava/api/icons?search=home&packages[]=ichava/icon-sets-tabler"
+curl "https://example.test/ichava/api/v1/icons?search=home&packages[]=ichava/icon-sets-tabler"
 ```
 
 [Getting started](docs/getting-started.md) walks through both; the [Documentation](#documentation) index covers the rest.

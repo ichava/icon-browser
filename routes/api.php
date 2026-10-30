@@ -24,7 +24,7 @@ use Simtabi\Laranail\Ichava\IconBrowser\Http\Controllers\Api\CommandHistoryApiCo
 | All routes return JSON responses.
 |
 | Middleware: ['api']
-| Prefix: /ichava/api
+| Prefix: /ichava/api/v1
 |
 */
 
@@ -35,7 +35,7 @@ use Simtabi\Laranail\Ichava\IconBrowser\Http\Controllers\Api\CommandHistoryApiCo
 // - ichava.security (XSS, SQL injection protection)
 // - ichava.json (force JSON responses)
 // - ichava.log (request logging in debug mode)
-Route::group(Helpers::routeGroup(Helpers::routePrefix() . '/api', ['ichava.api'], 'ichava.api.'), function () {
+Route::group(Helpers::routeGroup(Helpers::routePrefix() . '/api/v1', ['ichava.api'], 'ichava.api.v1.'), function () {
 
     // =====================================================================
     // SESSION: the host's signed-in user and where the library is kept

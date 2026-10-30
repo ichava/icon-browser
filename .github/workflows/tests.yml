@@ -95,10 +95,24 @@ jobs:
         run: |
           composer config --global --auth github-oauth.github.com "$GH_PACKAGES_PAT"
 
+      - name: Resolve ichava/core from its main branch
+        # composer.json keeps `ichava/core: ^0.1` (the only tag is v0.1.0). CI
+        # tests against core's main instead, aliased into that range, without
+        # touching the committed constraint.
+        run: composer require "ichava/core:dev-main as 0.1.99" --no-update --no-interaction
+
       - name: Install dependencies
         run: |
           composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
           composer update --${{ matrix.stability }} --prefer-dist --no-interaction
+
+      - name: Report the resolved siblings and restore composer.json
+        # The source reference is the core commit this run tested against. The
+        # restore makes SiblingConstraintsTest read the committed constraint,
+        # not the CI alias.
+        run: |
+          for p in ichava/core; do composer show "$p" | grep -E '^(name|versions|source) '; done
+          git checkout -- composer.json
 
       - name: Execute tests
         run: vendor/bin/pest --coverage
@@ -189,19 +203,24 @@ jobs:
         run: |
           composer config --global --auth github-oauth.github.com "$GH_PACKAGES_PAT"
 
+      - name: Resolve ichava/core from its main branch
+        # composer.json keeps `ichava/core: ^0.1` (the only tag is v0.1.0). CI
+        # tests against core's main instead, aliased into that range, without
+        # touching the committed constraint.
+        run: composer require "ichava/core:dev-main as 0.1.99" --no-update --no-interaction
+
       - name: Install dependencies
         run: |
           composer require "laravel/framework:13.*" "orchestra/testbench:^11.0" --no-interaction --no-update
           composer update --prefer-stable --prefer-dist --no-interaction
 
-      - name: Report the resolved core version
-        # This job tests browser against whatever `ichava/core: ^0.1.1` resolves
-        # to, which is a released tag rather than core's main branch. The
-        # PostgreSQL fix for the json/jsonb mismatch landed after v0.1.1, so
-        # until core ships 0.2.0 and this constraint is raised, a pgsql failure
-        # here may belong to core rather than to browser. Print it so the log
-        # answers that without a bisect.
-        run: composer show ichava/core | head -5
+      - name: Report the resolved siblings and restore composer.json
+        # The source reference is the core commit this run tested against. The
+        # restore makes SiblingConstraintsTest read the committed constraint,
+        # not the CI alias.
+        run: |
+          for p in ichava/core; do composer show "$p" | grep -E '^(name|versions|source) '; done
+          git checkout -- composer.json
 
       - name: Execute tests
         env:

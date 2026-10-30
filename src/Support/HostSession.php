@@ -12,7 +12,7 @@ use Simtabi\Laranail\Ichava\Contracts\PreferenceStore;
 /**
  * Who is using the browser and where their library is kept, in the one shape
  * every surface sends: the Inertia `auth` prop carries `user()`, and
- * `GET {prefix}/api/session` carries `toArray()`.
+ * `GET {prefix}/api/v1/session` carries `toArray()`.
  *
  * The user comes from the host through core's `HostUser`, so it honours
  * `ichava.ichava-core.auth.guard` and `Ichava::resolveUserUsing()`. It is the

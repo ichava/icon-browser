@@ -9,7 +9,9 @@ ICHAVA_INERTIA_ENABLED=false
 ICHAVA_API_ENABLED=true
 ```
 
-The Inertia pages and the `/ichava` redirect are not mounted. A client starts from `GET /ichava/api/bootstrap`, reads the library from `GET /ichava/api/library`, and writes through the endpoints the manifest lists.
+The Inertia pages and the `/ichava` redirect are not mounted. A client starts from `GET /ichava/api/v1/bootstrap`, reads the library from `GET /ichava/api/v1/library`, and writes through the endpoints the manifest lists.
+
+A client library with its own default base URL must be pointed at `/ichava/api/v1` (`/{prefix}/api/v1` under a custom prefix); nothing answers on `/ichava/api`.
 
 See [API endpoints](../tools/api-endpoints.md) and [Payload schema](../tools/payload-schema.md).
 

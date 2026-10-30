@@ -43,6 +43,12 @@ jobs:
         run: |
           composer config --global --auth github-oauth.github.com "$GH_PACKAGES_PAT"
 
+      - name: Resolve ichava/core from its main branch
+        # composer.json keeps `ichava/core: ^0.1` (the only tag is v0.1.0). CI
+        # tests against core's main instead, aliased into that range, without
+        # touching the committed constraint.
+        run: composer require "ichava/core:dev-main as 0.1.99" --no-update --no-interaction
+
       - name: Install dependencies
         run: composer update --prefer-stable --prefer-dist --no-interaction
 
@@ -79,8 +85,22 @@ jobs:
         run: |
           composer config --global --auth github-oauth.github.com "$GH_PACKAGES_PAT"
 
+      - name: Resolve ichava/core from its main branch
+        # composer.json keeps `ichava/core: ^0.1` (the only tag is v0.1.0). CI
+        # tests against core's main instead, aliased into that range, without
+        # touching the committed constraint.
+        run: composer require "ichava/core:dev-main as 0.1.99" --no-update --no-interaction
+
       - name: Install dependencies
         run: composer update --prefer-stable --prefer-dist --no-interaction
+
+      - name: Report the resolved siblings and restore composer.json
+        # The source reference is the core commit this run tested against. The
+        # restore makes SiblingConstraintsTest read the committed constraint,
+        # not the CI alias.
+        run: |
+          for p in ichava/core; do composer show "$p" | grep -E '^(name|versions|source) '; done
+          git checkout -- composer.json
 
       - name: Run PHPStan
         run: composer analyse
@@ -114,6 +134,12 @@ jobs:
         if: env.GH_PACKAGES_PAT != ''
         run: |
           composer config --global --auth github-oauth.github.com "$GH_PACKAGES_PAT"
+
+      - name: Resolve ichava/core from its main branch
+        # composer.json keeps `ichava/core: ^0.1` (the only tag is v0.1.0). CI
+        # tests against core's main instead, aliased into that range, without
+        # touching the committed constraint.
+        run: composer require "ichava/core:dev-main as 0.1.99" --no-update --no-interaction
 
       - name: Install dependencies
         run: composer update --prefer-stable --prefer-dist --no-interaction

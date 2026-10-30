@@ -39,9 +39,11 @@ class IconResource extends JsonResource
             'kind'   => $icon->kind->value,
             'themes' => $icon->themes(),
 
-            // Category & Variant (from relationships)
+            // Category & Variant (from relationships), and the subcategory:
+            // the nested category below the top-level one, null at the top.
             'category' => $icon->primary_category?->slug,
             'variant'  => $icon->primary_variant?->slug,
+            'sub'      => $icon->primary_subcategory?->slug,
 
             // Paths
             'path'      => $icon->icon_path,
@@ -58,7 +60,7 @@ class IconResource extends JsonResource
              * year. Clients should use this URL as given rather than rebuilding
              * it from the id. (W1-7b / `B0-b`.)
              */
-            'svg_url' => route('ichava.api.icons.svg', [
+            'svg_url' => route('ichava.api.v1.icons.svg', [
                 'id' => $icon->id,
                 'v'  => $icon->render_version,
             ], false),

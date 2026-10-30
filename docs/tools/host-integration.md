@@ -23,7 +23,7 @@ The browser receives that user as `UserData`, the same shape everywhere:
 ```
 
 - In the Inertia `auth` prop (null for a guest).
-- In `GET {prefix}/api/session`, with the storage `tier` (`database`, `session` or `browser`), `persistent`, the schema version and `links.login` / `links.logout`, the host's routes named by `auth.login_route` / `auth.logout_route`.
+- In `GET {prefix}/api/v1/session`, with the storage `tier` (`database`, `session` or `browser`), `persistent`, the schema version and `links.login` / `links.logout`, the host's routes named by `auth.login_route` / `auth.logout_route`.
 
 Email, passwords and tokens never leave the server. Extra attributes appear only when the host lists them in `ichava.ichava-core.auth.expose`.
 
@@ -31,7 +31,7 @@ Email, passwords and tokens never leave the server. Extra attributes appear only
 
 | Ability | Guards | Default |
 |---------|--------|---------|
-| `ichava.admin` | `GET {prefix}/api/status`, the `status` prop on the Stats page, the `status` feature | denied (core defines it when the host has not) |
+| `ichava.admin` | `GET {prefix}/api/v1/status`, the `status` prop on the Stats page, the `status` feature | denied (core defines it when the host has not) |
 | `ichava.manage-cache` | cache stats, clear and rebuild | undefined, so refused; falls back to `ichava.admin` when the host defines only that |
 
 Grant both with one Gate; see [Grant admin access](../recipes/grant-admin-access.md). The `ichava.admin` middleware alias guards any route of your own the same way.
@@ -42,17 +42,28 @@ Favourites, collections, history, command history and preferences live in core's
 
 The table's migration loads with the package (`php artisan migrate`). Until it has run, signed-in users fall back to the session. `library.store = session` keeps everyone on the session.
 
-Every write goes through one action shared by the Inertia route and its REST twin (`Actions\Library\*`, core's `Actions\UpdatePreferences`, `Actions\Preferences\ResetPreferences`). Resetting preferences keeps the library. **Delete my library** (`DELETE {prefix}/api/library`, `DELETE {prefix}/library`) removes every favourite and collection, one at a time, so `FavoriteToggled` and `CollectionChanged` fire for each.
+Every write goes through one action shared by the Inertia route and its REST twin (`Actions\Library\*`, core's `Actions\UpdatePreferences`, `Actions\Preferences\ResetPreferences`). Resetting preferences keeps the library. **Delete my library** (`DELETE {prefix}/api/v1/library`, `DELETE {prefix}/library`) removes every favourite and collection, one at a time, so `FavoriteToggled` and `CollectionChanged` fire for each.
 
 ## The features manifest
 
-`GET {prefix}/api/bootstrap` and the `ichava.features` Inertia prop carry one entry per feature:
+`GET {prefix}/api/v1/bootstrap` and the `ichava.features` Inertia prop carry one entry per feature:
 
 ```json
-"favorites": { "enabled": true, "reason": null, "endpoints": { "list": "https://app.test/ichava/favorites", "toggle": "https://app.test/ichava/api/favorites/{iconId}/toggle" } }
+"favorites": { "enabled": true, "reason": null, "endpoints": { "list": "https://app.test/ichava/favorites", "toggle": "https://app.test/ichava/api/v1/favorites/{iconId}/toggle" } }
 ```
 
 `reason` says why a feature is off: `config` (turned off in `features.*`), `gate` (the user lacks the ability), `driver` (the database cannot do it) or `empty` (nothing to show yet). Endpoints list only mounted routes; a parameter stays as a `{name}` placeholder.
+
+A feature's `endpoints` prefer the Inertia route where one exists. A REST client reads `api` instead, which `GET {prefix}/api/v1/bootstrap` carries beside `features`: `version` (`v1`), `base` (the absolute `{prefix}/api/v1` URL) and `endpoints`, one key per REST endpoint, every URL under `/api/v1`:
+
+```json
+"api": { "version": "v1", "base": "https://app.test/ichava/api/v1", "endpoints": {
+  "library.show": "https://app.test/ichava/api/v1/library",
+  "collections.addIcon": "https://app.test/ichava/api/v1/collections/{collectionId}/icons/{iconId}"
+} }
+```
+
+The keys are `session`, `bootstrap`, `status`; `icons.list`, `.show`, `.svg`, `.filters`, `.tree`, `.statistics`, `.updateStatus`; `packages.list`, `.show`; `terms.categories`, `.variants`, `.hierarchy`; `library.show`, `.destroy`; `favorites.list`, `.add`, `.remove`, `.toggle`; `collections.list`, `.create`, `.show`, `.rename`, `.delete`, `.addIcon`, `.removeIcon`; `history.list`, `.log`, `.clear`; `commands.list`, `.log`, `.clear`; `preferences.show`, `.update`, `.search`, `.filters`, `.reset`; `cache.stats`, `.clear`, `.rebuild`. Templates keep `{iconId}`, `{collectionId}` and `{package}`. A key is absent when its route is not mounted or the feature gating it is off for this user (`status` needs `ichava.admin`, `cache.*` the cache-admin ability).
 
 | Feature | Enabled when |
 |---------|--------------|

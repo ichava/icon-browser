@@ -64,7 +64,7 @@ Geist fonts) into `public/vendor/ichava/`. Do this after every `composer update`
 http://example.com/ichava/icons
 ```
 
-The prefix (`ichava` by default) is set by `ICHAVA_BROWSER_PREFIX`. The same prefix is shared with core's REST API at `/ichava/api/...`.
+The prefix (`ichava` by default) is set by `ICHAVA_BROWSER_PREFIX`. The same prefix is shared with core's REST API at `/ichava/api/v1/...`.
 
 ## 5. (Optional) Inject npm scripts for development
 
@@ -84,7 +84,7 @@ GitHub's public `ichava/js-ui-kernel`.
 ## What you get on top of core
 
 - The React + Inertia.js icon browser at `/{prefix}/icons`
-- The REST API at `/{prefix}/api/...` (icons, packages, terms, preferences, cache)
+- The REST API at `/{prefix}/api/v1/...` (icons, packages, terms, preferences, cache)
 - All Ichava middleware (`ichava.api`, `ichava.web`, hybrid Sanctum/session detection)
 - The `<x-ichava:ichava-test-icons>` and `<x-ichava:ichava-ui-icons>` demo Blade components
 - The `ui-icons` icon set the browser pages use

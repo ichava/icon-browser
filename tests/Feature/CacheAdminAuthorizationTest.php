@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Gate;
 /**
  * S9 — the destructive cache endpoints must be authorised, not merely rate limited.
  *
- * `POST ichava/api/cache/clear` and `.../rebuild` shipped with a 10/minute limit and no
+ * `POST ichava/api/v1/cache/clear` and `.../rebuild` shipped with a 10/minute limit and no
  * authorization at all. `rebuildCache()` also calls `PreferenceService::clear()`, so one
  * unauthenticated request flushed a 128,000-icon cache AND wiped every stored preference.
  * A rate limit slows repetition; it never decides who is allowed.
@@ -21,8 +21,8 @@ use Illuminate\Support\Facades\Gate;
 function destructiveCacheRoutes(): array
 {
     return [
-        'api clear'   => '/ichava/api/cache/clear',
-        'api rebuild' => '/ichava/api/cache/rebuild',
+        'api clear'   => '/ichava/api/v1/cache/clear',
+        'api rebuild' => '/ichava/api/v1/cache/rebuild',
         'web clear'   => '/ichava/cache/clear',
         'web rebuild' => '/ichava/cache/rebuild',
     ];
@@ -56,11 +56,11 @@ it('explains a missing ability differently from a denied one', function () {
     // The two cases need different messages: one is a misconfiguration the operator can
     // fix, the other is their own policy saying no. Collapsing them into a bare 403 sends
     // an operator hunting through their policies for a rule they never wrote.
-    $missing = $this->postJson('/ichava/api/cache/clear');
+    $missing = $this->postJson('/ichava/api/v1/cache/clear');
     expect($missing->json('message'))->toContain('not configured');
 
     Gate::define('ichava.manage-cache', fn (?object $user) => false);
-    $denied = $this->postJson('/ichava/api/cache/clear');
+    $denied = $this->postJson('/ichava/api/v1/cache/clear');
     expect($denied->json('message'))->not->toContain('not configured');
 });
 
@@ -69,12 +69,12 @@ it('honours the deliberate escape hatch for trusted deployments', function () {
     // explicitly rather than being what happens when nobody decided.
     config()->set('ichava.icon-browser.security.cache_admin.allow_without_gate', true);
 
-    expect($this->postJson('/ichava/api/cache/clear')->status())->not->toBe(403);
+    expect($this->postJson('/ichava/api/v1/cache/clear')->status())->not->toBe(403);
 });
 
 it('uses the configured ability name rather than a hardcoded one', function () {
     config()->set('ichava.icon-browser.security.cache_admin.ability', 'my-app.icons');
     Gate::define('my-app.icons', fn (?object $user) => true);
 
-    expect($this->postJson('/ichava/api/cache/clear')->status())->not->toBe(403);
+    expect($this->postJson('/ichava/api/v1/cache/clear')->status())->not->toBe(403);
 });

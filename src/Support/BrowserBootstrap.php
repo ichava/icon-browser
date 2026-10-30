@@ -6,7 +6,7 @@ namespace Simtabi\Laranail\Ichava\IconBrowser\Support;
 
 /**
  * The document a browser client starts from: one shape for the Inertia
- * `ichava` prop's host fields and for `GET {prefix}/api/bootstrap`.
+ * `ichava` prop's host fields and for `GET {prefix}/api/v1/bootstrap`.
  */
 final readonly class BrowserBootstrap
 {
@@ -27,7 +27,7 @@ final readonly class BrowserBootstrap
     }
 
     /**
-     * @return array{schemaVersion: string, locale: string, modes: array{inertia: bool, api: bool}, session: array<string, mixed>, features: array<string, array{enabled: bool, reason: string|null, endpoints: array<string, string>}>}
+     * @return array{schemaVersion: string, locale: string, modes: array{inertia: bool, api: bool}, session: array<string, mixed>, features: array<string, array{enabled: bool, reason: string|null, endpoints: array<string, string>}>, api: array{version: string, base: string|null, endpoints: array<string, string>}}
      */
     public function toArray(): array
     {
@@ -37,7 +37,10 @@ final readonly class BrowserBootstrap
             'locale'   => app()->getLocale(),
             'modes'    => self::modes(),
             'session'  => $this->session->toArray(),
-            'features' => $this->features->toArray(),
+            'features' => $features = $this->features->toArray(),
+            // Every REST endpoint by its own key, all under /api/v1, gated by
+            // the same features; separate from the Inertia-first `endpoints`.
+            'api' => $this->features->api($features),
         ];
     }
 }

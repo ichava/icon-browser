@@ -4,7 +4,7 @@
 
 *Reference.*
 
-`resources/schema/icon-browser.schema.json` is a JSON Schema (draft 2020-12) for every payload this package serves, one `$defs` entry each. Its `version` equals `PayloadSchema::VERSION`, which `GET {prefix}/api/session`, `GET {prefix}/api/bootstrap` and the `ichava` Inertia prop carry as `schemaVersion`.
+`resources/schema/icon-browser.schema.json` is a JSON Schema (draft 2020-12) for every payload this package serves, one `$defs` entry each. Its `version` equals `PayloadSchema::VERSION`, which `GET {prefix}/api/v1/session`, `GET {prefix}/api/v1/bootstrap` and the `ichava` Inertia prop carry as `schemaVersion`.
 
 | `$defs` entry | Payload |
 |---------------|---------|
@@ -20,6 +20,12 @@
 react-icon-browser generates its TypeScript types from this file. `tests/Feature/PayloadSchemaTest.php` validates real responses and page props against it, so a renamed or dropped field fails the suite.
 
 Bump the major version for a removed or retyped field and the minor for an added one, in `PayloadSchema::VERSION` and the file's `version` together.
+
+| Version | Change |
+|---|---|
+| 1.2.0 | `bootstrap` gains `api` (`apiManifest`): every REST endpoint by its own key, under `/api/v1`. Additive. |
+| 1.1.0 | `icon` gains `sub`, the nested category below the top-level one, or null. Additive. |
+| 1.0.0 | First published contract. |
 
 ---
 

@@ -18,7 +18,7 @@ use Simtabi\Laranail\Ichava\Support\HostCapabilities;
  * effort; the middleware never aborts when a tier is unavailable.
  *
  * The user tier is read through core's `HostUser`, the same resolver the
- * Inertia `auth` prop and `GET {prefix}/api/session` use, so it honours
+ * Inertia `auth` prop and `GET {prefix}/api/v1/session` use, so it honours
  * `ichava.ichava-core.auth.guard` and `Ichava::resolveUserUsing()` instead of
  * looking the user up a second way. The session and browser tiers are
  * unchanged: hosts without a session still keep guest data in the browser.

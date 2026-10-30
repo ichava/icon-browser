@@ -12,10 +12,10 @@ use Simtabi\Laranail\Ichava\IconBrowser\Support\BrowserBootstrap;
 /**
  * What a REST client needs before it draws anything, and the admin status.
  *
- * - `GET {prefix}/api/bootstrap`: schema version, locale, the session (user,
+ * - `GET {prefix}/api/v1/bootstrap`: schema version, locale, the session (user,
  *   storage tier, sign-in links) and the features manifest, the same values
  *   the Inertia `ichava` and `auth` props carry.
- * - `GET {prefix}/api/status`: core's `StatusData` (lifecycle, conflicts,
+ * - `GET {prefix}/api/v1/status`: core's `StatusData` (lifecycle, conflicts,
  *   orphans, discovery, watcher, logging, last rebuild), behind
  *   `ichava.admin`. It carries no absolute paths.
  */

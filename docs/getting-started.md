@@ -30,7 +30,7 @@ Every installed and seeded pack becomes searchable in the SPA with no further co
 The same data is available as JSON:
 
 ```bash
-curl "https://example.com/ichava/api/icons?search=home&package=ichava/icon-sets-tabler"
+curl "https://example.com/ichava/api/v1/icons?search=home&package=ichava/icon-sets-tabler"
 ```
 
 The PHP equivalent, from inside a Laravel application:
@@ -38,7 +38,7 @@ The PHP equivalent, from inside a Laravel application:
 ```php
 use Illuminate\Support\Facades\Http;
 
-$icons = Http::get('https://example.com/ichava/api/icons', [
+$icons = Http::get('https://example.com/ichava/api/v1/icons', [
     'search'  => 'home',
     'package' => 'ichava/icon-sets-tabler',
 ])->json();

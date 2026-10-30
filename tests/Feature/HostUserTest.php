@@ -16,7 +16,7 @@ use Simtabi\Laranail\Ichava\IconBrowser\Http\Middleware\IchavaStatefulGuard;
  * The Inertia `auth` prop used to be the default guard's model cut to
  * `id`, `name` and `email`: it ignored `ichava.ichava-core.auth.guard`, and it
  * sent an email address to every page. It is now core's `UserData`, the same
- * document `GET {prefix}/api/session` carries.
+ * document `GET {prefix}/api/v1/session` carries.
  */
 function hostUser(array $attributes = []): GenericUser
 {
@@ -83,9 +83,9 @@ describe('the Inertia auth prop', function () {
     });
 });
 
-describe('GET {prefix}/api/session', function () {
+describe('GET {prefix}/api/v1/session', function () {
     it('describes a guest', function () {
-        $this->getJson(route('ichava.api.session'))
+        $this->getJson(route('ichava.api.v1.session'))
             ->assertOk()
             ->assertJsonPath('data.authenticated', false)
             ->assertJsonPath('data.user', null)
@@ -96,7 +96,7 @@ describe('GET {prefix}/api/session', function () {
     it('carries the same user shape as the Inertia prop', function () {
         $this->actingAs(hostUser());
 
-        $response = $this->getJson(route('ichava.api.session'))->assertOk();
+        $response = $this->getJson(route('ichava.api.v1.session'))->assertOk();
 
         expect($response->json('data.authenticated'))->toBeTrue()
             ->and(array_keys($response->json('data.user')))->toEqualCanonicalizing(['id', 'name', 'avatarUrl', 'abilities'])
@@ -111,7 +111,7 @@ describe('GET {prefix}/api/session', function () {
         Route::post('/logout', fn () => 'logout')->name('logout');
         app('router')->getRoutes()->refreshNameLookups();
 
-        $this->getJson(route('ichava.api.session'))
+        $this->getJson(route('ichava.api.v1.session'))
             ->assertJsonPath('data.links.login', url('/login'))
             ->assertJsonPath('data.links.logout', url('/logout'));
     });
@@ -144,6 +144,6 @@ describe('cache administration', function () {
         app(Ichava::class)->resolveUserUsing(fn () => hostUser(['id' => 1, 'name' => 'Grace']));
 
         // The default guard has nobody signed in; only the resolver knows Grace.
-        expect($this->postJson('/ichava/api/cache/clear')->status())->not->toBe(403);
+        expect($this->postJson('/ichava/api/v1/cache/clear')->status())->not->toBe(403);
     });
 });

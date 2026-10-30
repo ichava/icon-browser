@@ -55,7 +55,7 @@ it('sends API icons snippet strings in the configured class, with the path the r
     config()->set('ichava.icon-browser.snippets.class_name', 'size-4');
     $icon = snippetsIcon();
 
-    $data = test()->getJson(route('ichava.api.icons.show', ['id' => $icon->id]))->assertOk()->json('data');
+    $data = test()->getJson(route('ichava.api.v1.icons.show', ['id' => $icon->id]))->assertOk()->json('data');
 
     $path = "{$icon->package}::shapes/star";
     $this->assertSame($path, $data['icon_path']);
@@ -85,9 +85,9 @@ it("adds the host resolver's snippets per icon, dropping empty ones", function (
     config()->set('ichava.icon-browser.snippets.resolver', RouteSnippetResolver::class);
     $icon = snippetsIcon();
 
-    $data = test()->getJson(route('ichava.api.icons.show', ['id' => $icon->id]))->assertOk()->json('data');
+    $data = test()->getJson(route('ichava.api.v1.icons.show', ['id' => $icon->id]))->assertOk()->json('data');
 
-    $this->assertSame(['download' => route('ichava.api.icons.svg', ['id' => $icon->id])], $data['snippets']);
+    $this->assertSame(['download' => route('ichava.api.v1.icons.svg', ['id' => $icon->id])], $data['snippets']);
     $this->assertSame($data['snippets'], app(IconSnippets::class)->transform($icon)['snippets'], 'Inertia pages and the API disagree');
 });
 

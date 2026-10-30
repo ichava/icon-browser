@@ -4,13 +4,19 @@
 
 *Reference.*
 
-REST endpoints exposed by `ichava/icon-browser`. All endpoints sit under `/{prefix}/api/...` where `{prefix}` defaults to `ichava` (set by `ICHAVA_BROWSER_PREFIX`).
+REST endpoints exposed by `ichava/icon-browser`. All endpoints sit under `/{prefix}/api/v1/...` where `{prefix}` defaults to `ichava` (set by `ICHAVA_BROWSER_PREFIX`).
 
 ### Base URL
 
 ```
-/ichava/api
+/ichava/api/v1
 ```
+
+### Versioning
+
+The path carries the API version, `v1`, and the route names carry it too (`ichava.api.v1.*`, for example `route('ichava.api.v1.icons.index')`). The payload contract has its own version: `GET /session` and `GET /bootstrap` return `schemaVersion`, the `version` of `resources/schema/icon-browser.schema.json`. A client compares that, not the path, to tell an added field from a breaking change. Nothing answers on the unversioned `/{prefix}/api/...` path.
+
+`GET /bootstrap` lists every endpoint below under `api.endpoints`, one key each, so a client reads URLs from there rather than building them; see [Host integration](host-integration.md#the-features-manifest).
 
 ### Host endpoints
 
@@ -45,6 +51,8 @@ See [Host integration](host-integration.md) for the shapes, and [Payload schema]
 | `subs[]` | Nested categories, or variants within the selected category |
 | `tags[]`, `keywords[]` | Tags and keywords an icon must carry |
 
+Each icon in the listing, and `GET /icons/{id}`, carries `sub`: the slug of the nested category the icon sits in below its top-level `category`, or null when it is filed only at the top level. It is the per-icon counterpart of `subs[]` (schema 1.1.0).
+
 Facet counts in `/icons/filters` are counted over the other filters, and `/icons/tree` over the selection. The `/icons` `meta` block carries `has_search`, `has_filters` and `empty_reason` (`no_match`, `no_icons`, or null). Each icon carries `kind` and `themes`.
 
 ### Package Endpoints
@@ -66,16 +74,16 @@ Facet counts in `/icons/filters` are counted over the other filters, and `/icons
 
 ```bash
 # List icons with pagination
-curl "http://example.com/ichava/api/icons?page=1&per_page=60"
+curl "http://example.com/ichava/api/v1/icons?page=1&per_page=60"
 
 # Search icons
-curl "http://example.com/ichava/api/icons?search=home"
+curl "http://example.com/ichava/api/v1/icons?search=home"
 
 # Filter by package
-curl "http://example.com/ichava/api/icons?packages[]=vendor/your-icons"
+curl "http://example.com/ichava/api/v1/icons?packages[]=vendor/your-icons"
 
 # Get statistics
-curl "http://example.com/ichava/api/icons/statistics"
+curl "http://example.com/ichava/api/v1/icons/statistics"
 ```
 
 ### API Response Format

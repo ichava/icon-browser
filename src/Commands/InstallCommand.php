@@ -133,7 +133,7 @@ class InstallCommand extends Command
             /** @var Route $route */
             $name = $route->getName();
 
-            if (is_string($name) && in_array($name, ['ichava.inertia.browser', 'ichava.api.bootstrap', 'ichava.api.session'], true)) {
+            if (is_string($name) && in_array($name, ['ichava.inertia.browser', 'ichava.api.v1.bootstrap', 'ichava.api.v1.session'], true)) {
                 $this->components->twoColumnDetail($name, '/' . ltrim($route->uri(), '/'));
             }
 
