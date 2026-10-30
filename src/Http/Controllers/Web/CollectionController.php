@@ -76,17 +76,21 @@ final class CollectionController extends BaseInertiaController
 
     public function store(Request $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'name'  => 'required|string|max:100',
-            'color' => 'nullable|string|regex:/^#[a-fA-F0-9]{6}$/',
-        ]);
-        /** @var array{name: string, color?: string|null} $validated */
+        $validated = $request->validate(CreateCollection::rules());
+        /** @var array{name: string, color?: string|null, icon_ids?: list<int|string>} $validated */
         $collection = $this->createCollection->handle(
             $validated['name'],
             $validated['color'] ?? null,
+            array_map(intval(...), $validated['icon_ids'] ?? []),
         );
 
         $this->logger->debug('Collection created from web', ['collection_id' => $collection['id']]);
+
+        // The browser creates collections with a partial reload of its own page; sending it
+        // to the collection's page would swap the browser out for it.
+        if ($request->hasHeader('X-Inertia-Partial-Component')) {
+            return redirect()->back()->with('success', 'Collection created successfully.');
+        }
 
         return redirect()
             ->route('ichava.inertia.collections.show', ['id' => $collection['id']])

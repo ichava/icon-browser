@@ -61,7 +61,7 @@ describe('useLibrarySync', () => {
     expect(m.pushHistory).toHaveBeenCalledWith(2, 'copied');
     expect(m.addToCollection).toHaveBeenCalledWith('5', 2);
     expect(m.updateCollection).toHaveBeenCalledWith('5', { name: 'Interface' });
-    expect(m.createCollection).toHaveBeenCalledWith('Brand');
+    expect(m.createCollection).toHaveBeenCalledWith('Brand', []);
     expect(m.deleteCollection).toHaveBeenCalledWith('5');
     // Toggling is never sent as a toggle: a replayed toggle could invert the server's state.
     expect(m.toggleFavorite).not.toHaveBeenCalled();
@@ -109,10 +109,21 @@ describe('useLibrarySync', () => {
     expect(m.deleteCollection).not.toHaveBeenCalled();
   });
 
-  it('creates a new collection empty: its provisional id is not the server one', () => {
+  it('creates a new collection with its icons, since its provisional id is not the server one', () => {
     const prev = { favorites: [], history: [], collections: [], recentCommands: [], libraryDeletions: 0 };
     const next = { ...prev, collections: [{ id: 'c-tmp', name: 'Brand', icons: [3, 4] }] };
-    expect(libraryOps(prev, next)).toEqual([{ kind: 'collection.create', id: 'c-tmp', name: 'Brand' }]);
+    expect(libraryOps(prev, next)).toEqual([{ kind: 'collection.create', id: 'c-tmp', name: 'Brand', icons: [3, 4] }]);
+  });
+
+  it('sends a collection made from an icon with that icon', () => {
+    const { store } = mount();
+    const m = mutations();
+    renderHook(() => useLibrarySync(store, m));
+
+    store.getState().createCollection('Brand', [2]);
+
+    expect(m.createCollection).toHaveBeenCalledWith('Brand', [2]);
+    expect(m.addToCollection).not.toHaveBeenCalled();
   });
 });
 

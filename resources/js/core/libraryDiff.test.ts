@@ -48,7 +48,7 @@ describe('diffLibrary', () => {
       { kind: 'collection.add', id: '1', iconId: 5 },
       { kind: 'collection.remove', id: '1', iconId: 1 },
       // react-icon-browser's diff names the provisional id the collection was created under.
-      { kind: 'collection.create', id: 'c-new', name: 'Brand' },
+      { kind: 'collection.create', id: 'c-new', name: 'Brand', icons: [] },
       { kind: 'collection.delete', id: '2' },
     ]);
   });
