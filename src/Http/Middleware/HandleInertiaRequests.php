@@ -9,6 +9,7 @@ use OutOfBoundsException;
 use Illuminate\Http\Request;
 use Composer\InstalledVersions;
 use Simtabi\Laranail\Ichava\IconBrowser\Support\Helpers;
+use Simtabi\Laranail\Ichava\IconBrowser\Support\HostSession;
 use Simtabi\Laranail\Ichava\Services\IconPreferenceService;
 use Simtabi\Laranail\Ichava\IconBrowser\Support\IconSnippets;
 
@@ -19,14 +20,17 @@ final class HandleInertiaRequests extends Middleware
     public function __construct(
         private readonly IconPreferenceService $preferences,
         private readonly IconSnippets $snippets,
+        private readonly HostSession $session,
     ) {}
 
     public function share(Request $request): array
     {
         return array_merge(parent::share($request), [
-            'auth' => fn () => $request->user()
-                ? $request->user()->only('id', 'name', 'email')
-                : null,
+            // The host's signed-in user through core's resolver, presented as
+            // `UserData`: id, name, avatarUrl, abilities. It used to be the
+            // default guard's model with `email`, which sent the address to
+            // every page and ignored `ichava.ichava-core.auth.guard`.
+            'auth' => fn () => $this->session->user()?->toArray(),
 
             'flash' => fn () => [
                 'success' => $request->session()->get('success'),

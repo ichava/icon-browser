@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Illuminate\Support\Facades\Route;
 use Simtabi\Laranail\Ichava\IconBrowser\Support\Helpers;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Controllers\Api\HistoryApiController;
+use Simtabi\Laranail\Ichava\IconBrowser\Http\Controllers\Api\SessionApiController;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Controllers\Api\FavoritesApiController;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Controllers\Api\CollectionsApiController;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Controllers\Api\IconBrowserApiController;
@@ -35,6 +36,13 @@ Route::prefix(Helpers::routePrefix() . '/api')
     ->middleware('ichava.api')
     ->name('ichava.api.')
     ->group(function () {
+
+        // =====================================================================
+        // SESSION: the host's signed-in user and where the library is kept
+        // =====================================================================
+        Route::get('/session', [SessionApiController::class, 'show'])
+            ->middleware(Helpers::getRateLimit('api', 120))
+            ->name('session');
 
         // =====================================================================
         // ICON MANAGEMENT API

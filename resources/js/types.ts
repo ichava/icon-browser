@@ -1,8 +1,15 @@
 import type { SnippetConfig } from '@/lib/browser';
+/**
+ * The host's signed-in user as the server presents it (core's `UserData`). The same shape
+ * arrives in the `auth` prop and in `GET {prefix}/api/session`. No email: extra attributes
+ * appear only when the host lists them in `ichava.ichava-core.auth.expose`.
+ */
 export interface AuthUser {
-    id: number;
+    id: string;
     name: string;
-    email: string;
+    avatarUrl: string | null;
+    abilities: Record<string, boolean>;
+    [extra: string]: unknown;
 }
 
 export interface FlashMessages {

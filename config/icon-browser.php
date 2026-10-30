@@ -75,6 +75,21 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | The host's sign-in
+    |--------------------------------------------------------------------------
+    | Ichava has no login of its own. The signed-in user comes from the host,
+    | through `ichava.ichava-core.auth.*` (the guard, the name and avatar
+    | attributes, the abilities sent to the browser). These name the host's
+    | routes the browser links to for signing in and out; a link is omitted
+    | when the host has no route by that name.
+    */
+    'auth' => [
+        'login_route'  => env('ICHAVA_LOGIN_ROUTE', 'login'),
+        'logout_route' => env('ICHAVA_LOGOUT_ROUTE', 'logout'),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Snippet tabs in the icon dialog
     |--------------------------------------------------------------------------
     | Shared to the browser page as its `snippets` config. Every key is optional;

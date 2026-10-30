@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Simtabi\Laranail\Ichava\IconBrowser\Support;
 
 use Illuminate\Support\Facades\Gate;
+use Simtabi\Laranail\Ichava\Support\Auth\HostUser;
 
 /**
  * The cache-administration decision, shared by the `ichava.cache-admin`
@@ -13,6 +14,10 @@ use Illuminate\Support\Facades\Gate;
  * It fails closed: with no ability defined the answer is a refusal, unless
  * `security.cache_admin.allow_without_gate` is set deliberately. See
  * `AuthorizeCacheAdmin` for why.
+ *
+ * The ability is asked of the host's user as core resolves it
+ * (`ichava.ichava-core.auth.guard`, `Ichava::resolveUserUsing()`), so the
+ * answer here agrees with the `abilities` the browser is sent.
  */
 final class CacheAdminGate
 {
@@ -45,7 +50,7 @@ final class CacheAdminGate
             );
         }
 
-        if (Gate::denies($ability)) {
+        if (Gate::forUser(app(HostUser::class)->user())->denies($ability)) {
             return 'You are not authorised to administer the Ichava icon cache.';
         }
 
