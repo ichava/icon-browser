@@ -5,23 +5,23 @@ declare(strict_types=1);
 namespace Simtabi\Laranail\Ichava\IconBrowser\Providers;
 
 use Illuminate\Routing\Router;
-use Illuminate\Contracts\Container\Container;
 use Illuminate\Support\Facades\Blade;
 use Simtabi\Laranail\Package\Tools\Package;
+use Illuminate\Contracts\Container\Container;
 use Illuminate\Session\Middleware\StartSession;
 use Simtabi\Laranail\Ichava\Services\IchavaLogger;
 use Simtabi\Laranail\Ichava\Services\IconRegistry;
 use Simtabi\Laranail\Ichava\Support\HostCapabilities;
+use Simtabi\Laranail\Ichava\IconBrowser\Support\Helpers;
 use Simtabi\Laranail\Ichava\Support\IchavaSessionManager;
 use Simtabi\Laranail\Ichava\Contracts\OwnerPreferenceStore;
-use Simtabi\Laranail\Ichava\IconBrowser\Support\Helpers;
 use Simtabi\Laranail\Ichava\IconBrowser\Support\IconSnippets;
-use Simtabi\Laranail\Ichava\IconBrowser\Support\Storage\DatabaseOwnerPreferenceStore;
 use Simtabi\Laranail\Ichava\IconBrowser\View\Components\Prepaint;
 use Simtabi\Laranail\Ichava\IconBrowser\View\Components\SriAsset;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Middleware\LogRequests;
 use Simtabi\Laranail\Package\Tools\Providers\PackageServiceProvider;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Middleware\EnsureSession;
+use Simtabi\Laranail\Ichava\IconBrowser\Http\Middleware\AuthorizeAdmin;
 use Simtabi\Laranail\Ichava\IconBrowser\Commands\InjectNpmScriptsCommand;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Middleware\ForceJsonResponse;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Middleware\IchavaApiSecurity;
@@ -31,6 +31,7 @@ use Simtabi\Laranail\Ichava\IconBrowser\Http\Middleware\ValidateIchavaRoute;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Middleware\HandleInertiaRequests;
 use Simtabi\Laranail\Ichava\IconBrowser\View\Components\IchavaUiIconComponent;
 use Simtabi\Laranail\Ichava\IconBrowser\View\Components\IchavaTestIconComponent;
+use Simtabi\Laranail\Ichava\IconBrowser\Support\Storage\DatabaseOwnerPreferenceStore;
 
 /**
  * Visual icon browser for the Ichava ecosystem.
@@ -182,6 +183,7 @@ class IconBrowserServiceProvider extends PackageServiceProvider
         $router->aliasMiddleware('ichava.validate', ValidateIchavaRoute::class);
         $router->aliasMiddleware('ichava.guard', IchavaStatefulGuard::class);
         $router->aliasMiddleware('ichava.cache-admin', AuthorizeCacheAdmin::class);
+        $router->aliasMiddleware('ichava.admin', AuthorizeAdmin::class);
         $router->aliasMiddleware('ichava.handle-inertia', HandleInertiaRequests::class);
 
         // Detect host capabilities (Sanctum / session availability).

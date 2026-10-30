@@ -13,13 +13,13 @@ use Simtabi\Laranail\Ichava\Models\Icon;
 use Simtabi\Laranail\Ichava\Services\IchavaLogger;
 use Simtabi\Laranail\Ichava\Services\IconBrowserService;
 use Simtabi\Laranail\Ichava\Services\IconPreferenceService;
+use Simtabi\Laranail\Ichava\IconBrowser\Support\IconSnippets;
 use Simtabi\Laranail\Ichava\IconBrowser\Exceptions\CollectionNotFound;
 use Simtabi\Laranail\Ichava\IconBrowser\Actions\Library\CreateCollection;
 use Simtabi\Laranail\Ichava\IconBrowser\Actions\Library\DeleteCollection;
 use Simtabi\Laranail\Ichava\IconBrowser\Actions\Library\UpdateCollection;
 use Simtabi\Laranail\Ichava\IconBrowser\Actions\Library\AddIconToCollection;
 use Simtabi\Laranail\Ichava\IconBrowser\Actions\Library\RemoveIconFromCollection;
-use Simtabi\Laranail\Ichava\IconBrowser\Support\IconSnippets;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Controllers\Web\Concerns\ResolvesIconsForPages;
 
 final class CollectionController extends BaseInertiaController
@@ -176,13 +176,6 @@ final class CollectionController extends BaseInertiaController
         return redirect()->back()->with('success', 'Icon removed from collection.');
     }
 
-    private function collectionMissing(CollectionNotFound $e): RedirectResponse
-    {
-        return redirect()
-            ->route('ichava.inertia.collections.index')
-            ->with('error', "Collection [{$e->collectionId}] not found.");
-    }
-
     /**
      * @return array<int, array<string, mixed>>
      */
@@ -197,5 +190,12 @@ final class CollectionController extends BaseInertiaController
         }
 
         return $collections;
+    }
+
+    private function collectionMissing(CollectionNotFound $e): RedirectResponse
+    {
+        return redirect()
+            ->route('ichava.inertia.collections.index')
+            ->with('error', "Collection [{$e->collectionId}] not found.");
     }
 }

@@ -6,6 +6,11 @@ namespace Simtabi\Laranail\Ichava\IconBrowser\Http\Controllers\Web;
 
 use Exception;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Gate;
+use Simtabi\Laranail\Ichava\Support\Auth\HostUser;
+use Simtabi\Laranail\Ichava\Support\Auth\IchavaGates;
+use Simtabi\Laranail\Ichava\Services\InformationService;
+use Simtabi\Laranail\Ichava\Services\DatabaseOperationsService;
 use Inertia\Response;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -34,6 +39,9 @@ final class InertiaBrowserController extends BaseInertiaController
         protected IconRegistry $registry,
         protected IconPackUpdateChecker $updateChecker,
         IchavaLogger $logger,
+        private readonly DatabaseOperationsService $databaseOperations,
+        private readonly InformationService $information,
+        private readonly HostUser $users,
     ) {
         parent::__construct($logger);
     }
@@ -87,9 +95,9 @@ final class InertiaBrowserController extends BaseInertiaController
                     'page'           => $request->getPage(),
                     'per_page'       => $request->getPerPage(),
                 ],
-                'filterOptions'  => $this->browserService->getFilters($filters),
-                'statistics'     => $this->browserService->getStatistics(),
-                'tree'           => $this->browserService->buildIconTree($filters),
+                'filterOptions' => $this->browserService->getFilters($filters),
+                'statistics'    => $this->browserService->getStatistics(),
+                'tree'          => $this->browserService->buildIconTree($filters),
                 // Every installed pack, whatever is selected, for the pack picker.
                 'packages'       => $this->browserService->getFilters()['packages'] ?? [],
                 'favorites'      => $this->preferenceService->getFavorites(),
@@ -178,9 +186,8 @@ final class InertiaBrowserController extends BaseInertiaController
 
             $packages = $this->registry->all();
 
-            $iconCounts = Icon::selectRaw('package, COUNT(*) as count')
-                ->groupBy('package')
-                ->pluck('count', 'package');
+            // Core's one grouped count, the same the package listing uses.
+            $iconCounts = $this->databaseOperations->getPackageStatistics();
 
             $termCounts = IconTerm::selectRaw('package, type, COUNT(*) as count')
                 ->whereIn('type', ['category', 'variant'])
@@ -228,6 +235,11 @@ final class InertiaBrowserController extends BaseInertiaController
                     : [],
                 'cacheHealthy' => $this->cacheService->isHealthy(),
                 'updateStatus' => $this->updateChecker->checkAll(),
+                // Core's StatusData (lifecycle, conflicts, orphans, watcher,
+                // logging, last rebuild), for administrators only.
+                'status' => Gate::forUser($this->users->user())->allows(IchavaGates::ADMIN)
+                    ? $this->information->status()->toArray()
+                    : null,
             ];
         } catch (Exception $e) {
             $this->logger->error('Failed to load Inertia statistics', $e);
@@ -245,6 +257,7 @@ final class InertiaBrowserController extends BaseInertiaController
                 'cacheStats'    => [],
                 'cacheHealthy'  => false,
                 'updateStatus'  => [],
+                'status'        => null,
             ];
         }
 

@@ -10,8 +10,8 @@ use Illuminate\Database\Connection;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\ConnectionInterface;
-use Illuminate\Database\ConnectionResolverInterface;
 use Simtabi\Laranail\Ichava\Data\PreferenceOwner;
+use Illuminate\Database\ConnectionResolverInterface;
 use Simtabi\Laranail\Ichava\Contracts\PreferenceStore;
 use Simtabi\Laranail\Ichava\Contracts\OwnerPreferenceStore;
 
@@ -170,6 +170,15 @@ final class DatabaseOwnerPreferenceStore implements OwnerPreferenceStore
         return $this->usable() ? null : $this->fallback->getBrowserId();
     }
 
+    private static function decode(string $json, mixed $default): mixed
+    {
+        try {
+            return json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+        } catch (JsonException) {
+            return $default;
+        }
+    }
+
     /** Whether rows can be read and written: an owner, and a migrated table. */
     private function usable(): bool
     {
@@ -215,14 +224,5 @@ final class DatabaseOwnerPreferenceStore implements OwnerPreferenceStore
     private function connection(): ConnectionInterface
     {
         return $this->connections->connection();
-    }
-
-    private static function decode(string $json, mixed $default): mixed
-    {
-        try {
-            return json_decode($json, true, 512, JSON_THROW_ON_ERROR);
-        } catch (JsonException) {
-            return $default;
-        }
     }
 }

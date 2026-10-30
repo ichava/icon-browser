@@ -9,11 +9,11 @@ use Inertia\Inertia;
 use Inertia\Response;
 use Illuminate\Http\RedirectResponse;
 use Simtabi\Laranail\Ichava\Services\IchavaLogger;
-use Simtabi\Laranail\Ichava\IconBrowser\Support\Helpers;
 use Simtabi\Laranail\Ichava\Actions\UpdatePreferences;
+use Simtabi\Laranail\Ichava\IconBrowser\Support\Helpers;
 use Simtabi\Laranail\Ichava\Services\IconPreferenceService;
-use Simtabi\Laranail\Ichava\IconBrowser\Http\Requests\PreferenceUpdateRequest;
 use Simtabi\Laranail\Ichava\IconBrowser\Actions\Preferences\ResetPreferences;
+use Simtabi\Laranail\Ichava\IconBrowser\Http\Requests\PreferenceUpdateRequest;
 
 final class SettingsController extends BaseInertiaController
 {

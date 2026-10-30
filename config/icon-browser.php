@@ -48,7 +48,8 @@ return [
     'browser' => [
         'per_page'       => env('ICHAVA_BROWSER_PER_PAGE', IchavaConstants::BROWSER_PER_PAGE),
         'cache_duration' => env('ICHAVA_BROWSER_CACHE', IchavaConstants::DEFAULT_CACHE_TTL),
-        'theme_toggle'   => true,
+        // Whether the browser shows its theme control (`features.themeToggle`).
+        'theme_toggle'   => env('ICHAVA_BROWSER_THEME_TOGGLE', true),
         'default_theme'  => 'light', // 'light' | 'dark'
     ],
 
@@ -86,6 +87,44 @@ return [
     'auth' => [
         'login_route'  => env('ICHAVA_LOGIN_ROUTE', 'login'),
         'logout_route' => env('ICHAVA_LOGOUT_ROUTE', 'logout'),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Features
+    |--------------------------------------------------------------------------
+    | Which browser features this host offers. The browser receives a manifest
+    | (the `ichava.features` prop, `GET {prefix}/api/bootstrap`) saying, per
+    | feature, whether it is enabled, why not, and the URLs to call, and shows
+    | only what is enabled. A library feature turned off here is not mounted.
+    |
+    | `status` and `cache_admin` also need the signed-in user to hold the
+    | `ichava.admin` / `ichava.manage-cache` ability; `illustrations` needs at
+    | least one illustration seeded; `search_language` needs PostgreSQL.
+    |
+    | The last five are modules of the standalone demo with no backend here
+    | (presence, invites, sharing, notifications, workspaces). They stay off in
+    | a host app.
+    */
+    'features' => [
+        'favorites'       => env('ICHAVA_FEATURE_FAVORITES', true),
+        'collections'     => env('ICHAVA_FEATURE_COLLECTIONS', true),
+        'history'         => env('ICHAVA_FEATURE_HISTORY', true),
+        'commands'        => env('ICHAVA_FEATURE_COMMANDS', true),
+        'library'         => env('ICHAVA_FEATURE_LIBRARY', true),
+        'preferences'     => env('ICHAVA_FEATURE_PREFERENCES', true),
+        'status'          => env('ICHAVA_FEATURE_STATUS', true),
+        'cache_admin'     => env('ICHAVA_FEATURE_CACHE_ADMIN', true),
+        'illustrations'   => env('ICHAVA_FEATURE_ILLUSTRATIONS', true),
+        'search_language' => env('ICHAVA_FEATURE_SEARCH_LANGUAGE', true),
+        'export'          => env('ICHAVA_FEATURE_EXPORT', true),
+        'motion'          => env('ICHAVA_FEATURE_MOTION', true),
+
+        'presence'      => false,
+        'invites'       => false,
+        'sharing'       => false,
+        'notifications' => false,
+        'workspaces'    => false,
     ],
 
     /*

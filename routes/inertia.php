@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
 use Simtabi\Laranail\Ichava\IconBrowser\Support\Helpers;
+use Simtabi\Laranail\Ichava\IconBrowser\Support\FeaturesManifest;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Controllers\Web\CacheController;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Controllers\Web\HistoryController;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Controllers\Web\LibraryController;
@@ -57,55 +58,65 @@ Route::prefix(Helpers::routePrefix())
             ->where('package', '.*');
 
         // Favorites.
-        Route::get('/favorites', [FavoriteController::class, 'index'])
-            ->name('favorites.index');
-        Route::post('/favorites/{iconId}', [FavoriteController::class, 'store'])
-            ->name('favorites.store')
-            ->where('iconId', '[0-9]+');
-        Route::delete('/favorites/{iconId}', [FavoriteController::class, 'destroy'])
-            ->name('favorites.destroy')
-            ->where('iconId', '[0-9]+');
-        Route::post('/favorites/{iconId}/toggle', [FavoriteController::class, 'toggle'])
-            ->name('favorites.toggle')
-            ->where('iconId', '[0-9]+');
+        if (FeaturesManifest::configured('favorites')) {
+            Route::get('/favorites', [FavoriteController::class, 'index'])
+                ->name('favorites.index');
+            Route::post('/favorites/{iconId}', [FavoriteController::class, 'store'])
+                ->name('favorites.store')
+                ->where('iconId', '[0-9]+');
+            Route::delete('/favorites/{iconId}', [FavoriteController::class, 'destroy'])
+                ->name('favorites.destroy')
+                ->where('iconId', '[0-9]+');
+            Route::post('/favorites/{iconId}/toggle', [FavoriteController::class, 'toggle'])
+                ->name('favorites.toggle')
+                ->where('iconId', '[0-9]+');
+        }
 
         // Collections.
-        Route::get('/collections', [CollectionController::class, 'index'])
-            ->name('collections.index');
-        Route::post('/collections', [CollectionController::class, 'store'])
-            ->name('collections.store');
-        Route::get('/collections/{id}', [CollectionController::class, 'show'])
-            ->name('collections.show');
-        Route::put('/collections/{id}', [CollectionController::class, 'update'])
-            ->name('collections.update');
-        Route::delete('/collections/{id}', [CollectionController::class, 'destroy'])
-            ->name('collections.destroy');
-        Route::post('/collections/{id}/icons/{iconId}', [CollectionController::class, 'addIcon'])
-            ->name('collections.addIcon')
-            ->where('iconId', '[0-9]+');
-        Route::delete('/collections/{id}/icons/{iconId}', [CollectionController::class, 'removeIcon'])
-            ->name('collections.removeIcon')
-            ->where('iconId', '[0-9]+');
+        if (FeaturesManifest::configured('collections')) {
+            Route::get('/collections', [CollectionController::class, 'index'])
+                ->name('collections.index');
+            Route::post('/collections', [CollectionController::class, 'store'])
+                ->name('collections.store');
+            Route::get('/collections/{id}', [CollectionController::class, 'show'])
+                ->name('collections.show');
+            Route::put('/collections/{id}', [CollectionController::class, 'update'])
+                ->name('collections.update');
+            Route::delete('/collections/{id}', [CollectionController::class, 'destroy'])
+                ->name('collections.destroy');
+            Route::post('/collections/{id}/icons/{iconId}', [CollectionController::class, 'addIcon'])
+                ->name('collections.addIcon')
+                ->where('iconId', '[0-9]+');
+            Route::delete('/collections/{id}/icons/{iconId}', [CollectionController::class, 'removeIcon'])
+                ->name('collections.removeIcon')
+                ->where('iconId', '[0-9]+');
+        }
 
         // "Delete my library": every favourite and collection kept on the server.
-        Route::delete('/library', [LibraryController::class, 'destroy'])
-            ->name('library.destroy');
+        if (FeaturesManifest::configured('library')) {
+            Route::delete('/library', [LibraryController::class, 'destroy'])
+                ->name('library.destroy');
+        }
 
         // Activity history.
-        Route::get('/history', [HistoryController::class, 'index'])
-            ->name('history.index');
-        Route::post('/history', [HistoryController::class, 'store'])
-            ->name('history.store');
-        Route::delete('/history', [HistoryController::class, 'clear'])
-            ->name('history.clear');
+        if (FeaturesManifest::configured('history')) {
+            Route::get('/history', [HistoryController::class, 'index'])
+                ->name('history.index');
+            Route::post('/history', [HistoryController::class, 'store'])
+                ->name('history.store');
+            Route::delete('/history', [HistoryController::class, 'clear'])
+                ->name('history.clear');
+        }
 
         // Command palette history.
-        Route::get('/command-history', [CommandHistoryController::class, 'index'])
-            ->name('commandHistory.index');
-        Route::post('/command-history', [CommandHistoryController::class, 'store'])
-            ->name('commandHistory.store');
-        Route::delete('/command-history', [CommandHistoryController::class, 'clear'])
-            ->name('commandHistory.clear');
+        if (FeaturesManifest::configured('commands')) {
+            Route::get('/command-history', [CommandHistoryController::class, 'index'])
+                ->name('commandHistory.index');
+            Route::post('/command-history', [CommandHistoryController::class, 'store'])
+                ->name('commandHistory.store');
+            Route::delete('/command-history', [CommandHistoryController::class, 'clear'])
+                ->name('commandHistory.clear');
+        }
 
         // Settings (preferences).
         Route::get('/settings', [SettingsController::class, 'index'])
