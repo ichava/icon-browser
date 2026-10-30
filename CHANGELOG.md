@@ -7,6 +7,8 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
 ### Changed
 
 - The changelog states the MIT-to-proprietary change as breaking under 0.1.1, and labels the archived pre-reset history as the record of the MIT, public releases.
+- The vendored react-icon-browser `LICENSE` no longer says the repository it ships in must remain private, since this repository is public. It still states the build is proprietary, that it contains Untitled UI React PRO components used under the Untitled UI licence, and that it may not be redistributed outside Ichava products. A test fails if a re-sync brings the old clause back.
+- `public/assets/js/inertia-app.js` is rebuilt so it matches a fresh `npm run build:prod` (three minifier-only differences); a second clean build is byte-identical.
 
 ### Fixed
 
