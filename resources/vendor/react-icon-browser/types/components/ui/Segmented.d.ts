@@ -1,6 +1,8 @@
 /**
  * Segmented — a compact single-choice control on Untitled UI's `ButtonGroup` (a react-aria
- * `ToggleButtonGroup`), restyled to the app's segmented track.
+ * `ToggleButtonGroup`), restyled to Ichava's square segments: a hairline track, the
+ * selected segment a flat accent tint, hover a muted fill and press a slight scale. Not
+ * Untitled UI's white pill in a grey track.
  *
  * `role="radiogroup"` of `radio`s with one tab stop and arrow keys from react-aria. The
  * hand-rolled segments it replaces declared `role="radio"` on plain buttons, with no group
