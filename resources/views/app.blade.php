@@ -48,7 +48,8 @@
         #app { display: flex; flex-direction: column; flex: 1 0 auto; min-height: 100dvh; }
     </style>
 </head>
-<body class="antialiased h-full bg-white text-gray-900 dark:bg-[#0a0d1a] dark:text-gray-100">
+{{-- The browser's warm frame (`--canvas`) and ink, so nothing flashes between the prepaint and the mount. --}}
+<body class="antialiased h-full bg-[#ece8de] text-[#1f1c17] dark:bg-[#14120e] dark:text-[#f6f4ee]">
     {{-- First, so the loader paints before the bundle downloads; the app removes it on mount. --}}
     <x-ichava::prepaint />
 
