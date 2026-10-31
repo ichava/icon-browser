@@ -1,10 +1,12 @@
 import type { CSSProperties, FC, SVGProps } from 'react';
-type IconComponent = FC<SVGProps<SVGSVGElement> & {
+type IconComponent = FC<Omit<SVGProps<SVGSVGElement>, 'stroke'> & {
     size?: number;
     color?: string;
+    stroke?: number | string;
 }>;
 /**
- * Chrome glyph names → `@untitledui/icons` components.
+ * Chrome glyph names → `@tabler/icons-react` components (since the 0.1.0 restyle the chrome
+ * draws from Tabler, the same MIT set `ichava/icon-sets-tabler` ships, at a 1.75 stroke).
  *
  * The names are the app's own vocabulary and are the stable API: call sites pass
  * `name`, so swapping the underlying icon set is a change to this table alone. That is
