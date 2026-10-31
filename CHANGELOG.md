@@ -4,6 +4,10 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
 
 ## [Unreleased]
 
+## [0.1.0] - TBD
+
+First release of `ichava/icon-browser`. The repository is published as a single commit; the 0.1.x tags cut between 2026-10-23 and 2026-10-28 (v0.1.0 to v0.1.1) are folded into this release, and their notes are kept below under *Archived history*.
+
 ### Added
 
 - **The Inertia browser lists the packs, opens on the default one and describes each variant.** `InertiaCatalog` gains `getCatalogMeta`, reading the page's `packages` (with `default`) and `filterOptions.variants_by_package`, and `getTreeFor`, which answers from the `tree` prop while only the categories, page or sort differ and otherwise shares the grid's listing visit. The tree prop is counted over the selection less its categories (`IconFilterRequest::treeFilters()`), as the REST tree is asked, and reloads with every listing visit. Payload schema **1.3.0** types `variants_by_package` (`variantMeta`). `InertiaCatalog.test.ts`, `InertiaCatalogMetaTest`, `PayloadSchemaTest`.
@@ -73,9 +77,20 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
 - Vendored `@ichava/react-icon-browser` 0.1.3 (`85d9dbd`): the browser renders in Geist again (since 0.1.1 it fell back to the system font), tooltips show their shortcut on one line with no leftover bubble, a tile's copy action reads "Copy Raw SVG" and its permalink keeps the host URL, related icons are ranked by shared words and pack, selects align to their trigger, and Arabic layout reaches selects, menus and sliders.
 - Vendored `@ichava/react-icon-browser` 0.1.2 (`733f5ba`): selected collection chips, the favourite button and active icon buttons now draw their label in a colour that meets WCAG AA contrast on the accent tint. It measured 2.78:1 in dark mode before.
 
-## [0.1.1] - 2026-10-28
+## [Archived history]
 
-### Added
+> The first two sections below are the 0.1.x releases cut from 2026-10-23 to 2026-10-28 and folded into
+> 0.1.0; their tags and GitHub releases are removed when the repository is published as one commit. After
+> them come the pre-reset releases: versioning was re-based to 0.1.0 on 2026-10-23, and those tags and
+> releases were removed then. All sections are reproduced verbatim, one heading level down.
+>
+> Every pre-reset release was MIT-licensed. From 0.1.1 the package is proprietary (the repository itself
+> is public), so the "open-source", MIT and public-install wording in the pre-reset sections describes
+> those releases only.
+
+### [0.1.1] - 2026-10-28
+
+#### Added
 
 - **Browser UI on the released react-icon-browser v0.1.1** (773accf), the same code as the 29480da build already vendored, now taken from its release tag.
 
@@ -106,7 +121,7 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
 
 - **Releases are prepared by release-please.** A *Release Please* workflow reads the Conventional Commit log, keeps one release pull request open that bumps `.release-please-manifest.json` and `package.json`, and tags the release when that pull request merges; the tag starts `release.yml` as before. On 0.x a breaking change bumps the minor and everything else bumps the patch. The minor moves in lockstep with the other coupled ichava packages: a breaking change anywhere in the family reaches every coupled repository as a `Release-As: 0.N.0` footer, so `^0.N` means the same line everywhere. Release notes stay hand-written: release-please is set to `skip-changelog`, and the workflow closes this `[Unreleased]` section under the new version on the release branch, failing if it is empty. It runs on `workflow_dispatch`, a weekly schedule, and the merge of a release pull request, so the only `push` trigger is still the tag. The pull request and the tag are made with a per-run Refresh Bot token, because ones made with `GITHUB_TOKEN` start no workflows. `release.yml` gains a `workflow_dispatch` recovery path for a tag push that started nothing; its first step refuses any ref that is not a `vX.Y.Z` tag.
 
-### Changed
+#### Changed
 
 - **The vendored browser is react-icon-browser `c720991`** (was `0bf95dd`). It brings the overlap fixes (react-icon-browser#158: tile actions, header search and the phone header no longer overlap), code kept left-to-right in Arabic and a motion picker that stays on screen (#159), and the colour and reset buttons grouped in the toolbar. `inertia-app.css` grows by 434 bytes, matching the vendored stylesheet, and `inertia-app.js` is rebuilt.
 - **The vendored browser is react-icon-browser `0bf95dd`** (was `a19ba13`), which ships the static loader as `prepaint.html` (react-icon-browser#157). `inertia-app.js` is rebuilt.
@@ -134,15 +149,15 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
 
 - **`@types/node` is raised from `^24.10.1` to `^26.6.5`.** Type definitions only: `tsconfig.inertia.json` loads them, and nothing from them reaches the bundle, which builds byte for byte as before. CI still runs Node 24, so the types now describe some Node 26 APIs the runner lacks; the only Node code here is the Vite and Vitest configs, which use `node:url` alone.
 
-### Deprecated
+#### Deprecated
 
 - **The `ichava-assets` publish tag.** Use `ichava::icon-browser-assets`; the old tag publishes the same paths (`IconBrowserServiceProvider::DEPRECATED_ASSETS_TAG`) and may be removed in 0.2.0 (plan I3).
 
-### Removed
+#### Removed
 
 - **The forked browser UI in `resources/js`** (143 files: components, engines, hooks, store, styles and their tests), replaced by the vendored library above. Its tests live on in react-icon-browser, which carries every fix the fork had (A0, `fork-diff.md`). Dependencies only the fork imported are dropped from `package.json`: `@ichava/js-motion`, `@tanstack/react-virtual`, `clsx`, `dompurify`, `fflate`, `tailwind-merge`, `tailwindcss-react-aria-components`, `@types/dompurify`; the library bundles its own. React, `react-aria`, `react-aria-components` and `zustand` move to the library's peer floors.
 
-### Fixed
+#### Fixed
 
 - **The library-sync hook no longer writes a ref during render.** `useLibrarySync` set `latest.current` while rendering, which is unsafe under concurrent rendering (ESLint `react-hooks/refs`, found by the new lint). It now updates in a layout effect.
 - **History's icon links have a name.** Each row's link held only the icon image, so a screen reader announced an unnamed link (axe `link-name`, found by the new page check). It is labelled with the icon's name.
@@ -155,22 +170,22 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
 - **The committed `inertia-app.css` holds only the rules this package uses.** `.claude/` was ignored only by a global git excludes file, which Tailwind's source scan does not read, so a local `npm run build:prod` also scanned every agent worktree under `.claude/worktrees/` and added about 108 rules that no current source uses (228,376 bytes against 162,316). The re-vendor above shipped that larger file. `.gitignore` now lists `/.claude/`, the rebuilt CSS is byte-identical to the file before the re-vendor, and `tailwindSourceScope.test.ts` fails if the line is removed.
 - **The release pull request is found in the same run that opens it.** The step that hands the release branch to the changelog close asked `gh pr list --label 'autorelease: pending'`, which goes through GitHub's search index; on the first live run (js-motion#30) the index had not caught up with the pull request opened seconds earlier, so the close was skipped and a second dispatch was needed. It now takes the branch from release-please's own `pr` output, and only when the action reports nothing (the pull request was already current) falls back to the open pull requests, matched by the `release-please--branches--main` prefix rather than the label.
 
-### Security
+#### Security
 
 - **The vendoring script refuses private icon content.** `.dev/tools/sync-vendored-library.mjs` now fails, before it clears the target, when the library's `dist/lib` holds any `baseline/` path or any SVG whose path names `icon-sets-metronic`, `icon-sets-bundled` or Metronic, and lists what it refused. react-icon-browser's `public/baseline/` holds Metronic and bundled SVGs for its rendering tests; both packs are private to Simtabi LLC (2026-10-26), so that sample may stay there but is never copied into a host. It also re-checks the written target. `privateContent()` is exported, and `syncVendoredLibrary.test.ts` plants each case in a synthetic library and asserts the refusal and an untouched target; with the refusal disabled, all three fail. The shared copy in ichava/ichava.com must take the same change (`cmp`).
 
 - **Vitest is raised from `^2.1.5` to `^4.1.12`**, with `@vitest/coverage-v8` alongside, which clears two Dependabot alerts: GHSA-5xrq-8626-4rwp (critical, fixed in 3.2.6: arbitrary file read and execution while the Vitest UI server listens) and GHSA-82fw-gwwq-j7x9 (moderate, fixed in 4.1.11: path traversal through `@vitest/mocker` redirect mocks). A dev dependency only; nothing it touches ships in the bundle. 4.1 keeps Vite 7 and Node 24 supported.
 
-## [0.1.0] - 2026-10-23
+### [0.1.0] - 2026-10-23
 
 Versioning re-based to 0.1.0. This release contains everything previously tagged v0.1.0 through v0.4.1 (2026-08-31 to 2026-09-26) plus the changes below, and requires `ichava/core` `^0.1`, the re-based core. Those tags and their GitHub releases were removed; every commit they pointed at is on `main`, and their sections are kept under *Archived pre-reset history*.
 
-### Changed
+#### Changed
 
 - **The motion engine is `@ichava/js-motion` at `v0.1.0`.** `package.json` depended on `@ichava/motion` at js-motion's pre-reset `#v0.1.1`, a tag the re-base removes. It now names the package by its new name at the re-based `#v0.1.0`, and the three source files that import or mention it follow. js-motion's `src/` is identical between the two tags and its `dist/` differs only in comment lines, so the checked-in `inertia-app.js` is unaffected and is not rebuilt here.
 - **References follow the repository renames.** `ichava/maintainer-toolkit` is now `ichava/icon-sets-sync`, `ichava/motion` is `ichava/js-motion` and `ichava/react-browser` is `ichava/react-icon-browser`. GitHub redirects the old names, but redirects are not permanent.
 
-### Added
+#### Added
 
 - **Inertia.js frontend serving the React 19 UI, beside the untouched JSON API.**
   `GET /{prefix}/icons` renders `Browser/Index` with the filtered listing from core's
@@ -208,7 +223,7 @@ Versioning re-based to 0.1.0. This release contains everything previously tagged
 - **Docs describe the React browser.** README and guides no longer reference Vue
   or the shadcn installer.
 
-### Changed
+#### Changed
 
 - **`inject-scripts` speaks through translations and the shared status vocabulary.** Its four
   messages resolve from `resources/lang/en/commands.php` under `ichava/icon-browser::commands.*`,
@@ -222,7 +237,7 @@ Versioning re-based to 0.1.0. This release contains everything previously tagged
   consumer that does not declare it cannot resolve core at all. The entry is harmless
   until then. Nothing here is on Packagist.
 
-### Fixed
+#### Fixed
 
 - **The Docs link pointed at the pre-rename path.** The Inertia port brought react-browser's
   `/documentation/ichava/browser/` into `core/config.ts` and the `HelpMenu` fallback, and the
@@ -247,7 +262,7 @@ Versioning re-based to 0.1.0. This release contains everything previously tagged
   > The next routine `npm run build:prod` picks the fix up. The font URLs were patched in the
   > committed `inertia-app.css` directly.
 
-### Removed
+#### Removed
 
 - **shadcn remnants removed.** shadcn was dropped for Untitled UI. What was left of it:
   - a CSS block styling Radix and cmdk elements (`data-slot`, `cmdk-item`) that no component
@@ -259,15 +274,6 @@ Versioning re-based to 0.1.0. This release contains everything previously tagged
   the `.theme-*` helpers still read them. The `.gitignore` comment naming the removed
   shadcn-vue installer is updated. The compiled `inertia-app.css` still carries the dead
   rules, which are harmless, until the next routine rebuild.
-
-## [Archived pre-reset history]
-
-> Versioning was re-based to 0.1.0 on 2026-10-23. The tags and GitHub releases below were removed;
-> every commit they pointed at is on `main`. Sections reproduced verbatim, one heading level down.
->
-> Every release recorded here was MIT-licensed and published from a public repository. That is
-> no longer true: from 0.1.1 the package is proprietary and its repository private, so the
-> "open-source", MIT and public-install wording below describes those releases only.
 
 ### [0.4.1] - 2026-09-26
 
