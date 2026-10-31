@@ -17,14 +17,16 @@
     "support": {
         "source": "https://github.com/ichava/icon-browser",
         "issues": "https://github.com/ichava/icon-browser/issues",
-        "security": "https://github.com/ichava/icon-browser/blob/main/SECURITY.md",
+        "security": "https://github.com/ichava/icon-browser/security/policy",
         "docs": "https://github.com/ichava/icon-browser/tree/main/docs"
     },
     "license": "proprietary",
     "authors": [
         {
             "name": "Simtabi LLC",
-            "email": "ichava@simtabi.com"
+            "email": "opensource@simtabi.com",
+            "homepage": "https://simtabi.com",
+            "role": "Developer"
         }
     ],
     "require": {
