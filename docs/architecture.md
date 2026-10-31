@@ -43,6 +43,13 @@ install `src/` without the `dist/lib` build. Vendoring the build keeps installs 
 bundle reproducible from a named commit. The cost is a manual step per library release; see
 [Release](release.md#updating-the-browser-ui).
 
+The look comes with the library: since the 0.1.0 restyle the browser draws Ichava's warm greys,
+the teal `#0e7c66` default accent, a 6px radius, Tabler chrome icons, square tags and tabs, flat
+buttons and no backdrop blur, and the loading screen follows the accent. The only colours this
+package sets itself are the Inertia shell's `<body>` in `resources/views/app.blade.php`, which
+takes the browser's frame and ink (`#ece8de` / `#1f1c17`, dark `#14120e` / `#f6f4ee`) so nothing
+flashes between the prepaint and the mount. Keep the two in step when the library's tokens move.
+
 The browser needs no JSON API. `InertiaCatalog` reads the Inertia props and reloads them, so the
 pages work with `ichava.icon-browser.api.enabled` off, which is the default.
 
