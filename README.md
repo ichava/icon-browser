@@ -1,9 +1,10 @@
 # ichava/icon-browser
 
+[![Packagist](https://img.shields.io/packagist/v/ichava/icon-browser)](https://packagist.org/packages/ichava/icon-browser)
 [![Tests](https://github.com/ichava/icon-browser/actions/workflows/tests.yml/badge.svg)](https://github.com/ichava/icon-browser/actions/workflows/tests.yml)
-[![Code Quality](https://github.com/ichava/icon-browser/actions/workflows/code-quality.yml/badge.svg)](https://github.com/ichava/icon-browser/actions/workflows/code-quality.yml)
+[![Static analysis](https://github.com/ichava/icon-browser/actions/workflows/code-quality.yml/badge.svg)](https://github.com/ichava/icon-browser/actions/workflows/code-quality.yml)
 
-Two badges, not four: the package is not on Packagist, so there is no registry version to show, and it is proprietary, not MIT.
+Three badges, not four: the package is proprietary, not MIT.
 
 > The HTTP layer for the Ichava Laravel icon ecosystem: the icon browser (Inertia pages around `@ichava/react-icon-browser`), the REST API and the middleware, installed on top of `ichava/core`.
 
@@ -11,14 +12,16 @@ A licensed, proprietary package: the repository is public, the code is not open 
 
 ## Install
 
-The package is not on Packagist, so Composer needs its repository entry:
+The package is listed on Packagist. Core's `laranail/*` dependencies are not yet, so Composer needs their repository entries first:
 
 ```bash
-composer config repositories.ichava-icon-browser vcs https://github.com/ichava/icon-browser
+for p in package-tools console enumerator db-tools; do
+  composer config "repositories.laranail-$p" vcs "https://github.com/laranail/$p"
+done
 composer require ichava/icon-browser:^0.1
 ```
 
-[Installation](docs/installation.md) gives the full repository block (core's dependencies are unpublished too), the optional `COMPOSER_AUTH` token for CI, and the asset publishing.
+[Installation](docs/installation.md) gives the repository entries, the optional `COMPOSER_AUTH` token for CI, and the asset publishing.
 
 ## Quick start guide and usage
 

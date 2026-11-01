@@ -10,15 +10,18 @@
 
 ## 1. Require the package
 
-`ichava/icon-browser` is not on Packagist, so Composer needs its repository entry. Add it
-alongside the ones
-[core's installation](https://opensource.simtabi.com/documentation/ichava/core/installation) already asked for:
+`ichava/icon-browser` is listed on Packagist, and so is `ichava/core`. Core's `laranail/*`
+dependencies are not, so Composer needs their repository entries, alongside the ones
+[core's installation](https://opensource.simtabi.com/documentation/ichava/core/installation) asks for:
 
 ```json
-{ "type": "vcs", "url": "https://github.com/ichava/icon-browser" }
+{ "type": "vcs", "url": "https://github.com/laranail/package-tools" },
+{ "type": "vcs", "url": "https://github.com/laranail/console" },
+{ "type": "vcs", "url": "https://github.com/laranail/enumerator" },
+{ "type": "vcs", "url": "https://github.com/laranail/db-tools" }
 ```
 
-The repository is public, so no token is needed to read it. Composer installs a VCS repository
+Those repositories are public, so no token is needed to read them. Composer installs a VCS repository
 through the GitHub API, though, and anonymous calls are rate limited; on a busy CI runner give it
 a token (a fine-grained token with *Contents: read* is enough). Locally:
 
@@ -39,12 +42,12 @@ Then:
 composer require ichava/icon-browser:^0.1
 ```
 
-The `IconBrowserServiceProvider` registers automatically. The browser depends on `ichava/core`, so Composer pulls it transitively if you don't already have it, but only if core's repository is declared in **your** `composer.json`: Composer reads `repositories` from the root package only.
+The `IconBrowserServiceProvider` registers automatically. The browser depends on `ichava/core`, so Composer pulls it from Packagist if you don't already have it. Core's `laranail/*` entries above must be in **your** `composer.json`: Composer reads `repositories` from the root package only.
 
 ## 2. Publish the browser config
 
 ```bash
-php artisan vendor:publish --tag=ichava:browser-config
+php artisan vendor:publish --tag=ichava::icon-browser-config
 ```
 
 Creates `config/ichava/icon-browser.php`. See [configuration](configuration.md) for the keys.
