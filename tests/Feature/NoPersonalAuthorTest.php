@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 /*
  * The package is published under Simtabi LLC with the role address
- * ichava@simtabi.com; no personal name or email ships in it. The vendored
+ * opensource@simtabi.com; no personal name or email ships in it. The vendored
  * react-icon-browser build (resources/vendor) and the compiled bundle
  * (public/assets) are excluded: they are fixed upstream and re-vendored.
  */
@@ -38,5 +38,5 @@ it('publishes no personal author name or email', function (): void {
         }
     }
 
-    $this->assertSame([], $offenders, 'Name Simtabi LLC (ichava@simtabi.com), not a person.');
+    $this->assertSame([], $offenders, 'Name Simtabi LLC (opensource@simtabi.com), not a person.');
 });

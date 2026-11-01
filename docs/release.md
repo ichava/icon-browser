@@ -105,8 +105,18 @@ host is `demos/ichava-app` (`composer update`, `php artisan migrate`,
 Versioning was re-based on 2026-10-23, with every other ichava package. The tags `v0.1.0` to
 `v0.4.1` (2026-08-31 to 2026-09-26) and their GitHub releases were removed, and `main` was tagged `v0.1.0`. Every
 commit those tags pointed at is on `main`, so no code was lost; their notes are kept in
-`CHANGELOG.md` under *Archived pre-reset history*. Version numbers in older changelog entries and
+`CHANGELOG.md` under *Archived history*. Version numbers in older changelog entries and
 issues refer to that earlier series.
+
+## The 0.1.0 release
+
+0.1.0 is published from a single root commit whose tree is `main` at release time. The 0.1.x tags
+cut after the re-base (`v0.1.0` 2026-10-23, `v0.1.1` 2026-10-28) are folded into it: their tags and
+releases are removed, and their changelog sections sit under *Archived history*, one heading level
+down. `CHANGELOG.md` already carries the `## [0.1.0]` section, so the hand-cut `v0.1.0` tag starts
+`release.yml`, which publishes that section. `.release-please-manifest.json` reads `0.1.0`, so
+release-please treats `v0.1.0` as the last release and the next release pull request proposes
+`0.1.1`.
 
 ## See also
 
