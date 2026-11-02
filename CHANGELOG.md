@@ -4,6 +4,8 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-11-02
+
 ### Changed
 
 - Re-vendored `@ichava/react-icon-browser` at `a9c247d`: its SVG policy copy now says the raster-wrapping brand logos are parked rather than shipped blank (a comment-only change; the policy is identical).
