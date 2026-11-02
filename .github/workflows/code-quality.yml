@@ -1,0 +1,169 @@
+name: Code Quality
+
+# Written while the repository was private; kept since it went public on 2026-10-30: drafts
+# skipped, superseded runs cancelled, a timeout on every job.
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, ready_for_review]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pint:
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
+    timeout-minutes: 15
+    name: Laravel Pint
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+        with:
+          php-version: 8.5
+          extensions: dom, curl, libxml, mbstring, zip
+          coverage: none
+
+      - name: Authenticate Composer for private GitHub deps
+        env:
+          GH_PACKAGES_PAT: ${{ secrets.GH_PACKAGES_PAT }}
+        # ichava/core (and laranail/package-tools while still private) live
+        # in private repos. Composer's git clone has no auth on a fresh runner
+        # without this. Provision a PAT with `repo:read` scope and store it
+        # as the GH_PACKAGES_PAT secret on each consuming repo. The step
+        # short-circuits cleanly when the secret is absent, so public
+        # forks aren't blocked.
+        if: env.GH_PACKAGES_PAT != ''
+        run: |
+          composer config --global --auth github-oauth.github.com "$GH_PACKAGES_PAT"
+
+      - name: Resolve ichava/core from its main branch
+        # composer.json keeps `ichava/core: ^0.1` (the only tag is v0.1.0). CI
+        # tests against core's main instead, aliased into that range, without
+        # touching the committed constraint.
+        run: composer require "ichava/core:dev-main as 0.1.99" --no-update --no-interaction
+
+      - name: Install dependencies
+        run: composer update --prefer-stable --prefer-dist --no-interaction
+
+      - name: Run Laravel Pint
+        run: composer pint
+
+  phpstan:
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
+    timeout-minutes: 15
+    name: PHPStan
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+        with:
+          php-version: 8.5
+          extensions: dom, curl, libxml, mbstring, zip
+          coverage: none
+
+      - name: Authenticate Composer for private GitHub deps
+        env:
+          GH_PACKAGES_PAT: ${{ secrets.GH_PACKAGES_PAT }}
+        # ichava/core (and laranail/package-tools while still private) live
+        # in private repos. Composer's git clone has no auth on a fresh runner
+        # without this. Provision a PAT with `repo:read` scope and store it
+        # as the GH_PACKAGES_PAT secret on each consuming repo. The step
+        # short-circuits cleanly when the secret is absent, so public
+        # forks aren't blocked.
+        if: env.GH_PACKAGES_PAT != ''
+        run: |
+          composer config --global --auth github-oauth.github.com "$GH_PACKAGES_PAT"
+
+      - name: Resolve ichava/core from its main branch
+        # composer.json keeps `ichava/core: ^0.1` (the only tag is v0.1.0). CI
+        # tests against core's main instead, aliased into that range, without
+        # touching the committed constraint.
+        run: composer require "ichava/core:dev-main as 0.1.99" --no-update --no-interaction
+
+      - name: Install dependencies
+        run: composer update --prefer-stable --prefer-dist --no-interaction
+
+      - name: Report the resolved siblings and restore composer.json
+        # The source reference is the core commit this run tested against. The
+        # restore makes SiblingConstraintsTest read the committed constraint,
+        # not the CI alias.
+        run: |
+          for p in ichava/core; do composer show "$p" | grep -E '^(name|versions|source) '; done
+          git checkout -- composer.json
+
+      - name: Run PHPStan
+        run: composer analyse
+
+  security:
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
+    timeout-minutes: 15
+    name: Security Audit
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+        with:
+          php-version: 8.5
+          extensions: dom, curl, libxml, mbstring, zip
+          coverage: none
+
+      - name: Authenticate Composer for private GitHub deps
+        env:
+          GH_PACKAGES_PAT: ${{ secrets.GH_PACKAGES_PAT }}
+        # ichava/core (and laranail/package-tools while still private) live
+        # in private repos. Composer's git clone has no auth on a fresh runner
+        # without this. Provision a PAT with `repo:read` scope and store it
+        # as the GH_PACKAGES_PAT secret on each consuming repo. The step
+        # short-circuits cleanly when the secret is absent, so public
+        # forks aren't blocked.
+        if: env.GH_PACKAGES_PAT != ''
+        run: |
+          composer config --global --auth github-oauth.github.com "$GH_PACKAGES_PAT"
+
+      - name: Resolve ichava/core from its main branch
+        # composer.json keeps `ichava/core: ^0.1` (the only tag is v0.1.0). CI
+        # tests against core's main instead, aliased into that range, without
+        # touching the committed constraint.
+        run: composer require "ichava/core:dev-main as 0.1.99" --no-update --no-interaction
+
+      - name: Install dependencies
+        run: composer update --prefer-stable --prefer-dist --no-interaction
+
+      - name: Security Audit
+        run: composer audit
+
+  actionlint:
+    name: Workflow lint
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
+    timeout-minutes: 5
+
+    # Nothing else reads these files until a tag is pushed. `release.yml` triggers
+    # on `push: tags`, so until now a broken workflow was first observed as a
+    # release that refused to start -- after the decision to release had been made.
+    #
+    # A YAML parse is not a substitute. `yaml.safe_load` accepts a duplicate key
+    # and silently keeps the last one, which is how a double-applied patch shipped
+    # a step carrying `continue-on-error:` twice and still validated clean.
+    # actionlint rejects what Actions rejects.
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: actionlint
+        uses: raven-actions/actionlint@3d39aea434753780c3b3d4a1a31c854b4dbf49d7 # v2.2.0

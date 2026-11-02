@@ -1,0 +1,36 @@
+Copyright (c) Simtabi LLC. All rights reserved.
+
+This software and its source code are proprietary and confidential. No part of
+it may be copied, modified, distributed, published, sublicensed or sold, in
+whole or in part, without the prior written permission of Simtabi LLC.
+
+Untitled UI PRO
+---------------
+The browser interface this package ships is @ichava/react-icon-browser, which
+includes components from Untitled UI React PRO, used under the Untitled UI
+licence (https://www.untitledui.com/license). Those components are compiled
+into:
+
+- resources/vendor/react-icon-browser (the vendored library build)
+- public/assets/js/inertia-app.js and public/assets/css/inertia-app.css (the
+  committed browser bundle, published to host applications)
+
+That licence does not permit exposing their source code publicly or
+redistributing them as a UI kit or library. This repository must therefore
+remain private, and the package may be installed only by holders of a licence
+from Simtabi LLC.
+
+Third-party components
+----------------------
+Third-party code in this repository stays under its own licence:
+
+- Untitled UI React (free components, compiled into the same build): MIT
+  License, Copyright (c) Untitled UI.
+  https://github.com/untitleduico/react/blob/main/LICENSE
+- Geist and Geist Mono fonts (public/assets/fonts and
+  resources/vendor/react-icon-browser/fonts): SIL Open Font License 1.1,
+  Copyright (c) Vercel. See public/assets/fonts/LICENSE.txt.
+- Icon assets under resources/assets/svg keep the licence of their upstream
+  icon set.
+- Ichava's open-source packages this package depends on (ichava/core and the
+  icon packs) are published under their own licences, unaffected by this one.

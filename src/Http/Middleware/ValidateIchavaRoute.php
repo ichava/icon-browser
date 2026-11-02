@@ -1,0 +1,38 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Simtabi\Laranail\Ichava\IconBrowser\Http\Middleware;
+
+use Closure;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Simtabi\Laranail\Ichava\IconBrowser\Support\Helpers;
+
+/**
+ * Validate Ichava Routes Middleware
+ *
+ * Ensures that only valid Ichava-prefixed routes are accessed.
+ * Prevents unauthorized access to Ichava internals.
+ */
+final class ValidateIchavaRoute
+{
+    /**
+     * Handle an incoming request.
+     *
+     * @param Closure(Request): Response $next
+     */
+    public function handle(Request $request, Closure $next): Response
+    {
+        $prefix = Helpers::routePrefix();
+        $path = $request->path();
+
+        // Ensure request is for an Ichava route
+        if (! Str::startsWith($path, $prefix)) {
+            abort(404, 'Not an Ichava route');
+        }
+
+        return $next($request);
+    }
+}
