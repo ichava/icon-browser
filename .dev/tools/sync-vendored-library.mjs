@@ -103,7 +103,7 @@ export function repositoryUrl(pkg) {
   return raw.replace(/^git\+/, '').replace(/\.git$/, '');
 }
 
-export function syncVendoredLibrary({ packageName, source, target, typeDependencies = [], generatedBy, root }) {
+export function syncVendoredLibrary({ packageName, source, target, typeDependencies = [], generatedBy, root, license = (text) => text }) {
   const lib = join(source, 'dist', 'lib');
   if (!existsSync(join(source, 'package.json'))) throw new SyncError(`no package.json in ${source}`);
   const pkg = JSON.parse(readFileSync(join(source, 'package.json'), 'utf8'));
@@ -128,11 +128,15 @@ export function syncVendoredLibrary({ packageName, source, target, typeDependenc
   if (statSync(join(lib, 'index.js')).mtimeMs < committedAt) throw new SyncError('dist/lib is older than HEAD; rebuild it with `npm run build:lib`');
 
   const manifest = vendoredManifest(pkg, { typeDependencies, generatedBy });
+  // The host may reword the library's LICENSE for the copy it ships (`license`, text in, text out).
+  // Applied before the target is cleared, so a refusal leaves the vendored copy as it was, and
+  // written before the manifest is hashed, so VENDORED.json always matches what is on disk.
+  const licenseText = license(readFileSync(join(source, 'LICENSE'), 'utf8'));
 
   rmSync(target, { recursive: true, force: true });
   mkdirSync(target, { recursive: true });
   cpSync(lib, target, { recursive: true, filter: (src) => !src.endsWith('.map') });
-  cpSync(join(source, 'LICENSE'), join(target, 'LICENSE'));
+  writeFileSync(join(target, 'LICENSE'), licenseText);
   // Maps are not shipped, so drop each JS file's comment pointing at its own (bundlers warn on a
   // missing map). Every file, not only index.js: a library with more than one entry splits its
   // code into chunks, and each chunk names its map.

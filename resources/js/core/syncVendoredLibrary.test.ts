@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { execFileSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
@@ -16,7 +17,7 @@ type Mod = {
   parseArgs: (argv: string[]) => Record<string, unknown>;
   SyncError: new (m: string) => Error;
   privateContent: (paths: string[]) => string[];
-  syncVendoredLibrary: (o: { packageName: string; source: string; target: string; root: string; generatedBy: string }) => unknown;
+  syncVendoredLibrary: (o: { packageName: string; source: string; target: string; root: string; generatedBy: string; license?: (t: string) => string }) => { files: Record<string, string> };
 };
 // Imported by URL so the type checker does not resolve a plain-JS tool script.
 const url = pathToFileURL(resolve(process.cwd(), '.dev/tools/sync-vendored-library.mjs')).href;
@@ -120,6 +121,35 @@ describe('sync-vendored-library', () => {
         expect(readFileSync(join(target, file), 'utf8')).toBe('export {};\n');
         expect(existsSync(join(target, `${file}.map`))).toBe(false);
       }
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+
+  it('writes the host-reworded LICENSE and hashes that, not the library original', () => {
+    const root = mkdtempSync(join(tmpdir(), 'ichava-vendor-'));
+    try {
+      const source = join(root, 'lib-checkout');
+      const target = join(root, 'host', 'vendor');
+      mkdirSync(join(source, 'src'), { recursive: true });
+      writeFileSync(join(source, 'package.json'), JSON.stringify(library));
+      writeFileSync(join(source, 'LICENSE'), 'Original terms.\n');
+      writeFileSync(join(source, 'src', 'index.ts'), 'export {};\n');
+      const git = (...args: string[]) => execFileSync('git', ['-C', source, '-c', 'user.name=t', '-c', 'user.email=t@t', '-c', 'core.fsmonitor=false', ...args]);
+      git('init', '-q');
+      git('add', '-A');
+      git('commit', '-qm', 'library');
+      mkdirSync(join(source, 'dist', 'lib'), { recursive: true });
+      writeFileSync(join(source, 'dist', 'lib', 'index.js'), 'export {};\n');
+
+      const { files } = mod.syncVendoredLibrary({
+        packageName: library.name, source, target, root, generatedBy: 'x.mjs', license: (t) => t.replace('Original', 'Vendored'),
+      });
+
+      expect(readFileSync(join(target, 'LICENSE'), 'utf8')).toBe('Vendored terms.\n');
+      const manifest = JSON.parse(readFileSync(join(target, 'VENDORED.json'), 'utf8'));
+      expect(manifest.files.LICENSE).toBe(files.LICENSE);
+      expect(manifest.files.LICENSE).toBe(createHash('sha256').update('Vendored terms.\n').digest('hex'));
     } finally {
       rmSync(root, { recursive: true, force: true });
     }

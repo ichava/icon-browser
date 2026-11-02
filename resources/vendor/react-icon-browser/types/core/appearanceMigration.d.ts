@@ -16,9 +16,9 @@ export declare const LEGACY_APPEARANCE_DEFAULTS: {
     readonly accent: '#7c3aed';
     readonly radius: 8;
 };
-/** The defaults shipped from persist version 5. Kept equal to `CONFIG_DEFAULTS` by test. */
+/** The defaults shipped from persist version 5, from the kernel. Kept equal to `CONFIG_DEFAULTS` by test. */
 export declare const APPEARANCE_DEFAULTS: {
-    readonly accent: '#0e7c66';
+    readonly accent: "#0e7c66";
     readonly radius: 6;
 };
 /** The persist version that introduced the new defaults. */

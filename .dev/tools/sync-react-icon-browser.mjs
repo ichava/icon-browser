@@ -14,12 +14,28 @@
 // readable library source, Untitled UI PRO included.
 
 import { dirname, join, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { run } from './sync-vendored-library.mjs';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+import { run, SyncError } from './sync-vendored-library.mjs';
+
+// react-icon-browser's LICENSE says that repository must stay private, which is true there and not
+// of the repository this compiled copy ships in. The vendored copy says where the source lives and
+// limits the build to Ichava products instead; vendoredLibrary.test.ts pins the wording.
+const PRIVATE_CLAUSE =
+  /This repository\s+must\s+therefore\s+remain\s+private,\s+and\s+its\s+source\s+may\s+be\s+shared\s+only\s+with\s+people\s+who\s+hold\s+their\s+own\s+Untitled\s+UI\s+licence\./;
+const VENDORED_CLAUSE = `Their source therefore stays in the private react-icon-browser
+repository and may be shared only with people who hold their own Untitled UI
+licence. This vendored copy holds only the compiled build, which may be used
+as part of Ichava products published by Simtabi LLC and may not be
+redistributed outside them.`;
+
+export function vendoredLicense(text) {
+  if (!PRIVATE_CLAUSE.test(text)) throw new SyncError("react-icon-browser's LICENSE no longer has the must-remain-private clause; update vendoredLicense()");
+  return text.replace(PRIVATE_CLAUSE, VENDORED_CLAUSE);
+}
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
 
-run(
+if (import.meta.url === pathToFileURL(process.argv[1] ?? '').href) run(
   {
     root,
     packageName: '@ichava/react-icon-browser',
@@ -28,6 +44,7 @@ run(
     // The declarations import the kernel's types; the JS has it bundled.
     typeDependencies: ['@ichava/js-ui-kernel'],
     generatedBy: '.dev/tools/sync-react-icon-browser.mjs',
+    license: vendoredLicense,
   },
   'sync-react-icon-browser',
 );
