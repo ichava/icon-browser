@@ -6,6 +6,7 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
 
 ### Changed
 
+- Re-vendored `@ichava/react-icon-browser` at `a9c247d`: its SVG policy copy now says the raster-wrapping brand logos are parked rather than shipped blank (a comment-only change; the policy is identical).
 - **Re-vendored react-icon-browser `7889fac` (#194).** The DevTools toggle moves from Mod+D, the browser's bookmark key, to Shift+Mod+D. `X-Browser-Id` becomes a stable per-install id (a random UUID kept in localStorage under `ichava.browser-id`) instead of a fingerprint that changed every day, so the session-backed library keyed on it no longer resets at midnight UTC. `IchavaStatefulGuard` and core's `IchavaSessionManager::getBrowserId()` read the header as an opaque string, so no PHP change was needed; existing visitors get a new id once, on first load after upgrading.
 
 ## [0.1.0] - TBD
