@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Link, router, usePage } from '@inertiajs/react';
-import { Heart } from '@untitledui/icons';
+import { HeartIcon } from '@/components/HeartIcon';
 import { IconImage } from '@/components/IconImage';
 import { FlashBanner } from '@/components/FlashBanner';
 import { normalizeRawIcon } from '@/core/propsToCatalog';
@@ -80,7 +80,7 @@ export default function BrowserShow() {
               }
               className="theme-bg-muted theme-text-secondary mt-3 flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium"
             >
-              <Heart aria-hidden className="size-[13px]" />
+              <HeartIcon aria-hidden className="size-[13px]" />
               Toggle favorite
             </button>
 
