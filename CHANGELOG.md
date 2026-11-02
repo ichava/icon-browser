@@ -4,6 +4,10 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
 
 ## [Unreleased]
 
+### Changed
+
+- **Re-vendored react-icon-browser `7889fac` (#194).** The DevTools toggle moves from Mod+D, the browser's bookmark key, to Shift+Mod+D. `X-Browser-Id` becomes a stable per-install id (a random UUID kept in localStorage under `ichava.browser-id`) instead of a fingerprint that changed every day, so the session-backed library keyed on it no longer resets at midnight UTC. `IchavaStatefulGuard` and core's `IchavaSessionManager::getBrowserId()` read the header as an opaque string, so no PHP change was needed; existing visitors get a new id once, on first load after upgrading.
+
 ## [0.1.0] - TBD
 
 First release of `ichava/icon-browser`. The repository is published as a single commit; the 0.1.x tags cut between 2026-10-23 and 2026-10-28 (v0.1.0 to v0.1.1) are folded into this release, and their notes are kept below under *Archived history*.
