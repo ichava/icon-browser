@@ -8,7 +8,8 @@ export interface ShortcutScope {
 }
 /**
  * Platform-aware keyboard shortcuts:
- * ⌘K palette · ⌘T theme · ⌘, settings · ⌘1/2/3 library tabs · ⇧⌘⌫ reset filters · Esc closes.
+ * ⌘K palette · ⌘T theme · ⌘, settings · ⌘1/2/3 library tabs · ⇧⌘⌫ reset filters · ⇧⌘D DevTools
+ * (when enabled) · Esc closes.
  * Grid keys (F favorite / C copy / X select) are handled on the focused tile.
  *
  * The listener sits on `document`, but a key only counts when it happens inside this
@@ -18,6 +19,7 @@ export interface ShortcutScope {
  * ⌘A and Esc. A hook called without a scope keeps the old document-wide behaviour.
  *
  * Reset filters used to be ⌘R, which `preventDefault`ed the browser's reload (G4). It is
- * ⇧⌘⌫ now; the toolbar's reset button is unchanged.
+ * ⇧⌘⌫ now; the toolbar's reset button is unchanged. The DevTools toggle was ⌘D, the
+ * browser's bookmark key, for the same reason; it is ⇧⌘D now (R-18).
  */
 export declare function useShortcuts(scope?: ShortcutScope): void;
