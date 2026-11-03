@@ -122,7 +122,7 @@ release-please treats `v0.1.0` as the last release and the next release pull req
 
 - [Installation](installation.md)
 - [Architecture](architecture.md)
-- [Core release process](https://opensource.simtabi.com/documentation/ichava/core/release)
+- [Core release process](https://github.com/ichava/core/blob/main/docs/release.md)
 
 ## Tags are final
 

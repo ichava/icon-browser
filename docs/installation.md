@@ -4,7 +4,7 @@
 
 *How-to guide.*
 
-`ichava/icon-browser` is the optional HTTP layer for Ichava: the visual icon browser, the REST API and the middleware. Install it on top of [`ichava/core`](https://opensource.simtabi.com/documentation/ichava/core/installation).
+`ichava/icon-browser` is the optional HTTP layer for Ichava: the visual icon browser, the REST API and the middleware. Install it on top of [`ichava/core`](https://github.com/ichava/core/blob/main/docs/installation.md).
 
 > **A licensed, proprietary package.** Its repository is public, but the code is not open source. `ichava/core` and the icon packs stay open source and work headless without it. Installing this package needs a licence from Simtabi LLC. Its browser interface includes compiled Untitled UI PRO components, used under the Untitled UI licence; see [LICENSE](../LICENSE).
 
@@ -12,7 +12,7 @@
 
 `ichava/icon-browser` is listed on Packagist, and so is `ichava/core`. Core's `laranail/*`
 dependencies are not, so Composer needs their repository entries, alongside the ones
-[core's installation](https://opensource.simtabi.com/documentation/ichava/core/installation) asks for:
+[core's installation](https://github.com/ichava/core/blob/main/docs/installation.md) asks for:
 
 ```json
 { "type": "vcs", "url": "https://github.com/laranail/package-tools" },
@@ -98,8 +98,8 @@ GitHub's public `ichava/js-ui-kernel`.
 - [Configuration](configuration.md)
 - [Environment variables](environment.md)
 - [API endpoints](tools/api-endpoints.md)
-- [Core installation](https://opensource.simtabi.com/documentation/ichava/core/installation)
-- [Troubleshooting](https://opensource.simtabi.com/documentation/ichava/core/troubleshooting)
+- [Core installation](https://github.com/ichava/core/blob/main/docs/installation.md)
+- [Troubleshooting](https://github.com/ichava/core/blob/main/docs/troubleshooting.md)
 
 ---
 

@@ -86,7 +86,7 @@ The `/{prefix}/icons` path comes from `ICHAVA_BROWSER_PREFIX` in **core's** conf
 - [Installation](installation.md)
 - [Configuration](configuration.md)
 - [API endpoints](tools/api-endpoints.md)
-- [Core architecture](https://opensource.simtabi.com/documentation/ichava/core/architecture)
+- [Core architecture](https://github.com/ichava/core/blob/main/docs/architecture.md)
 
 ---
 
