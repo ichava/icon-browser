@@ -5,7 +5,7 @@
     "description": "Inertia + React adapter for the Ichava icon browser (Laravel). The browser UI is the vendored @ichava/react-icon-browser library.",
     "private": true,
     "license": "UNLICENSED",
-    "author": "Simtabi LLC <opensource@simtabi.com> (https://simtabi.com)",
+    "author": "Simtabi LLC <ichava@simtabi.com> (https://simtabi.com)",
     "homepage": "https://github.com/ichava/icon-browser",
     "repository": {
         "type": "git",
