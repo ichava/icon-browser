@@ -6,6 +6,7 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
 
 ### Changed
 
+- **The stylesheet is minified with Lightning CSS at Vite 8's default targets** (Chrome/Edge 111, Firefox 114, Safari 16.4, no lower than Tailwind v4's own floor), replacing the esbuild minifier and Vite 7's targets kept since the Vite 8 upgrade. `inertia-app.css` is 26.4 KB gzipped instead of 27.8 KB: duplicate Tailwind layers merge and 21 obsolete `-moz-` prefixes go. Normalized with Lightning CSS, the old and new stylesheets match rule for rule. The only differences are `calc()` expressions that esbuild folded and Lightning CSS keeps inside custom properties, which resolve to the same values. The 26 leftover `:deep()` selectors are untouched. The JavaScript bundle is unchanged.
 - **The author and contact address is `ichava@simtabi.com`** (W-11, Sim 2026-11-03), replacing the community address `opensource@simtabi.com` wherever this repository named it. Vulnerability reports still go to `security@simtabi.com`. The test that guards the address expects `ichava@` now.
 
 ## [0.1.1] - 2026-11-02

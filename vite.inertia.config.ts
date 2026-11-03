@@ -47,15 +47,14 @@ export default defineConfig({
         emptyOutDir: false, // NEVER wipe the Vue / React parallel-run output
         cssCodeSplit: false, // single CSS file, like the other builds
         manifest: false, // Blade loads a fixed path, not a manifest
-        // Vite 8 minifies CSS with Lightning CSS and raised the default browser targets.
-        // Both change the committed inertia-app.css: Lightning CSS merges the two Tailwind
-        // stylesheets' duplicate layers, which moves rules, and drops the -moz- prefixes the
-        // old targets kept. Until that output has been checked in a browser, keep the
-        // stylesheet as Vite 7 built it: esbuild's minifier, Vite 7's default targets.
-        // With these two lines the CSS matches Vite 7's byte for byte, apart from the
-        // `/*$vite$:1*/` marker Vite 8 appends.
-        cssMinify: 'esbuild',
-        cssTarget: ['chrome107', 'edge107', 'firefox104', 'safari16'],
+        // Lightning CSS with Vite 8's default targets (Chrome/Edge 111, Firefox 114, Safari 16.4),
+        // which are no lower than Tailwind v4's own floor. Against the esbuild minifier and Vite
+        // 7's targets it used before, the CSS is 26.4 KB gzipped instead of 27.8 KB: duplicate
+        // Tailwind layers merge and obsolete -moz- prefixes go. Run through Lightning CSS with
+        // these targets, the two stylesheets matched rule for rule (2026-11-03), apart from
+        // calc() that esbuild folded and Lightning CSS keeps in custom properties, which
+        // resolve to the same values.
+        cssMinify: 'lightningcss',
         rolldownOptions: {
             input: 'resources/js/app.tsx',
             output: {
