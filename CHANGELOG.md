@@ -4,6 +4,8 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-11-02
+
 ### Changed
 
 - **`@untitledui/icons` is no longer a dependency.** Its only use was the heart on the icon page's favourite toggle, now an inline `HeartIcon` component. The browser itself comes from the vendored react-icon-browser library, which carries its own icons. `inertia-app.js` and `inertia-app.css` are rebuilt.
