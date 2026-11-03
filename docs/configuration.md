@@ -10,7 +10,7 @@ Publish `config/ichava/icon-browser.php` once after install:
 php artisan vendor:publish --tag=ichava::icon-browser-config
 ```
 
-Browser-specific HTTP keys live here. Engine config (database, queue, logging) is in [`config/ichava/core.php`](https://opensource.simtabi.com/documentation/ichava/core/configuration).
+Browser-specific HTTP keys live here. Engine config (database, queue, logging) is in [`config/ichava/core.php`](https://github.com/ichava/core/blob/main/docs/configuration.md).
 
 ## Top-level keys
 
@@ -140,9 +140,9 @@ final class IconSnippetResolver implements SnippetResolver
 - [Host integration](tools/host-integration.md), the user, the features manifest and the owner-keyed library
 
 - [Environment variables](environment.md), every browser-related `ICHAVA_*` env var
-- [Core configuration](https://opensource.simtabi.com/documentation/ichava/core/configuration), engine keys
+- [Core configuration](https://github.com/ichava/core/blob/main/docs/configuration.md), engine keys
 - [API endpoints](tools/api-endpoints.md)
-- [Architecture](https://opensource.simtabi.com/documentation/ichava/core/architecture)
+- [Architecture](https://github.com/ichava/core/blob/main/docs/architecture.md)
 
 ---
 

@@ -4,7 +4,7 @@
 
 *Reference.*
 
-Browser-specific `ICHAVA_*` env vars (HTTP layer: SPA + REST API + middleware). Engine vars (database, queue, logging) live in [core/environment.md](https://opensource.simtabi.com/documentation/ichava/core/environment).
+Browser-specific `ICHAVA_*` env vars (HTTP layer: SPA + REST API + middleware). Engine vars (database, queue, logging) live in [core/environment.md](https://github.com/ichava/core/blob/main/docs/environment.md).
 
 Copy what you need from [`.env.example`](https://github.com/ichava/icon-browser/blob/main/.env.example) into your application's `.env`.
 
@@ -74,7 +74,7 @@ The guard the user is read from is core's `ICHAVA_AUTH_GUARD` (`ichava.ichava-co
 ## See also
 
 - [Configuration reference](configuration.md)
-- [Core environment variables](https://opensource.simtabi.com/documentation/ichava/core/environment)
+- [Core environment variables](https://github.com/ichava/core/blob/main/docs/environment.md)
 - [API endpoints](tools/api-endpoints.md)
 
 ---

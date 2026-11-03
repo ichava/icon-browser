@@ -79,8 +79,8 @@ The docs live in this repository, under [`docs/`](docs/).
 
 ### Ecosystem
 
-- [Core architecture](https://opensource.simtabi.com/documentation/ichava/core/architecture)
-- [Troubleshooting](https://opensource.simtabi.com/documentation/ichava/core/troubleshooting)
+- [Core architecture](https://github.com/ichava/core/blob/main/docs/architecture.md)
+- [Troubleshooting](https://github.com/ichava/core/blob/main/docs/troubleshooting.md)
 
 ## Contributing & security
 
