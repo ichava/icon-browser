@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Simtabi\Laranail\Ichava\Models\Icon;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Simtabi\Laranail\Ichava\IconBrowser\Support\IconSnippets;
+use Simtabi\Laranail\Ichava\IconBrowser\Support\ThemeVariants;
 
 /**
  * IconResource - Transform Icon model to API response
@@ -36,8 +37,10 @@ class IconResource extends JsonResource
 
             // What the SVG is (`icon` or `illustration`) and the theme twins it
             // carries (e.g. `dark`), served through the same sanitiser.
-            'kind'   => $icon->kind->value,
-            'themes' => $icon->themes(),
+            'kind'           => $icon->kind->value,
+            'kind_source'    => $icon->kindSource()->value,
+            'themes'         => $icon->themes(),
+            'theme_variants' => ThemeVariants::for($icon),
 
             // Category & Variant (from relationships), and the subcategory:
             // the nested category below the top-level one, null at the top.

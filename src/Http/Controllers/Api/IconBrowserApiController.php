@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Simtabi\Laranail\Ichava\IconBrowser\Support\Helpers;
 use Simtabi\Laranail\Ichava\Services\IconBrowserService;
 use Simtabi\Laranail\Ichava\Services\IconPreferenceService;
+use Simtabi\Laranail\Ichava\IconBrowser\Support\ThemeVariants;
 use Simtabi\Laranail\Ichava\IconBrowser\Support\CacheStatsPayload;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Resources\IconResource;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Resources\IconCollection;
@@ -220,8 +221,16 @@ final class IconBrowserApiController extends BaseApiController
     public function svg(Request $request, int $id): Response
     {
         try {
-            $icon = Icon::select(['id', 'name', 'package', 'path', 'file_hash'])
+            // `kind` selects the size budget the file is held to and `theme_variants`
+            // the twin `?theme=` names; left out, an illustration was held to the
+            // icon budget.
+            $icon = Icon::select(['id', 'name', 'package', 'path', 'file_hash', 'kind', 'theme_variants'])
                 ->findOrFail($id);
+
+            $theme = $request->query('theme');
+            if ($theme !== null && (! is_string($theme) || ! $icon->hasTheme($theme))) {
+                return $this->notFoundResponse('Theme');
+            }
 
             $this->logDebug('Serving SVG', [
                 'icon_id'   => $id,
@@ -229,7 +238,7 @@ final class IconBrowserApiController extends BaseApiController
                 'package'   => $icon->package,
             ]);
 
-            $svg = $icon->svg_content;
+            $svg = is_string($theme) ? $icon->themeSvgContent($theme) : $icon->svg_content;
 
             if (! $svg) {
                 throw IchavaException::iconNotFound($icon->name, $icon->package);
@@ -260,7 +269,7 @@ final class IconBrowserApiController extends BaseApiController
              * The ETag covers both cases: a short max-age plus a strong validator
              * means the revalidating path costs a 304, not a re-download.
              */
-            $isVersioned = $request->query('v') === $icon->render_version;
+            $isVersioned = $request->query('v') === (is_string($theme) ? ThemeVariants::version($icon, $theme) : $icon->render_version);
 
             $cacheControl = $isVersioned
                 ? 'public, max-age=31536000, immutable'

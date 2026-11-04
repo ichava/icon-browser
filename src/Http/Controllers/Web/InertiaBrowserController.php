@@ -85,6 +85,7 @@ final class InertiaBrowserController extends BaseInertiaController
                     'language'       => $request->getLanguage(),
                     'packages'       => $request->getPackages(),
                     'kind'           => $request->getKind(),
+                    'kinds'          => $request->getKinds(),
                     'categories'     => $request->getCategories(),
                     'subs'           => $request->getSubs(),
                     'variants'       => $request->getVariants(),

@@ -30,7 +30,8 @@ final class IconSnippets
     ) {}
 
     /**
-     * core's `transformIcon()` row with this package's snippet strings over it.
+     * core's `transformIcon()` row with this package's snippet strings over it,
+     * and the icon's theme variants.
      *
      * @return array<string, mixed>
      */
@@ -39,7 +40,7 @@ final class IconSnippets
         /** @var array<string, mixed> $row */
         $row = $this->browser->transformIcon($icon);
 
-        return array_merge($row, $this->forIcon($icon));
+        return array_merge($row, ['theme_variants' => ThemeVariants::for($icon)], $this->forIcon($icon));
     }
 
     /**

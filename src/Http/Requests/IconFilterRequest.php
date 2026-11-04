@@ -43,8 +43,11 @@ class IconFilterRequest extends FormRequest
             'variants'     => ['nullable', 'array', 'max:20'],
             'variants.*'   => ['required', 'string', 'max:50'],
 
-            // What the SVG is: icons or illustrations. One kind at a time.
-            'kind' => ['nullable', 'string', Rule::enum(IconKind::class)],
+            // What the SVG is: icons or illustrations. `?kind=icon` or the
+            // repeatable `?kind[]=icon&kind[]=illustration` (prepareForValidation
+            // lifts the first into the second), OR-ed together.
+            'kind'   => ['nullable', 'array', 'max:10'],
+            'kind.*' => ['nullable', 'string', Rule::enum(IconKind::class)],
 
             // Nested categories, or variants within the selected category.
             'subs'   => ['nullable', 'array', 'max:50'],
@@ -156,13 +159,28 @@ class IconFilterRequest extends FormRequest
     }
 
     /**
-     * Get the validated kind, `icon` or `illustration`, or null for both.
+     * Get the validated kinds, in the order asked, each once. Empty means both.
+     *
+     * @return list<string>
+     */
+    public function getKinds(): array
+    {
+        $kinds = $this->validated('kind', []);
+
+        return is_array($kinds)
+            ? array_values(array_unique(array_filter($kinds, fn (mixed $kind): bool => is_string($kind) && $kind !== '')))
+            : [];
+    }
+
+    /**
+     * Get the validated kind, `icon` or `illustration`, or null when none or
+     * several were asked for. {@see self::getKinds()} is the whole list.
      */
     public function getKind(): ?string
     {
-        $kind = $this->validated('kind');
+        $kinds = $this->getKinds();
 
-        return is_string($kind) && $kind !== '' ? $kind : null;
+        return count($kinds) === 1 ? $kinds[0] : null;
     }
 
     /**
@@ -210,7 +228,7 @@ class IconFilterRequest extends FormRequest
      * facets and the tree alike. One builder, so the REST and Inertia listings
      * cannot filter differently.
      *
-     * @return array{search: string|null, language: string|null, packages: array<mixed>, kind: string|null, categories: array<mixed>, subs: list<string>, variants: array<mixed>, tags: list<string>, keywords: list<string>}
+     * @return array{search: string|null, language: string|null, packages: array<mixed>, kind: list<string>, categories: array<mixed>, subs: list<string>, variants: array<mixed>, tags: list<string>, keywords: list<string>}
      */
     public function filters(): array
     {
@@ -218,7 +236,7 @@ class IconFilterRequest extends FormRequest
             'search'     => $this->getSearch(),
             'language'   => $this->getLanguage(),
             'packages'   => $this->getPackages(),
-            'kind'       => $this->getKind(),
+            'kind'       => $this->getKinds(),
             'categories' => $this->getCategories(),
             'subs'       => $this->getSubs(),
             'variants'   => $this->getVariants(),
@@ -305,10 +323,22 @@ class IconFilterRequest extends FormRequest
         return ! empty($this->getPackages())
             || ! empty($this->getCategories())
             || ! empty($this->getVariants())
-            || $this->getKind() !== null
+            || $this->getKinds() !== []
             || $this->getSubs() !== []
             || $this->getTags() !== []
             || $this->getKeywords() !== [];
+    }
+
+    /**
+     * `?kind=icon` is the one-element form of `?kind[]=icon`.
+     */
+    protected function prepareForValidation(): void
+    {
+        $kind = $this->input('kind');
+
+        if (is_string($kind)) {
+            $this->merge(['kind' => $kind === '' ? [] : [$kind]]);
+        }
     }
 
     /**
