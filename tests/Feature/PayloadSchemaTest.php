@@ -163,7 +163,7 @@ it('rejects a REST map key the schema does not name, so the guard can fail', fun
     expect($result->isValid())->toBeFalse();
 });
 
-describe('schema 1.4.0: kinds, limits, cross-links, theme variants and formats', function () {
+describe('schema 1.5.0: kinds, limits, cross-links, theme variants and formats', function () {
     function kindsSchemaFixture(): void
     {
         $scene = Icon::create(['package' => 'ichava/test-pack', 'name' => 'park', 'path' => '/fake/park.svg', 'kind' => 'illustration', 'kind_source' => 'category']);
@@ -175,11 +175,11 @@ describe('schema 1.4.0: kinds, limits, cross-links, theme variants and formats',
         test()->scene = $scene;
     }
 
-    it('is version 1.4.0', function () {
+    it('is version 1.5.0', function () {
         $schema = json_decode((string) file_get_contents(PayloadSchema::path()), true, 512, JSON_THROW_ON_ERROR);
 
-        expect(PayloadSchema::VERSION)->toBe('1.4.0')
-            ->and($schema['version'])->toBe('1.4.0');
+        expect(PayloadSchema::VERSION)->toBe('1.5.0')
+            ->and($schema['version'])->toBe('1.5.0');
     });
 
     it('validates a bootstrap that carries kinds, limits and crossLinks', function () {
@@ -267,7 +267,7 @@ describe('schema 1.4.0: kinds, limits, cross-links, theme variants and formats',
         $schema = json_decode((string) file_get_contents(PayloadSchema::path()), true, 512, JSON_THROW_ON_ERROR);
         $ids = array_column($schema['x-ichava-formats'], 'id');
 
-        expect(count($ids))->toBeGreaterThanOrEqual(13)
+        expect(count($ids))->toBeGreaterThanOrEqual(18)
             ->and($ids)->toBe($schema['$defs']['format']['enum'])
             ->and($ids)->toBe(array_values(array_unique($ids)));
     });

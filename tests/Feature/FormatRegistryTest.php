@@ -30,11 +30,11 @@ const LARAVEL_FORMAT_SOURCES = [
 ];
 
 describe('the registry', function () {
-    it('has the thirteen formats, in tab order, each with the entry shape', function () {
+    it('has the eighteen formats, in tab order, each with the entry shape', function () {
         ['formats' => $formats] = schemaFormats();
 
-        expect(count($formats))->toBeGreaterThanOrEqual(13)
-            ->and(array_column($formats, 'id'))->toBe(['svg', 'motion', 'helper', 'blade', 'bladeGeneric', 'livewire', 'alpine', 'vue', 'react', 'svelte', 'webcomponent', 'api', 'name']);
+        expect(count($formats))->toBeGreaterThanOrEqual(18)
+            ->and(array_column($formats, 'id'))->toBe(['svg', 'motion', 'helper', 'blade', 'bladeGeneric', 'livewire', 'alpine', 'vue', 'react', 'svelte', 'webcomponent', 'reactNative', 'angular', 'solid', 'preact', 'astro', 'api', 'name']);
 
         foreach ($formats as $format) {
             expect(array_keys($format))->toBe(['id', 'label', 'group', 'delivery', 'kinds', 'copy', 'defaultCopy'])

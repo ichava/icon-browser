@@ -163,7 +163,8 @@ return [
     |
     | `tabs`       which tabs show, in order: the built-in ids (svg, motion,
     |              helper, blade, bladeGeneric, livewire, alpine, vue, react,
-    |              svelte, webcomponent, api, name) and the ids of `templates`.
+    |              svelte, webcomponent, reactNative, angular, solid, preact, astro, api,
+    |              name) and the ids of `templates`.
     | `labels`     tab labels by id, shown as written.
     | `templates`  a template per id, replacing a built-in or adding a tab when
     |              its id is in `tabs`. Tokens are bare words in double braces:

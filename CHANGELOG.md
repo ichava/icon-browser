@@ -6,6 +6,7 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
 
 ### Added
 
+- **Tier 2 formats, payload schema 1.5.0.** `reactNative`, `angular`, `solid`, `preact` and `astro` join `$defs/format` and `x-ichava-formats` (18 formats; `delivery: "generated"`, group `js`, icon and illustration, none a default copy), after `webcomponent`. They are the flavours `ichava/js-icon-components` generates. Additive: `snippets.tabs` accepts the new ids, and a 1.4.0 payload still validates. `PayloadSchema::VERSION` is `1.5.0`.
 - **Kinds in API v1, payload schema 1.4.0** (kinds-and-flavours Phase 1; every new schema property is optional, so a 1.3.0 payload still validates).
   - `?kind=` is repeatable: `kind[]=icon&kind[]=illustration` ORs, ANDs with every other filter, and `?kind=icon` still works. An element that is not a kind is a 422. The Inertia page's `appliedFilters.kind` keeps its meaning (the single kind, else null) and gains `kinds`, the full list.
   - Per-kind counts: `kinds.counts` in the bootstrap and the `ichava` prop, `by_package_kind` on `/icons/statistics`, and `by_kind` on each pack facet (K4).
