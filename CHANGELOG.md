@@ -6,6 +6,7 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
 
 ### Added
 
+- **Re-vendored `ichava/react-icon-browser` at `962c396`** (react-icon-browser#202, SVG policy parity). `vendored.json` names the commit, and the committed bundle under `public/assets` is rebuilt from it.
 - **Re-vendored `ichava/react-icon-browser` at `ff10f5e`** (react-icon-browser#201), which adds the Tier 2 code tabs for payload schema 1.5.0 (`reactNative`, `angular`, `solid`, `preact`, `astro`). `vendored.json` names the commit, and the committed bundle under `public/assets` is rebuilt from it.
 - **Tier 2 formats, payload schema 1.5.0.** `reactNative`, `angular`, `solid`, `preact` and `astro` join `$defs/format` and `x-ichava-formats` (18 formats; `delivery: "generated"`, group `js`, icon and illustration, none a default copy), after `webcomponent`. They are the flavours `ichava/js-icon-components` generates. Additive: `snippets.tabs` accepts the new ids, and a 1.4.0 payload still validates. `PayloadSchema::VERSION` is `1.5.0`.
 - **Kinds in API v1, payload schema 1.4.0** (kinds-and-flavours Phase 1; every new schema property is optional, so a 1.3.0 payload still validates).
