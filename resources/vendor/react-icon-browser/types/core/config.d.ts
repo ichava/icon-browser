@@ -164,6 +164,10 @@ export interface AppConfig {
         recentCommandsCap: number;
         paletteIconResults: number;
         logBuffer: number;
+        /** SVG sanitiser: longest input accepted, in characters, checked before parsing. Over-cap input renders nothing. */
+        svgMaxChars: number;
+        /** SVG sanitiser: most nodes accepted (elements, comments, processing instructions; counted as `<`). Over-cap input renders nothing. */
+        svgMaxNodes: number;
     };
     toolbar: {
         sortOptions: {
