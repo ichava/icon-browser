@@ -4,8 +4,9 @@ import type { HttpTransport } from '../../catalog';
 import { type HostContext } from '../domain/HostContext';
 /**
  * The browser config a host context implies: each feature flag from the manifest (and
- * the user's abilities, for the admin ones), the host's theme, page size and locale, and
- * the context itself as `config.host` for the identity, the library sync and the URLs.
+ * the user's abilities, for the admin ones), the host's theme, page size and locale, its
+ * initial kind, SVG limits and landing link (schema 1.4.0), and the context itself as
+ * `config.host` for the identity, the library sync and the URLs.
  *
  * The demo fixtures are switched off: in a host there is no sample user, no seeded
  * notifications and no fabricated collaborators. Merge it over a host's own partial

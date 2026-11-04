@@ -1,3 +1,4 @@
+import type { Format } from './api/schema.gen';
 /**
  * A framework-agnostic inline-style object.
  *
@@ -19,7 +20,12 @@ export type ViewMode = 'grid' | 'list';
 export type { SortKey, SortOrder } from '../modules/catalog/domain/IconQuery';
 export type Theme = 'light' | 'dark';
 export type SizeUnit = 'px' | 'rem' | 'em';
-export type CopyFormat = 'svg' | 'helper' | 'blade' | 'vue' | 'react' | 'name';
+/**
+ * A copy format: any id of the format registry (`Format`, from icon-browser's schema
+ * `x-ichava-formats`). Was a six-id union; widened in place, so every old value is still
+ * one (contract §6.2).
+ */
+export type CopyFormat = Format;
 /**
  * The icon dialog's snippet tabs, as a host configures them (`config.snippets`; on Laravel,
  * `config('ichava.icon-browser.snippets')`). Every key is optional in a host's config.
