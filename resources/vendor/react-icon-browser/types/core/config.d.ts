@@ -1,4 +1,5 @@
 import type { CopyFormat, Scale as ScaleT, SnippetConfig } from './types';
+import type { IconKind } from '@ichava/js-ui-kernel';
 import type { HostContext } from '../modules/host/domain/HostContext';
 export type { ScaleT };
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error' | 'silent';
@@ -142,6 +143,8 @@ export interface AppConfig {
                 name: string;
             }[];
         }[];
+        /** The kind the browser opens on, on a first visit. A host sets it from `kinds` (contract §2.3). */
+        kind?: IconKind;
     };
     ranges: {
         size: {
@@ -239,6 +242,13 @@ export interface AppConfig {
     storage: {
         frontendDriver: 'local' | 'session';
         laravelDriver?: string;
+    };
+    /**
+     * Links to the host's other surfaces (schema 1.4.0 `crossLinks`). `landing` is the
+     * product's landing page, shown in About; null shows no link.
+     */
+    crossLinks: {
+        landing: string | null;
     };
 }
 export type PartialConfig = DeepPartial<AppConfig>;

@@ -1,6 +1,11 @@
 import type { Icon } from '@ichava/js-ui-kernel';
 import type { SnippetConfig } from '../../../core/types';
-/** The formats the browser builds itself. */
+/**
+ * The formats the browser builds itself: the ids of the format registry
+ * (`x-ichava-formats` in icon-browser's schema, vendored as `FORMATS`), kept as a literal
+ * tuple because it is public API. formatRegistry.test.ts holds the two equal, at run time
+ * and in the typecheck.
+ */
 export declare const BUILTIN_SNIPPET_FORMATS: readonly ['svg', 'motion', 'helper', 'blade', 'bladeGeneric', 'livewire', 'alpine', 'vue', 'react', 'svelte', 'webcomponent', 'api', 'name'];
 export type BuiltinSnippetFormat = (typeof BUILTIN_SNIPPET_FORMATS)[number];
 /** A built-in format, or any id a host adds through `config.snippets.templates` or `register()`. */
@@ -34,7 +39,10 @@ export interface SnippetContext {
     tokens: Record<string, string>;
 }
 export type SnippetBuilder = (ctx: SnippetContext) => string;
-/** Detail-dialog tabs, in their default order. A host reorders or trims them with `config.snippets.tabs`. */
+/**
+ * Detail-dialog tabs, in their default order: one per copyable format of the registry, in
+ * the registry's order. A host reorders or trims them with `config.snippets.tabs`.
+ */
 export declare const SNIPPET_TABS: {
     id: BuiltinSnippetFormat;
     label: string;

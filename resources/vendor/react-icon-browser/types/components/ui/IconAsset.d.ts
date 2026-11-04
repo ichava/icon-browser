@@ -6,7 +6,7 @@ import type { Icon } from '@ichava/js-ui-kernel';
  *   stroke slider moved → INLINE svg with the exact stroke-width rewritten
  *   otherwise → fast CSS mask + treatment styling
  */
-export declare function IconAsset({ icon, size, color, stroke, inline }: {
+export declare function IconAsset({ icon: item, size, color, stroke, inline }: {
     icon: Icon;
     size: number;
     color?: string | null;

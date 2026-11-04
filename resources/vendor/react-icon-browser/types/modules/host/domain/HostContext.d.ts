@@ -1,4 +1,4 @@
-import type { ApiManifest, Bootstrap, Feature, Features, Ichava, Links, Modes, User } from '../../../core/api/schema.gen';
+import type { ApiManifest, Bootstrap, CrossLinks, Feature, Features, Ichava, Kind, KindsInfo, Links, Modes, User } from '../../../core/api/schema.gen';
 /** A feature icon-browser's manifest reports on: `favorites`, `status`, `presence`... */
 export type FeatureName = keyof Features;
 /** Where the host context came from: Inertia page props, or the REST bootstrap document. */
@@ -51,6 +51,21 @@ export interface HostContext {
      * payload schema 1.2.0.
      */
     api?: HostApi | null;
+    /**
+     * The host's default kind, the kinds it may show, and their unfiltered counts (schema
+     * 1.4.0, `kinds`). Null from an older host, or when the block is not the schema shape.
+     */
+    kinds?: KindsInfo | null;
+    /**
+     * The host's SVG ceilings (schema 1.4.0, `limits`): core's `svg.max_elements` and
+     * `svg.max_bytes`. Each field is null unless it is a positive integer.
+     */
+    limits?: {
+        svgMaxNodes: number | null;
+        svgMaxChars: number | null;
+    } | null;
+    /** Links to the host's other surfaces (schema 1.4.0, `crossLinks`). `landing` is an http(s) URL or null. */
+    crossLinks?: CrossLinks | null;
 }
 /** The host Gates the browser reads. A host grants them; the package denies by default. */
 export declare const ABILITIES: {
@@ -59,6 +74,13 @@ export declare const ABILITIES: {
 };
 /** Whether a schema version is one these types can read: the same major version. */
 export declare function isCompatible(version: string, ours?: string): boolean;
+/**
+ * The kind the browser opens on (contract §2.3): the host's default; else, when that kind
+ * is not available, the first available one; and when it has no items while another
+ * available kind has some, the first kind with items. Null without a `kinds` block, so the
+ * browser keeps its own default. A choice the user made and persisted wins over this.
+ */
+export declare function initialKind(kinds: KindsInfo | null | undefined): Kind | null;
 /**
  * The host context from Inertia's shared props (`auth` and `ichava`). Null when the
  * props carry no features manifest: an icon-browser older than payload schema 1.0.0,

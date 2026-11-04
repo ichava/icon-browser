@@ -1,5 +1,5 @@
 /** The schema version these types describe (`schemaVersion` in the session and bootstrap documents). */
-export declare const PAYLOAD_SCHEMA_VERSION = "1.2.0";
+export declare const PAYLOAD_SCHEMA_VERSION = "1.4.0";
 /** The host's signed-in user as presented by core's UserData. Never carries email, password or tokens; extra keys only when the host lists them in ichava.ichava-core.auth.expose. */
 export type User = {
     id: string;
@@ -8,13 +8,43 @@ export type User = {
     abilities: Record<string, boolean>;
 };
 export type Kind = "icon" | "illustration";
+/** Which D6 row decided an item's kind. Added in 1.4.0. */
+export type KindSource = "host" | "item" | "rule" | "category" | "pack" | "default";
+export type KindCounts = {
+    icon: number;
+    illustration: number;
+};
+/** The browser's initial kind, the kinds it may show, and unfiltered counts. Added in 1.4.0. */
+export type KindsInfo = {
+    default: Kind;
+    available: Kind[];
+    counts: KindCounts;
+};
+/** Client SVG ceilings, from core's svg.max_elements and svg.max_bytes. Added in 1.4.0. */
+export type Limits = {
+    svgMaxNodes: number;
+    svgMaxChars: number;
+};
+/** ichava.icon-browser.links.landing; null renders no link. Added in 1.4.0. */
+export type CrossLinks = {
+    landing: string | null;
+};
+export type ThemeVariant = {
+    svg_url: string | null;
+    svg_content?: string | null;
+};
+/** Code-tab and copy-format ids. The registry is x-ichava-formats at the schema root. Added in 1.4.0. */
+export type Format = "svg" | "motion" | "helper" | "blade" | "bladeGeneric" | "livewire" | "alpine" | "vue" | "react" | "svelte" | "webcomponent" | "api" | "name";
 /** One icon, as IconResource (REST) and IconSnippets::transform (Inertia) send it. */
 export type Icon = {
     id: number;
     package: string;
     name: string;
     kind: Kind;
+    kind_source?: KindSource;
     themes: string[];
+    /** Theme twins by theme, each with its own SVG URL; [] when there are none. Added in 1.4.0. */
+    theme_variants?: Record<string, ThemeVariant> | [];
     category: string | null;
     variant: string | null;
     /** The nested category the icon sits in, below its top-level category: the per-icon counterpart of the subs[] filter. Null at the top level. Added in 1.1.0. */
@@ -57,18 +87,27 @@ export type Package = {
     vendor?: string;
     kind?: Kind;
     default?: boolean;
+    by_kind?: KindCounts;
 };
 export type Facet = {
     name: string;
     label?: string;
     count: number;
 };
+/** One of a pack's variants as the variant picker shows it (core's VariantData): the translated label and description. Added in 1.3.0. */
+export type VariantMeta = {
+    slug: string;
+    label: string;
+    description: string;
+    default: boolean;
+};
 /** GET {prefix}/api/v1/icons/filters and the Inertia filterOptions prop; counts are scoped by the other filters. */
 export type Filters = {
     packages: Package[];
     categories: unknown[];
     variants: unknown[];
-    variants_by_package?: unknown[] | Record<string, unknown>;
+    /** Each pack's variants, keyed by pack name, in display order. PHP sends an empty map as []. Typed in 1.3.0. */
+    variants_by_package?: Record<string, VariantMeta[]> | [];
     kinds: Facet[];
     empty?: boolean;
 };
@@ -84,6 +123,8 @@ export type Statistics = {
         illustration: number;
     };
     empty?: boolean;
+    /** Icons per pack and kind; [] when nothing is seeded. Added in 1.4.0. */
+    by_package_kind?: Record<string, KindCounts> | [];
 };
 export type Collection = {
     id: string;
@@ -161,6 +202,9 @@ export type Bootstrap = {
     session: Session;
     features: Features;
     api: ApiManifest;
+    kinds?: KindsInfo;
+    limits?: Limits;
+    crossLinks?: CrossLinks;
 };
 /** GET {prefix}/api/v1/status (ichava.admin) and the Stats page status prop: core's StatusData. */
 export type Status = {
@@ -215,6 +259,9 @@ export type Ichava = {
     };
     snippets: Record<string, unknown> | unknown[];
     routes: Record<string, unknown>;
+    kinds?: KindsInfo;
+    limits?: Limits;
+    crossLinks?: CrossLinks;
 };
 /** Props HandleInertiaRequests shares with every page. */
 export type SharedProps = {
@@ -231,6 +278,8 @@ export type AppliedFilters = {
     language: string | null;
     packages: string[];
     kind: Kind | null;
+    /** Every kind asked for, in order; kind is the single one or null. Added in 1.4.0. */
+    kinds?: Kind[];
     categories: string[];
     subs: string[];
     variants: string[];
@@ -256,7 +305,9 @@ export type BrowserPage = SharedProps & ({
     appliedFilters: AppliedFilters;
     filterOptions: Filters;
     statistics: Statistics;
+    /** The category tree counted over the applied filters less the category selection (as GET /api/v1/icons/tree is asked by the browser). Reloaded with every listing visit since 1.3.0. */
     tree: unknown[];
+    /** Every installed pack, whatever is selected, with the one the browser opens on marked default; the Inertia catalog's getCatalogMeta reads it with filterOptions.variants_by_package. */
     packages: Package[];
     favorites: number[];
     collections: Collection[];
@@ -394,3 +445,15 @@ export type ApiManifest = {
         "cache.rebuild"?: string;
     } | unknown[];
 };
+/** One entry of the format registry (`x-ichava-formats`). */
+export interface FormatEntry {
+    id: Format;
+    label: string;
+    group: string;
+    delivery: "laravel" | "client" | "generated";
+    kinds: readonly Kind[];
+    copy: boolean;
+    defaultCopy: boolean;
+}
+/** The code-tab and copy-format registry (`x-ichava-formats`), in tab order. */
+export declare const FORMATS: readonly FormatEntry[];
