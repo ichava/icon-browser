@@ -129,6 +129,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Links out of the browser
+    |--------------------------------------------------------------------------
+    | Shared to the browser as `crossLinks`. `landing` is the page the About
+    | dialog and the footer link back to (the marketing site, for example). Null,
+    | the default, renders no link. Only an http(s) URL or a path on this host is
+    | sent; anything else is dropped, because the browser renders it as an href.
+    */
+    'links' => [
+        'landing' => env('ICHAVA_BROWSER_LANDING_URL'),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Where a signed-in user's library is kept
     |--------------------------------------------------------------------------
     | `database` (default) keeps a signed-in user's favourites, collections,

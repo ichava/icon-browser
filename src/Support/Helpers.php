@@ -38,16 +38,19 @@ final class Helpers
     }
 
     /**
-     * Build a Laravel throttle-middleware string from the per-route rate limit.
+     * The per-route throttle middleware, or none when rate limiting is off.
      *
-     * Reads `ichava.icon-browser.rate_limiting.enabled` and
-     * `ichava.icon-browser.rate_limiting.{type}`. When rate limiting is disabled,
-     * returns an empty array (caller spreads it into ->middleware([...])).
+     * Reads `ichava.icon-browser.rate_limiting.enabled`. When it is off, returns
+     * an empty array (the caller spreads it into ->middleware([...])). When on,
+     * returns one `ichava.throttle:<default>,1,<type>` entry: the route's own
+     * `$default` per minute, which `rate_limiting.{type}` may lower per request
+     * but never raise (S3: it used to replace the default, so the figure each
+     * route declared was never used). See {@see ThrottleRoute}.
      *
-     * @param string $type Rate limit bucket (e.g. 'browser', 'api').
-     * @param int $default Fallback per-minute limit if not configured.
+     * @param string $type Rate limit bucket (e.g. 'api').
+     * @param int $default The route's own per-minute limit.
      *
-     * @return array<int, string> Array containing one `throttle:N,1` entry or empty.
+     * @return array<int, string> One `ichava.throttle:N,1,bucket` entry, or empty.
      */
     public static function getRateLimit(string $type, int $default): array
     {
@@ -55,9 +58,7 @@ final class Helpers
             return [];
         }
 
-        $limit = self::configString("ichava.icon-browser.rate_limiting.{$type}", (string) $default);
-
-        return ["throttle:{$limit},1"];
+        return ["ichava.throttle:{$default},1,{$type}"];
     }
 
     /**

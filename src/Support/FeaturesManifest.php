@@ -69,6 +69,19 @@ final readonly class FeaturesManifest
         ],
     ];
 
+    /** The administrator-only status feature: the Stats page and core's status document. */
+    private const array STATUS = [
+        'page'   => ['ichava.inertia.stats'],
+        'status' => ['ichava.api.v1.status'],
+    ];
+
+    /** The cache-admin feature, behind the `ichava.manage-cache` ability. */
+    private const array CACHE_ADMIN = [
+        'stats'   => ['ichava.api.v1.cache.stats'],
+        'clear'   => ['ichava.inertia.cache.clear', 'ichava.api.v1.cache.clear'],
+        'rebuild' => ['ichava.inertia.cache.rebuild', 'ichava.api.v1.cache.rebuild'],
+    ];
+
     /**
      * Every REST endpoint, keyed `<area>.<action>` => [route name, the feature
      * that gates it or null, placeholder renames]. Separate from the per-feature
@@ -142,6 +155,31 @@ final readonly class FeaturesManifest
     }
 
     /**
+     * Every route name the manifest can advertise, each once: the library
+     * features' Inertia and REST routes, the status and cache-admin routes, and
+     * every REST endpoint. The suite walks the list through `Route::has` (W2), so
+     * a renamed route fails a test rather than vanishing from the bootstrap.
+     *
+     * @return list<string>
+     */
+    public static function routeNames(): array
+    {
+        $names = [];
+
+        foreach ([...array_values(self::LIBRARY), self::STATUS, self::CACHE_ADMIN] as $feature) {
+            foreach ($feature as $routes) {
+                array_push($names, ...$routes);
+            }
+        }
+
+        foreach (self::API as [$name]) {
+            $names[] = $name;
+        }
+
+        return array_values(array_unique($names));
+    }
+
+    /**
      * @return array<string, array{enabled: bool, reason: string|null, endpoints: array<string, string>}>
      */
     public function toArray(): array
@@ -152,17 +190,10 @@ final readonly class FeaturesManifest
             $features[$feature] = self::feature(self::configured($feature), 'config', $routes);
         }
 
-        $features['status'] = $this->gated('status', IchavaGates::ADMIN, [
-            'page'   => ['ichava.inertia.stats'],
-            'status' => ['ichava.api.v1.status'],
-        ]);
+        $features['status'] = $this->gated('status', IchavaGates::ADMIN, self::STATUS);
 
         $features['cacheAdmin'] = self::configured('cache_admin')
-            ? self::feature(CacheAdminGate::allows(), 'gate', [
-                'stats'   => ['ichava.api.v1.cache.stats'],
-                'clear'   => ['ichava.inertia.cache.clear', 'ichava.api.v1.cache.clear'],
-                'rebuild' => ['ichava.inertia.cache.rebuild', 'ichava.api.v1.cache.rebuild'],
-            ])
+            ? self::feature(CacheAdminGate::allows(), 'gate', self::CACHE_ADMIN)
             : self::feature(false, 'config', []);
 
         $features['illustrations'] = self::configured('illustrations')

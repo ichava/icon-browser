@@ -30,7 +30,8 @@ final class IconSnippets
     ) {}
 
     /**
-     * core's `transformIcon()` row with this package's snippet strings over it.
+     * core's `transformIcon()` row with this package's snippet strings over it,
+     * and the icon's theme variants.
      *
      * @return array<string, mixed>
      */
@@ -39,7 +40,7 @@ final class IconSnippets
         /** @var array<string, mixed> $row */
         $row = $this->browser->transformIcon($icon);
 
-        return array_merge($row, $this->forIcon($icon));
+        return array_merge($row, ['theme_variants' => ThemeVariants::for($icon)], $this->forIcon($icon));
     }
 
     /**
@@ -72,16 +73,25 @@ final class IconSnippets
         $config = (array) config('ichava.icon-browser.snippets', []);
         $out = [];
 
-        $tabs = array_values(array_filter((array) ($config['tabs'] ?? []), is_string(...)));
-        if ($tabs !== []) {
-            $out['tabs'] = $tabs;
-        }
-
         foreach (['labels', 'templates'] as $key) {
             $map = array_filter((array) ($config[$key] ?? []), fn ($v, $k): bool => is_string($k) && is_string($v) && $v !== '', ARRAY_FILTER_USE_BOTH);
             if ($map !== []) {
                 $out[$key] = $map;
             }
+        }
+
+        // A tab is a format (the schema's registry) or a template of the host's own.
+        // The browser drops any other id silently; here it is dropped too, and logged,
+        // so a typo is found on the server rather than as a tab that never appears.
+        $tabs = array_values(array_filter((array) ($config['tabs'] ?? []), is_string(...)));
+        $unknown = FormatRegistry::unknownTabs($tabs, $out['templates'] ?? []);
+        if ($unknown !== []) {
+            logger()->warning('ichava.icon-browser.snippets.tabs names neither a format nor a template: ' . implode(', ', $unknown));
+            $tabs = array_values(array_diff($tabs, $unknown));
+        }
+
+        if ($tabs !== []) {
+            $out = ['tabs' => $tabs] + $out;
         }
 
         $class = $config['class_name'] ?? null;

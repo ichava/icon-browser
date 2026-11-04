@@ -15,6 +15,8 @@
 | `icon`, `iconResource`, `iconList` | One icon (Inertia and REST) and `/icons` |
 | `filters`, `facet`, `package`, `statistics` | `/icons/filters`, `/packages`, `/icons/statistics` |
 | `sharedProps`, `ichava`, `browserPage`, `statsPage` | The shared Inertia props and the Browser and Stats pages |
+| `kindSource`, `kindCounts`, `kindsInfo`, `limits`, `crossLinks`, `themeVariant` | The kinds fields (1.4.0), shared by `bootstrap` and `ichava` |
+| `format` and the root `x-ichava-formats` | The code-tab and copy-format registry |
 | `*Response` | The `{ success, data, message }` envelope around each REST document |
 
 react-icon-browser generates its TypeScript types from this file. `tests/Feature/PayloadSchemaTest.php` validates real responses and page props against it, so a renamed or dropped field fails the suite.
@@ -23,10 +25,17 @@ Bump the major version for a removed or retyped field and the minor for an added
 
 | Version | Change |
 |---|---|
+| 1.4.0 | Kinds and flavours. `icon` gains `kind_source` and `theme_variants`; `package` gains `by_kind`; `statistics` gains `by_package_kind`; `appliedFilters` gains `kinds`; `bootstrap` and `ichava` gain `kinds` (`default`, `available`, `counts`), `limits` (`svgMaxNodes`, `svgMaxChars`, core's `svg.max_elements` and `svg.max_bytes`) and `crossLinks` (`landing`). New `$defs/format` and the root `x-ichava-formats` registry. Every new property is optional, so a 1.3.0 payload still validates. Additive. |
 | 1.3.0 | `filters.variants_by_package` is typed: each pack's list of `variantMeta` (`slug`, `label`, `description`, `default`), or `[]` when no pack describes its variants. `browserPage.tree` is counted over the selection less its categories and reloads with every listing visit. Additive. |
 | 1.2.0 | `bootstrap` gains `api` (`apiManifest`): every REST endpoint by its own key, under `/api/v1`. Additive. |
 | 1.1.0 | `icon` gains `sub`, the nested category below the top-level one, or null. Additive. |
 | 1.0.0 | First published contract. |
+
+## Format registry
+
+`x-ichava-formats` is an ordered array of the 13 code-tab and copy-format ids, and its order is the tab order. Each entry is `{ id, label, group, delivery, kinds, copy, defaultCopy }`. `delivery` says where the text comes from: `laravel` (a field this package serves, or a Laravel component), `client` (the browser's snippet factory) or `generated` (a package built from the icon; the factory's snippet stands in until it ships). `defaultCopy` marks the six formats the toolbar copies by default (`svg`, `helper`, `blade`, `vue`, `react`, `name`).
+
+`$defs/format` is the same ids as an enum. `Support\FormatRegistry` reads the registry for PHP, and `snippets.tabs` is checked against it: an id that is neither a format nor one of the host's `snippets.templates` is dropped from what the browser is sent, and logged. `tests/Feature/FormatRegistryTest.php` fails if the enum and the registry disagree, or if a `laravel` format has no source field on an icon or an illustration. react-icon-browser vendors the schema and checks its tabs against the same list.
 
 ---
 

@@ -47,13 +47,21 @@ See [Host integration](host-integration.md) for the shapes, and [Payload schema]
 |-----------|---------|
 | `search`, `language` | Search text; `language` picks the PostgreSQL full-text language (ignored on other drivers) |
 | `packages[]`, `categories[]`, `variants[]` | As before |
-| `kind` | `icon` or `illustration` |
+| `kind` | `icon` or `illustration`. Repeatable: `kind[]=icon&kind[]=illustration` returns both (OR within kind, AND with every other filter); absent or empty returns all. A value that is not a kind is a 422 |
 | `subs[]` | Nested categories, or variants within the selected category |
 | `tags[]`, `keywords[]` | Tags and keywords an icon must carry |
 
 Each icon in the listing, and `GET /icons/{id}`, carries `sub`: the slug of the nested category the icon sits in below its top-level `category`, or null when it is filed only at the top level. It is the per-icon counterpart of `subs[]` (schema 1.1.0).
 
 Facet counts in `/icons/filters` are counted over the other filters, and `/icons/tree` over the selection. The `/icons` `meta` block carries `has_search`, `has_filters` and `empty_reason` (`no_match`, `no_icons`, or null). Each icon carries `kind` and `themes`.
+
+### Kinds, in schema 1.4.0
+
+- **`kind_source`** on every icon names the row of the kind resolution order that decided it: `host`, `item`, `rule`, `category`, `pack` or `default`. The rule's pattern (`kind_rule`) is not served, because it can carry host configuration.
+- **`theme_variants`** on every icon maps each theme in `themes` to `{ svg_url, svg_content? }`, and is `[]` when there are none. `svg_content` is present only when the icon itself carries `svg_content`, and is sanitised the same way. `svg_url` is `/icons/{id}/svg?theme=<theme>&v=<version>`; a theme the icon does not have is a 404. The twin is held to the same per-kind size budget as the light file.
+- **`/icons/statistics`** gains `by_package_kind`: `{ "<package>": { icon, illustration } }`, or `[]` when nothing is seeded. `by_kind` is unchanged.
+- **`/icons/filters`**: each `packages[*]` carries `by_kind` (`{ icon, illustration }` for that pack within the current filters), and the `kinds` facet is counted over every filter but `kind` itself, so a client can show both counts while one kind is selected.
+- On the Inertia page, `appliedFilters.kind` is the single kind or null (none, or two or more) and `appliedFilters.kinds` is always the full list.
 
 ### Package Endpoints
 

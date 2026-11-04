@@ -201,7 +201,7 @@ final class IchavaApiSecurity
         $response = $next($request);
 
         // 6. Add security headers
-        $response = $this->addSecurityHeaders($response);
+        $response = $this->addSecurityHeaders($response, $request);
 
         // 7. Pretty print JSON for browser requests
         if ($response instanceof JsonResponse && $this->shouldPrettyPrint($request)) {
@@ -345,7 +345,7 @@ final class IchavaApiSecurity
      * forking the middleware. CSP mode supports `strict`, `nonce`, and
      * `hash`.
      */
-    private function addSecurityHeaders(Response $response): Response
+    private function addSecurityHeaders(Response $response, Request $request): Response
     {
         // X-XSS-Protection is deliberately omitted: the header is deprecated
         // (removed from Chrome 78+, never implemented in Firefox), and the
@@ -376,7 +376,8 @@ final class IchavaApiSecurity
         }
 
         if (config('ichava.icon-browser.api.cors.enabled', true)) {
-            $headers = array_merge($headers, $this->getCorsHeaders());
+            $headers = array_merge($headers, $this->getCorsHeaders($request));
+            $this->varyOnOriginWhenSeveral($response);
         }
 
         /*
@@ -567,20 +568,74 @@ final class IchavaApiSecurity
     /**
      * Get CORS headers
      *
+     * `Access-Control-Allow-Origin` holds one origin or `*`: a browser rejects a
+     * list (S4). One configured origin is sent as it always was; several are
+     * matched against the request's `Origin`, and the header is left out for an
+     * origin that is not listed, which is how the browser refuses it.
+     *
      * @return array<string, mixed>
      */
-    private function getCorsHeaders(): array
+    private function getCorsHeaders(Request $request): array
     {
-        $allowedOrigins = config('ichava.icon-browser.api.cors.allowed_origins');
         $allowedMethods = config('ichava.icon-browser.api.cors.allowed_methods', 'GET, POST, PUT, DELETE, OPTIONS');
         $allowedHeaders = config('ichava.icon-browser.api.cors.allowed_headers', 'Content-Type, Authorization, X-Requested-With, Accept');
 
-        return [
-            'Access-Control-Allow-Origin'  => is_array($allowedOrigins) ? implode(', ', array_map(Helpers::stringOf(...), $allowedOrigins)) : $allowedOrigins,
+        $headers = [
             'Access-Control-Allow-Methods' => $allowedMethods,
             'Access-Control-Allow-Headers' => $allowedHeaders,
             'Access-Control-Max-Age'       => '86400',
         ];
+
+        $origin = $this->allowedOrigin($request);
+
+        return $origin === null ? $headers : ['Access-Control-Allow-Origin' => $origin] + $headers;
+    }
+
+    /**
+     * The configured origins: an array, or the comma-separated string
+     * `ICHAVA_API_CORS_ORIGINS` sets. Trailing slashes are not part of an origin.
+     *
+     * @return list<string>
+     */
+    private function allowedOrigins(): array
+    {
+        $configured = config('ichava.icon-browser.api.cors.allowed_origins');
+        $items = is_array($configured) ? $configured : explode(',', Helpers::stringOf($configured));
+
+        $origins = [];
+        foreach ($items as $item) {
+            $origin = rtrim(trim(Helpers::stringOf($item)), '/');
+            if ($origin !== '' && ! in_array($origin, $origins, true)) {
+                $origins[] = $origin;
+            }
+        }
+
+        return $origins;
+    }
+
+    private function allowedOrigin(Request $request): ?string
+    {
+        $origins = $this->allowedOrigins();
+
+        if (count($origins) <= 1) {
+            return $origins[0] ?? null;
+        }
+
+        if (in_array('*', $origins, true)) {
+            return '*';
+        }
+
+        $sent = $request->headers->get('Origin');
+
+        return is_string($sent) && in_array(rtrim($sent, '/'), $origins, true) ? rtrim($sent, '/') : null;
+    }
+
+    /** With several origins the answer depends on the request, so a cache must key on it. */
+    private function varyOnOriginWhenSeveral(Response $response): void
+    {
+        if (count($this->allowedOrigins()) > 1) {
+            $response->setVary('Origin', false);
+        }
     }
 
     /**

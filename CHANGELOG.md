@@ -4,9 +4,26 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
 
 ## [Unreleased]
 
+### Added
+
+- **Kinds in API v1, payload schema 1.4.0** (kinds-and-flavours Phase 1; every new schema property is optional, so a 1.3.0 payload still validates).
+  - `?kind=` is repeatable: `kind[]=icon&kind[]=illustration` ORs, ANDs with every other filter, and `?kind=icon` still works. An element that is not a kind is a 422. The Inertia page's `appliedFilters.kind` keeps its meaning (the single kind, else null) and gains `kinds`, the full list.
+  - Per-kind counts: `kinds.counts` in the bootstrap and the `ichava` prop, `by_package_kind` on `/icons/statistics`, and `by_kind` on each pack facet (K4).
+  - `kind_source` on every icon names the row that decided its kind. `kind_rule` is not served.
+  - `theme_variants` on every icon, with `GET /icons/{id}/svg?theme=<theme>` serving a twin through the same sanitiser and size budget, under its own cache version. An unknown theme is a 404.
+  - `kinds` (`default`, `available`, `counts`), `limits` and `crossLinks` on the bootstrap and the `ichava` prop. `kinds.default` now reads core's `kinds.default` (K2/D3, closes the knob nothing read). `limits.svgMaxNodes` and `svgMaxChars` are core's `svg.max_elements` and `svg.max_bytes`, so a host can override the browser's SVG ceilings (Q11). `crossLinks.landing` comes from the new `links.landing` config (`ICHAVA_BROWSER_LANDING_URL`, default none) and passes only an `http(s)` URL or a local path (W4, browser to landing).
+  - The format registry: `$defs/format` and the root `x-ichava-formats` in the schema (13 formats, tab order), read in PHP by `Support\FormatRegistry`. `snippets.tabs` ids that are neither a format nor a template are dropped and logged. The PHP half of the two-way guard is `FormatRegistryTest`.
+  - Tests: `KindsApiTest`, `BrowserKindsBootstrapTest`, `FormatRegistryTest`, `PayloadSchemaTest` (schema 1.4.0), and `FeaturesManifestRoutesTest` (W2: every route name the manifest can advertise, 58 of them, is mounted; floor 40).
+
+### Fixed
+
+- **Per-route rate limits now apply (S3).** `getRateLimit()` read `rate_limiting.<bucket>`, which the shipped config always sets, so the limit each route declared (10, 30, 60, 120, 300) was never used, and Laravel's string `throttle:` shares one counter per caller across routes. The new `ichava.throttle` middleware takes the route's declared limit, lets `rate_limiting.<bucket>` only lower it, reads that per request, and counts per route. Turning `rate_limiting.enabled` on also crashed route loading (a nested array in the `cache` group's middleware, "Array to string conversion"); fixed. Behaviour change for hosts that enable the switch: `icons/filters`, `tree` and `statistics` now answer 429 after 60 requests a minute, not 300.
+- **CORS with several origins works (S4).** `Access-Control-Allow-Origin` was the comma-joined list, which a browser rejects. A single origin is sent as before; several are matched against the request's `Origin` and echoed when listed, the response varies on `Origin`, and an unlisted origin gets no header. `ICHAVA_API_CORS_ORIGINS` strings are split on commas. The docs said the default was `*`; it is `APP_URL`.
+- **`GET /icons/{id}/svg` holds an illustration to the illustration size budget.** The route selected a handful of columns without `kind`, so every file was checked against the icon budget.
+
 ### Security
 
-- **Re-vendored react-icon-browser `2db1e60` (ichava/react-icon-browser#197).** The vendored SVG sanitizer now guards CSS `url()` references, and the browser caps the size of an SVG it will process: `limits.svgMaxNodes` 30000 and `limits.svgMaxChars` 4500000 in the app's `AppConfig.limits`. `inertia-app.js` and `inertia-app.css` are rebuilt. The PHP side passes no limits to the browser today, so the caps are fixed defaults and a host cannot override them yet.
+- **Re-vendored react-icon-browser `2db1e60` (ichava/react-icon-browser#197).** The vendored SVG sanitizer now guards CSS `url()` references, and the browser caps the size of an SVG it will process: `limits.svgMaxNodes` 30000 and `limits.svgMaxChars` 4500000 in the app's `AppConfig.limits`. `inertia-app.js` and `inertia-app.css` are rebuilt. The PHP side now passes core's `svg.max_elements` and `svg.max_bytes` as `limits`, so a host can override them (see Added); the vendored browser reads them once it is re-vendored.
 
 ### Changed
 

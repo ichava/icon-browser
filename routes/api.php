@@ -186,7 +186,7 @@ Route::group(Helpers::routeGroup(Helpers::routePrefix() . '/api/v1', ['ichava.ap
     // is allowed. `ichava.cache-admin` fails closed unless the host grants the ability.
     Route::prefix('cache')
         ->name('cache.')
-        ->middleware(['ichava.cache-admin', Helpers::getRateLimit('api', 10)])
+        ->middleware(['ichava.cache-admin', ...Helpers::getRateLimit('api', 10)])
         ->group(function () {
             Route::post('/clear', [IconBrowserApiController::class, 'clearCache'])
                 ->name('clear');
