@@ -49,7 +49,29 @@ export declare function allowedAttributeNames(): string[];
 /** Same-document fragment references only; everything else is blocked. */
 export declare function fragmentPattern(): RegExp;
 /**
- * Values a `style` attribute may not carry. `url()` aimed off the document is
- * the CSS exfiltration vector; the rest are script sinks in their own right.
+ * Attributes whose value is a CSS paint, url or funciri, so a `url()` can reach the
+ * network from them just as from `style`. Checked with the same guard.
+ */
+export declare const CSS_VALUE_ATTRIBUTES: readonly string[];
+/**
+ * Comments, then escapes, then lowercase. The order matters: a comment is removed from
+ * the raw text (an unterminated one runs to the end, as in CSS), and text an escape
+ * decodes into is never re-read as a comment, because a browser does not read it that
+ * way either. A comment becomes nothing, not a space, so a comment inside `url` is
+ * checked as `url(`: wrong in the strict direction.
+ */
+export declare function normaliseCss(value: string): string;
+/**
+ * Whether a CSS value is safe to keep. It is normalised first (comments, escapes, case)
+ * and then judged against an allow-list: the only `url()` that survives points at a
+ * `#fragment`, every other function must be in SAFE_FUNCTIONS, and an `@` rule drops the
+ * whole value. Used for `style` and for the attributes in CSS_VALUE_ATTRIBUTES.
+ */
+export declare function cssValueIsSafe(value: string): boolean;
+/**
+ * Values a `style` attribute may not carry. `url()` aimed off the document is the CSS
+ * exfiltration vector, and so are `image-set()`, `src()` and the other functions that
+ * take a URL; `expression(` and friends are script sinks in their own right. Kept under
+ * its original name for existing callers.
  */
 export declare function styleValueIsSafe(value: string): boolean;
