@@ -409,6 +409,11 @@ declare const EN: {
     'format.react': string;
     'format.svelte': string;
     'format.webcomponent': string;
+    'format.reactNative': string;
+    'format.angular': string;
+    'format.solid': string;
+    'format.preact': string;
+    'format.astro': string;
     'format.api': string;
     'format.name': string;
     'about.landing': string;
