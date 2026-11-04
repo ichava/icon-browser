@@ -25,6 +25,7 @@ Bump the major version for a removed or retyped field and the minor for an added
 
 | Version | Change |
 |---|---|
+| 1.5.0 | `$defs/format` and `x-ichava-formats` gain `reactNative`, `angular`, `solid`, `preact` and `astro`, the Tier 2 flavours `ichava/js-icon-components` generates (`delivery: "generated"`, group `js`, icon and illustration, not default copy), in tab order after `webcomponent`. Additive: a 1.4.0 payload still validates. |
 | 1.4.0 | Kinds and flavours. `icon` gains `kind_source` and `theme_variants`; `package` gains `by_kind`; `statistics` gains `by_package_kind`; `appliedFilters` gains `kinds`; `bootstrap` and `ichava` gain `kinds` (`default`, `available`, `counts`), `limits` (`svgMaxNodes`, `svgMaxChars`, core's `svg.max_elements` and `svg.max_bytes`) and `crossLinks` (`landing`). New `$defs/format` and the root `x-ichava-formats` registry. Every new property is optional, so a 1.3.0 payload still validates. Additive. |
 | 1.3.0 | `filters.variants_by_package` is typed: each pack's list of `variantMeta` (`slug`, `label`, `description`, `default`), or `[]` when no pack describes its variants. `browserPage.tree` is counted over the selection less its categories and reloads with every listing visit. Additive. |
 | 1.2.0 | `bootstrap` gains `api` (`apiManifest`): every REST endpoint by its own key, under `/api/v1`. Additive. |
