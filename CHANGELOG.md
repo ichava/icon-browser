@@ -4,6 +4,10 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
 
 ## [Unreleased]
 
+### Security
+
+- **Re-vendored react-icon-browser `2db1e60` (ichava/react-icon-browser#197).** The vendored SVG sanitizer now guards CSS `url()` references, and the browser caps the size of an SVG it will process: `limits.svgMaxNodes` 30000 and `limits.svgMaxChars` 4500000 in the app's `AppConfig.limits`. `inertia-app.js` and `inertia-app.css` are rebuilt. The PHP side passes no limits to the browser today, so the caps are fixed defaults and a host cannot override them yet.
+
 ### Changed
 
 - **Documentation links point at each repository's own `docs/`** (Sim, 2026-11-03: "all ichava repos have docs in their respective repos. thats by design"). Links to `opensource.simtabi.com/documentation/ichava/...` and the `opensource.simtabi.com/products/ichava/...` homepage, which answer 404 for every ichava page, now go to the matching `docs/*.md` on GitHub, or to the repository itself. Each target was checked to exist on that repository's `main`. The manifest's `homepage` and `support.docs` follow.
