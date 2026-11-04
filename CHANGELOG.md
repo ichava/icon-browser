@@ -27,6 +27,7 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
 ### Security
 
 - **Re-vendored react-icon-browser `2db1e60` (ichava/react-icon-browser#197).** The vendored SVG sanitizer now guards CSS `url()` references, and the browser caps the size of an SVG it will process: `limits.svgMaxNodes` 30000 and `limits.svgMaxChars` 4500000 in the app's `AppConfig.limits`. `inertia-app.js` and `inertia-app.css` are rebuilt. The PHP side now passes core's `svg.max_elements` and `svg.max_bytes` as `limits`, so a host can override them (see Added); the vendored browser reads them once it is re-vendored.
+- **Every workflow declares a top-level `permissions: contents: read`** (S9), so its token no longer depends on the organisation's default. None of these jobs writes. `tests/Feature/WorkflowPermissionsTest.php` fails if a workflow loses the block.
 
 ### Changed
 
