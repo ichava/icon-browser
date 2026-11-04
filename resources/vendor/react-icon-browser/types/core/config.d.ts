@@ -1,0 +1,273 @@
+import type { CopyFormat, Scale as ScaleT, SnippetConfig } from './types';
+import type { IconKind } from '@ichava/js-ui-kernel';
+import type { HostContext } from '../modules/host/domain/HostContext';
+export type { ScaleT };
+export type LogLevel = 'debug' | 'info' | 'warn' | 'error' | 'silent';
+export type AppEnv = 'production' | 'development';
+export interface Workspace {
+    id: string;
+    name: string;
+    plan: string;
+    active: boolean;
+}
+export interface TeamMember {
+    initials: string;
+    name: string;
+    online: boolean;
+    /** online | away | offline — falls back to online?online:offline */
+    status?: 'online' | 'away' | 'offline';
+}
+export interface FeatureFlags {
+    devtools: boolean;
+    collections: boolean;
+    history: boolean;
+    motion: boolean;
+    treatments: boolean;
+    multiSelect: boolean;
+    presence: boolean;
+    /**
+     * Development fixtures: the sample signed-in user, seeded collections with
+     * fabricated collaborators, and the seeded notification feed.
+     *
+     * Defaults to FALSE. The standalone dev app turns it on in
+     * `public/data/app-config.json`; a host embedding the browser simply omits it
+     * and gets a neutral product with no invented data. Keeping the switch in one
+     * place is the point -- the alternative is auditing every call site at port
+     * time.
+     *
+     * This flag does NOT gate a real feature. Nothing behind it may ever become a
+     * substitute for the host's own auth or data.
+     */
+    demo: boolean;
+    favorites: boolean;
+    /** Command-palette recents. */
+    commands: boolean;
+    /** The server-side library as a whole: "Delete my library". */
+    library: boolean;
+    /** Preferences kept by the host (reset from Settings). */
+    preferences: boolean;
+    /** The admin status panel (`ichava.admin`). */
+    status: boolean;
+    /** Cache stats, clear and rebuild (`ichava.manage-cache`). */
+    cacheAdmin: boolean;
+    /** The Icons | Illustrations switch; it also needs at least one illustration. */
+    illustrations: boolean;
+    /** Search in the reader's language (PostgreSQL hosts). */
+    searchLanguage: boolean;
+    export: boolean;
+    /** The light/dark control. */
+    themeToggle: boolean;
+    invites: boolean;
+    sharing: boolean;
+    notifications: boolean;
+    workspaces: boolean;
+}
+export interface AppConfig {
+    meta: {
+        version: string;
+        author: string;
+        sets: number;
+        license: string;
+        url: string;
+    };
+    seo: {
+        title: string;
+        description: string;
+        ogImage?: string;
+        canonical?: string;
+    };
+    env: AppEnv | null;
+    debug: {
+        enabled: boolean | null;
+        logLevel: LogLevel;
+    };
+    features: FeatureFlags;
+    brand: {
+        name: string;
+        suffix: string;
+        tagline: string;
+    };
+    user: {
+        mode: string;
+        name: string;
+        email: string;
+        initials: string;
+        plan: string;
+        workspaces: Workspace[];
+    };
+    team: TeamMember[];
+    ui: {
+        defaultTheme: 'light' | 'dark';
+        scale: ScaleT;
+        density: 'compact' | 'comfy';
+        accentOptions: string[];
+        perPageOptions: number[];
+        scaleOptions: {
+            id: ScaleT;
+            label: string;
+        }[];
+        baseFontSize: number;
+        avatarPalette: string[];
+    };
+    defaults: {
+        packages: string[];
+        perPage: number;
+        sortBy: 'name' | 'package' | 'category';
+        sortOrder: 'asc' | 'desc';
+        appearance: {
+            theme: 'light' | 'dark' | 'system';
+            accent: string;
+            radius: number;
+            scale: ScaleT;
+            density: 'compact' | 'comfy';
+            reduceMotion: boolean;
+            showLabels: boolean; /** Recolour monochrome black icons to the text colour in dark mode (B7). */
+            adaptMonochrome?: boolean;
+        };
+        render: {
+            size: number;
+            sizeUnit: 'px' | 'rem' | 'em';
+            gridStroke: number;
+            color: string | null;
+            treatment: string;
+            copyFormat: CopyFormat;
+        };
+        collections: {
+            id: string;
+            name: string;
+            icons: number[];
+            shared?: boolean;
+            role?: 'editor' | 'viewer';
+            sharedWith?: {
+                initials: string;
+                name: string;
+            }[];
+        }[];
+        /** The kind the browser opens on, on a first visit. A host sets it from `kinds` (contract §2.3). */
+        kind?: IconKind;
+    };
+    ranges: {
+        size: {
+            min: number;
+            max: number;
+            step: number;
+        };
+        stroke: {
+            min: number;
+            max: number;
+            step: number;
+        };
+        radius: {
+            min: number;
+            max: number;
+        };
+    };
+    limits: {
+        historyCap: number;
+        recentCommandsCap: number;
+        paletteIconResults: number;
+        logBuffer: number;
+        /** SVG sanitiser: longest input accepted, in characters, checked before parsing. Over-cap input renders nothing. */
+        svgMaxChars: number;
+        /** SVG sanitiser: most nodes accepted (elements, comments, processing instructions; counted as `<`). Over-cap input renders nothing. */
+        svgMaxNodes: number;
+    };
+    toolbar: {
+        sortOptions: {
+            id: string;
+            label: string;
+        }[];
+        treatments: {
+            id: string;
+            label: string;
+            desc: string;
+        }[];
+        sizeUnits: string[];
+        copyFormats: {
+            id: CopyFormat;
+            label: string;
+        }[];
+        exportFormats: {
+            id: string;
+            label: string;
+            desc: string;
+            icon?: string;
+        }[];
+        /**
+         * The registry's native asset formats (schema 1.8.0: flutter, swiftui), shown
+         * in the Export menu as "Download for …" links to where the generator publishes them. The
+         * browser cannot build these itself. Optional so a host's own AppConfig written before it
+         * existed still type-checks.
+         */
+        nativeExports?: {
+            id: string;
+            href: string;
+        }[];
+    };
+    about: {
+        description: string;
+        creditsTitle: string;
+        copyright: string;
+        creditsMarqueeSec: number;
+        credits: {
+            name: string;
+            author: string;
+            license: string;
+        }[];
+        links: {
+            label: string;
+            href: string;
+        }[];
+        stats: {
+            key: string;
+            label: string;
+        }[];
+    };
+    /** i18n metadata. The Laravel backend may serve `available` locales + an `endpoint`
+     *  returning `{ [locale]: { key: value } }` overrides, kept in the mount's store (`addTranslations`). */
+    i18n: {
+        locale: string;
+        available: string[];
+        endpoint?: string;
+    };
+    /** `consent` is the site-wide consent answer (A6-gaps G17); optional so a host's own
+     *  AppConfig written before it existed still type-checks. */
+    storageKeys: {
+        persist: string;
+        driver: string;
+        paletteRecent: string;
+        locale: string;
+        consent?: string;
+    };
+    /**
+     * The host application this browser runs in, when it runs in one: its user, features
+     * manifest, endpoints and sign-in links (`hostConfig` / `hostConfigFromProps`). Null
+     * for the standalone app.
+     */
+    host: HostContext | null;
+    /** @ichava/bootsplash config block (Part D). Framework-agnostic; passed to .config(). */
+    boot: Record<string, unknown>;
+    /** The icon dialog's snippet tabs: order, labels, templates, class (see `SnippetConfig`). */
+    snippets: SnippetConfig;
+    storage: {
+        frontendDriver: 'local' | 'session';
+        laravelDriver?: string;
+    };
+    /**
+     * Links to the host's other surfaces (schema 1.4.0 `crossLinks`). `landing` is the
+     * product's landing page, shown in About; null shows no link.
+     */
+    crossLinks: {
+        landing: string | null;
+    };
+}
+export type PartialConfig = DeepPartial<AppConfig>;
+type DeepPartial<T> = {
+    [K in keyof T]?: T[K] extends object ? (T[K] extends unknown[] ? T[K] : DeepPartial<T[K]>) : T[K];
+};
+/** The single source of truth for every default DATA value. */
+export declare const CONFIG_DEFAULTS: AppConfig;
+/** Deep-merge a partial config onto another (arrays replace, objects merge). */
+export declare function mergeConfig<T>(base: T, over: unknown): T;
+/** Resolve a wire-partial config onto the defaults → a complete typed AppConfig. */
+export declare function resolveConfig(partial: PartialConfig | null | undefined): AppConfig;
