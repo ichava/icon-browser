@@ -25,6 +25,9 @@
         <testsuite name="Configured">
             <directory>tests/Configured</directory>
         </testsuite>
+        <testsuite name="RateLimited">
+            <directory>tests/RateLimited</directory>
+        </testsuite>
         <testsuite name="Headless">
             <directory>tests/Headless</directory>
         </testsuite>

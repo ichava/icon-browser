@@ -22,6 +22,7 @@ use Simtabi\Laranail\Ichava\IconBrowser\View\Components\SriAsset;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Middleware\LogRequests;
 use Simtabi\Laranail\Package\Tools\Providers\PackageServiceProvider;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Middleware\EnsureSession;
+use Simtabi\Laranail\Ichava\IconBrowser\Http\Middleware\ThrottleRoute;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Middleware\AuthorizeAdmin;
 use Simtabi\Laranail\Ichava\IconBrowser\Commands\InjectNpmScriptsCommand;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Middleware\ForceJsonResponse;
@@ -190,6 +191,7 @@ class IconBrowserServiceProvider extends PackageServiceProvider
         $router->aliasMiddleware('ichava.guard', IchavaStatefulGuard::class);
         $router->aliasMiddleware('ichava.cache-admin', AuthorizeCacheAdmin::class);
         $router->aliasMiddleware('ichava.admin', AuthorizeAdmin::class);
+        $router->aliasMiddleware('ichava.throttle', ThrottleRoute::class);
         $router->aliasMiddleware('ichava.handle-inertia', HandleInertiaRequests::class);
 
         // Detect host capabilities (Sanctum / session availability).

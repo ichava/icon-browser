@@ -8,6 +8,7 @@ use Simtabi\Laranail\Ichava\IconBrowser\Tests\ApiDisabledTestCase;
 use Simtabi\Laranail\Ichava\IconBrowser\Tests\CustomPrefixTestCase;
 use Simtabi\Laranail\Ichava\IconBrowser\Tests\ConfiguredHostTestCase;
 use Simtabi\Laranail\Ichava\IconBrowser\Tests\InertiaDisabledTestCase;
+use Simtabi\Laranail\Ichava\IconBrowser\Tests\RateLimitedHostTestCase;
 
 pest()
     ->extend(TestCase::class)
@@ -33,3 +34,8 @@ pest()
     ->extend(InertiaDisabledTestCase::class)
     ->use(RefreshDatabase::class)
     ->in('Headless');
+
+pest()
+    ->extend(RateLimitedHostTestCase::class)
+    ->use(RefreshDatabase::class)
+    ->in('RateLimited');
