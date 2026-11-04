@@ -30,15 +30,17 @@ const LARAVEL_FORMAT_SOURCES = [
 ];
 
 describe('the registry', function () {
-    it('has the eighteen formats, in tab order, each with the entry shape', function () {
+    it('has the twenty-seven formats, in tab order, each with the entry shape', function () {
         ['formats' => $formats] = schemaFormats();
 
-        expect(count($formats))->toBeGreaterThanOrEqual(18)
-            ->and(array_column($formats, 'id'))->toBe(['svg', 'motion', 'helper', 'blade', 'bladeGeneric', 'livewire', 'alpine', 'vue', 'react', 'svelte', 'webcomponent', 'reactNative', 'angular', 'solid', 'preact', 'astro', 'api', 'name']);
+        expect(count($formats))->toBeGreaterThanOrEqual(27)
+            ->and(array_column($formats, 'id'))->toBe(['svg', 'motion', 'helper', 'blade', 'bladeGeneric', 'livewire', 'alpine', 'vue', 'react', 'svelte', 'webcomponent', 'reactNative', 'angular', 'solid', 'preact', 'astro', 'qwik', 'ember', 'elm', 'css-mask', 'data-uri', 'png-zip', 'flutter', 'swiftui', 'android-vd', 'api', 'name']);
 
         foreach ($formats as $format) {
-            expect(array_keys($format))->toBe(['id', 'label', 'group', 'delivery', 'kinds', 'copy', 'defaultCopy'])
-                ->and($format['delivery'])->toBeIn(['laravel', 'client', 'generated'])
+            $shape = ['id', 'label', 'group', 'delivery', 'kinds', 'copy', 'defaultCopy'];
+
+            expect(array_keys($format))->toBe(($format['native'] ?? false) ? [...$shape, 'native'] : $shape)
+                ->and($format['delivery'])->toBeIn(['laravel', 'client', 'generated', 'asset'])
                 ->and($format['kinds'])->not->toBeEmpty()
                 ->and($format['label'])->not->toBe('');
         }
@@ -48,6 +50,21 @@ describe('the registry', function () {
         ['schema' => $schema, 'formats' => $formats] = schemaFormats();
 
         expect($schema['$defs']['format']['enum'])->toBe(array_column($formats, 'id'));
+    });
+
+    it('carries the 1.6.0 formats: generated copy true, asset exports, native exports', function () {
+        $byId = array_column(schemaFormats()['formats'], null, 'id');
+
+        foreach (['qwik', 'ember', 'elm'] as $id) {
+            expect($byId[$id]['delivery'])->toBe('generated')->and($byId[$id]['copy'])->toBeTrue();
+        }
+        foreach (['css-mask', 'data-uri', 'png-zip', 'flutter', 'swiftui', 'android-vd'] as $id) {
+            expect($byId[$id]['delivery'])->toBe('asset')->and($byId[$id]['group'])->toBe('export')->and($byId[$id]['copy'])->toBeFalse();
+        }
+
+        $native = array_keys(array_filter($byId, fn (array $f): bool => $f['native'] ?? false));
+
+        expect($native)->toBe(['flutter', 'swiftui', 'android-vd']);
     });
 
     it('marks the six default copy formats', function () {
