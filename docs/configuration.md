@@ -60,12 +60,17 @@ return [
         'domain'     => env('ICHAVA_ROUTE_DOMAIN'),         // one domain, or null for all
     ],
 
+    // Links out of the browser (shared as `crossLinks`)
+    'links' => [
+        'landing' => env('ICHAVA_BROWSER_LANDING_URL'),     // About dialog and footer; null renders no link
+    ],
+
     // REST API
     'api' => [
         'pretty_print' => env('ICHAVA_API_PRETTY_PRINT', true),
         'cors' => [
             'enabled'         => env('ICHAVA_API_CORS_ENABLED', true),
-            'allowed_origins' => env('ICHAVA_API_CORS_ORIGINS', '*'),
+            'allowed_origins' => env('ICHAVA_API_CORS_ORIGINS', env('APP_URL', 'http://localhost')),
             'allowed_methods' => 'GET, POST, PUT, DELETE, OPTIONS',
             'allowed_headers' => 'Content-Type, Authorization, X-Requested-With, Accept',
         ],
@@ -126,10 +131,20 @@ final class IconSnippetResolver implements SnippetResolver
 }
 ```
 
+## What the browser is told
+
+The `ichava` Inertia prop and `GET {prefix}/api/v1/bootstrap` carry three documents (schema 1.4.0):
+
+- `kinds`: `default` is core's `ichava.ichava-core.kinds.default` (`ICHAVA_DEFAULT_KIND`); `available` is `["icon"]` when `features.illustrations` is off and every kind otherwise; `counts` are the unfiltered `{ icon, illustration }`. The browser opens on `default`, then falls back to the first available kind, then to the first kind that has items.
+- `limits`: `svgMaxNodes` and `svgMaxChars` are core's `ichava.ichava-core.svg.max_elements` and `svg.max_bytes` (`ICHAVA_SVG_MAX_ELEMENTS`, `ICHAVA_SVG_MAX_BYTES`). A host that raises the server's ceilings raises the browser's with them; a value that is not a positive integer falls back to core's default.
+- `crossLinks.landing`: `links.landing` (`ICHAVA_BROWSER_LANDING_URL`). Only an `http(s)` URL or a path on the host is sent, since the browser renders it as an `href`; anything else, and the default, is null and renders no link.
+
 ## Notes
 
 - The route prefix (`/{prefix}/icons`, `/{prefix}/api/v1/...`) is set by `ICHAVA_BROWSER_PREFIX` and lives in **core's** config (`config('ichava.ichava-core.prefix')`). Both packages read it; icon-browser reads it through `Helpers::routePrefix()`.
-- `rate_limiting.enabled = false` (default) makes per-bucket limits no-ops. The `api_floor` global throttle still applies regardless.
+- `rate_limiting.enabled = false` (default) makes per-route limits no-ops. The `api_floor` global throttle still applies regardless.
+- With `rate_limiting.enabled = true`, each REST route carries the limit it declares (for example 60 a minute for `icons/filters`, 10 for the cache writes), counted per route and per caller. `rate_limiting.api` can only **lower** that figure for every API route; it never raises it. The figure is read per request, so changing it needs no route cache clear, but `enabled` is read when routes load.
+- `api.cors.allowed_origins` takes one origin, a list, or the comma-separated string `ICHAVA_API_CORS_ORIGINS` holds. With one origin it is sent as is; with several, `Access-Control-Allow-Origin` echoes the request's `Origin` when it is listed (and the response varies on `Origin`), and is omitted otherwise. No credentials header is ever sent.
 - Multi-domain mode: set `ICHAVA_DOMAINS=app.test,admin.test` to restrict routes. Empty (default) means routes are reachable on every domain.
 
 - The signed-in user comes from the host, through core's `ichava.ichava-core.auth.*` keys (the guard, the name and avatar attributes, the abilities sent to the browser). See [Host integration](tools/host-integration.md).

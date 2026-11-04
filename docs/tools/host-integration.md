@@ -78,7 +78,7 @@ The keys are `session`, `bootstrap`, `status`; `icons.list`, `.show`, `.svg`, `.
 | `themeToggle` | `browser.theme_toggle` |
 | `presence`, `invites`, `sharing`, `notifications`, `workspaces` | off: demo-only modules with no backend here |
 
-The `ichava` prop also carries `schemaVersion`, `locale` (the host's `app()->getLocale()`), `modes`, `account` (the sign-in links) and `storage`.
+The `ichava` prop also carries `schemaVersion`, `locale` (the host's `app()->getLocale()`), `modes`, `account` (the sign-in links), `storage`, and, from schema 1.4.0, `kinds` (the default, the available kinds and the unfiltered counts), `limits` (the SVG ceilings, core's `svg.max_elements` and `svg.max_bytes`) and `crossLinks` (`landing`). `/bootstrap` carries the same three. See [Configuration](../configuration.md#what-the-browser-is-told).
 
 The browser page reads both props: `browserConfig` (`resources/js/core/appConfig.ts`) passes `auth` and `ichava` to react-icon-browser's `hostConfigFromProps`, so the vendored browser signs in as the host user, links to its sign-in and sign-out routes, and renders only the features the manifest turns on. A REST client of the browser (any page outside this package) reads every URL from `api.endpoints` instead.
 

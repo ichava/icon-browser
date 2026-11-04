@@ -29,7 +29,22 @@ final class FormatRegistry
         $schema = json_decode((string) file_get_contents(PayloadSchema::path()), true, 512, JSON_THROW_ON_ERROR);
         $formats = is_array($schema) && is_array($schema['x-ichava-formats'] ?? null) ? $schema['x-ichava-formats'] : [];
 
-        return self::$formats = array_values(array_filter($formats, is_array(...)));
+        $entries = [];
+        foreach ($formats as $format) {
+            if (! is_array($format)) {
+                continue;
+            }
+
+            $entry = [];
+            foreach ($format as $key => $value) {
+                if (is_string($key)) {
+                    $entry[$key] = $value;
+                }
+            }
+            $entries[] = $entry;
+        }
+
+        return self::$formats = $entries;
     }
 
     /**
