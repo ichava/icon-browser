@@ -11,7 +11,7 @@
 //
 // Why vendor instead of installing: the libraries are private, so an npm git dependency would
 // need a GitHub token on every CI run and every deploy, and it would install `src/` without the
-// `dist/lib` build. Instead the built output is copied in with a manifest, VENDORED.json, naming
+// `dist/lib` build. Instead the built output is copied in with a manifest, vendored.json, naming
 // the exact commit and a SHA-256 for every file, which the host's test checks.
 //
 // Refuses: a checkout that is not the named package, one with no `dist/lib/index.js`, one with
@@ -37,6 +37,9 @@ export class SyncError extends Error {}
 /** Path segments and SVG paths that must never be vendored (see the header). */
 const BASELINE_SEGMENT = /(^|\/)baseline(\/|$)/i;
 const PRIVATE_PACK_SVG = /(icon-sets-metronic|icon-sets-bundled|metronic)[^]*\.svg$/i;
+
+/** The manifest's file name. Lowercase slug, like every file name (it was VENDORED.json). */
+export const MANIFEST = 'vendored.json';
 
 /**
  * The paths, relative and `/`-separated, that may not be vendored: anything under a
@@ -130,7 +133,7 @@ export function syncVendoredLibrary({ packageName, source, target, typeDependenc
   const manifest = vendoredManifest(pkg, { typeDependencies, generatedBy });
   // The host may reword the library's LICENSE for the copy it ships (`license`, text in, text out).
   // Applied before the target is cleared, so a refusal leaves the vendored copy as it was, and
-  // written before the manifest is hashed, so VENDORED.json always matches what is on disk.
+  // written before the manifest is hashed, so vendored.json always matches what is on disk.
   const licenseText = license(readFileSync(join(source, 'LICENSE'), 'utf8'));
 
   rmSync(target, { recursive: true, force: true });
@@ -149,7 +152,7 @@ export function syncVendoredLibrary({ packageName, source, target, typeDependenc
     walk(target)
       .filter((f) => !f.endsWith(sep))
       .map((f) => relative(target, f).split(sep).join('/'))
-      .filter((f) => f !== 'VENDORED.json')
+      .filter((f) => f !== MANIFEST)
       .sort()
       .map((f) => [f, createHash('sha256').update(readFileSync(join(target, f))).digest('hex')]),
   );
@@ -157,7 +160,7 @@ export function syncVendoredLibrary({ packageName, source, target, typeDependenc
   if (privateContent(Object.keys(files)).length) throw new SyncError('a baseline/ path or a Metronic or bundled SVG reached the target');
 
   writeFileSync(
-    join(target, 'VENDORED.json'),
+    join(target, MANIFEST),
     JSON.stringify(
       { package: pkg.name, version: pkg.version, repository: repositoryUrl(pkg), commit, builtWith: 'npm run build:lib', files },
       null,

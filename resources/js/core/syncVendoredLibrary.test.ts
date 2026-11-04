@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -147,7 +147,9 @@ describe('sync-vendored-library', () => {
       });
 
       expect(readFileSync(join(target, 'LICENSE'), 'utf8')).toBe('Vendored terms.\n');
-      const manifest = JSON.parse(readFileSync(join(target, 'VENDORED.json'), 'utf8'));
+      expect(readdirSync(target)).toContain('vendored.json');
+      expect(readdirSync(target)).not.toContain('VENDORED.json');
+      const manifest = JSON.parse(readFileSync(join(target, 'vendored.json'), 'utf8'));
       expect(manifest.files.LICENSE).toBe(files.LICENSE);
       expect(manifest.files.LICENSE).toBe(createHash('sha256').update('Vendored terms.\n').digest('hex'));
     } finally {

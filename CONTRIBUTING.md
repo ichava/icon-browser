@@ -22,7 +22,7 @@ A change to `@ichava/react-icon-browser` lands everywhere it is used in the same
 - in the local `demos/ichava-app`, with `composer update`;
 - in the docs that describe the change.
 
-react-icon-browser's `release-please.yml` enforces it. Its `npm run check:consumers` step reads `resources/vendor/react-icon-browser/VENDORED.json` from this repository's `main` and refuses to cut the next release while that copy is older than the newest tag.
+react-icon-browser's `release-please.yml` enforces it. Its `npm run check:consumers` step reads `resources/vendor/react-icon-browser/vendored.json` from this repository's `main` and refuses to cut the next release while that copy is older than the newest tag.
 
 ## Releases and versioning
 

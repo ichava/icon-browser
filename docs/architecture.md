@@ -23,7 +23,7 @@ Relocated from the README, which is now a slim pointer.
 
 The interface is not written here. It is `@ichava/react-icon-browser`, the single source of the
 browser UI, consumed as its built library (`npm run build:lib` there, `dist/lib`) and vendored
-under `resources/vendor/react-icon-browser`, with a `VENDORED.json` naming the commit it was built
+under `resources/vendor/react-icon-browser`, with a `vendored.json` naming the commit it was built
 from and a hash of every file. `resources/js` is only the Inertia adapter around it:
 
 | File | Role |
