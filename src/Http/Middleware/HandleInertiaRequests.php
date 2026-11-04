@@ -101,6 +101,9 @@ final class HandleInertiaRequests extends Middleware
                 'tier'       => $bootstrap['session']['tier'] ?? null,
                 'persistent' => $bootstrap['session']['persistent'] ?? null,
             ],
+            'kinds'      => $bootstrap['kinds'],
+            'limits'     => $bootstrap['limits'],
+            'crossLinks' => $bootstrap['crossLinks'],
         ];
     }
 
