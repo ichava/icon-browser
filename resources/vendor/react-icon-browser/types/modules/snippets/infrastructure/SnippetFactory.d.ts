@@ -6,7 +6,7 @@ import type { SnippetConfig } from '../../../core/types';
  * tuple because it is public API. formatRegistry.test.ts holds the two equal, at run time
  * and in the typecheck.
  */
-export declare const BUILTIN_SNIPPET_FORMATS: readonly ['svg', 'motion', 'helper', 'blade', 'bladeGeneric', 'livewire', 'alpine', 'vue', 'react', 'svelte', 'webcomponent', 'api', 'name'];
+export declare const BUILTIN_SNIPPET_FORMATS: readonly ['svg', 'motion', 'helper', 'blade', 'bladeGeneric', 'livewire', 'alpine', 'vue', 'react', 'svelte', 'webcomponent', 'reactNative', 'angular', 'solid', 'preact', 'astro', 'api', 'name'];
 export type BuiltinSnippetFormat = (typeof BUILTIN_SNIPPET_FORMATS)[number];
 /** A built-in format, or any id a host adds through `config.snippets.templates` or `register()`. */
 export type SnippetFormat = BuiltinSnippetFormat | (string & {});
