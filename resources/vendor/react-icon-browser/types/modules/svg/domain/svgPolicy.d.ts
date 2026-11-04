@@ -75,3 +75,15 @@ export declare function cssValueIsSafe(value: string): boolean;
  * its original name for existing callers.
  */
 export declare function styleValueIsSafe(value: string): boolean;
+/** The attributes `presentationValueIsSafe` judges. Every other name passes it. */
+export declare const PRESENTATION_ATTRIBUTES: readonly string[];
+/**
+ * Value guards for the presentation attributes added in icon-sets-sync#85. OpenMoji
+ * hides the construction shapes of its subdivision flags with `display="none"`, and
+ * stripping it makes them render.
+ *
+ *  - `display`: bare keywords only, and through `cssValueIsSafe`.
+ *  - `color`: `cssValueIsSafe`.
+ *  - `marker-start`, `marker-mid`, `marker-end`: `none`, or `url(#id)` through `cssValueIsSafe`.
+ */
+export declare function presentationValueIsSafe(name: string, value: string): boolean;
