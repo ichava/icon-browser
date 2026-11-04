@@ -4,6 +4,10 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
 
 ## [Unreleased]
 
+### Removed
+
+- **Payload schema 1.7.0: the `png-zip` asset export is dropped**, by owner decision (Sim, 2026-11-04). `$defs/format` and `x-ichava-formats` lose `png-zip` (26 formats), `PayloadSchema::VERSION` is `1.7.0`, and `FormatRegistryTest` now fails if the id comes back. 1.6.0 was never released, so no published payload named it.
+
 ### Added
 
 - **Payload schema 1.6.0 (kinds-and-flavours V-B14).** `x-ichava-formats` and `$defs/format` gain nine formats after `astro` (27 in all). `qwik`, `ember` and `elm` are generated flavours (`copy: true`). `css-mask`, `data-uri` and `png-zip` are asset exports (`delivery: "asset"`, group `export`). `flutter`, `swiftui` and `android-vd` are native asset exports (`native: true`). Additive: a 1.5.0 payload still validates. `PayloadSchema::VERSION` is `1.6.0`; `FormatRegistryTest` and `PayloadSchemaTest` carry the new ids and the `asset` delivery.

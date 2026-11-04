@@ -30,11 +30,11 @@ const LARAVEL_FORMAT_SOURCES = [
 ];
 
 describe('the registry', function () {
-    it('has the twenty-seven formats, in tab order, each with the entry shape', function () {
+    it('has the twenty-six formats, in tab order, each with the entry shape', function () {
         ['formats' => $formats] = schemaFormats();
 
-        expect(count($formats))->toBeGreaterThanOrEqual(27)
-            ->and(array_column($formats, 'id'))->toBe(['svg', 'motion', 'helper', 'blade', 'bladeGeneric', 'livewire', 'alpine', 'vue', 'react', 'svelte', 'webcomponent', 'reactNative', 'angular', 'solid', 'preact', 'astro', 'qwik', 'ember', 'elm', 'css-mask', 'data-uri', 'png-zip', 'flutter', 'swiftui', 'android-vd', 'api', 'name']);
+        expect(count($formats))->toBeGreaterThanOrEqual(26)
+            ->and(array_column($formats, 'id'))->toBe(['svg', 'motion', 'helper', 'blade', 'bladeGeneric', 'livewire', 'alpine', 'vue', 'react', 'svelte', 'webcomponent', 'reactNative', 'angular', 'solid', 'preact', 'astro', 'qwik', 'ember', 'elm', 'css-mask', 'data-uri', 'flutter', 'swiftui', 'android-vd', 'api', 'name']);
 
         foreach ($formats as $format) {
             $shape = ['id', 'label', 'group', 'delivery', 'kinds', 'copy', 'defaultCopy'];
@@ -58,13 +58,18 @@ describe('the registry', function () {
         foreach (['qwik', 'ember', 'elm'] as $id) {
             expect($byId[$id]['delivery'])->toBe('generated')->and($byId[$id]['copy'])->toBeTrue();
         }
-        foreach (['css-mask', 'data-uri', 'png-zip', 'flutter', 'swiftui', 'android-vd'] as $id) {
+        foreach (['css-mask', 'data-uri', 'flutter', 'swiftui', 'android-vd'] as $id) {
             expect($byId[$id]['delivery'])->toBe('asset')->and($byId[$id]['group'])->toBe('export')->and($byId[$id]['copy'])->toBeFalse();
         }
 
         $native = array_keys(array_filter($byId, fn (array $f): bool => $f['native'] ?? false));
 
         expect($native)->toBe(['flutter', 'swiftui', 'android-vd']);
+    });
+
+    it('has no png-zip format: dropped in 1.7.0 by owner decision', function () {
+        expect(array_column(schemaFormats()['formats'], 'id'))->not->toContain('png-zip')
+            ->and(schemaFormats()['schema']['$defs']['format']['enum'])->not->toContain('png-zip');
     });
 
     it('marks the six default copy formats', function () {
