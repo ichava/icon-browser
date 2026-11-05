@@ -49,6 +49,7 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
 
 ### Changed
 
+- **The version is back at 0.1.0 for the re-squash, and the vendored react-icon-browser names its v0.1.0 root.** release-please cut `v0.1.1` on 2026-11-02; the re-squash folds it in, so `.release-please-manifest.json` and `package.json` read `0.1.0` and the `[0.1.1]` section moved into `[0.1.0]`. `vendored.json` `commit` is react-icon-browser's root `054c2b3`, the tree of `1ea1d44`: re-synced from `1ea1d44`, all 249 files are byte-identical to the copy vendored at `648f92a`.
 - **The Inertia listing props are checked, not cast** (re-audit F-15): `snapshotFromProps` checks `icons`, `pagination`, `packages` and `appliedFilters` for the shapes the browser reads; a malformed prop rejects the visit.
 - **react-icon-browser vendored at `6217b2b`**: the six non-default locale catalogs load on demand (F-12), the library rows are react-aria GridLists (F-20), the window globals are declared. Page first load: 1,411,528 B (408,868 gzip) before, 1,289,667 B (380,135 gzip) after.
 - **Blade components carry this package's prefix** (forward only): `<x-ichava-icon-browser::prepaint />`, `::sri-asset`, `::ui-icons` and `::test-icons` replace the `ichava::` aliases, so a host that turns core's short prefix off (`ichava.ichava-core.components.short_prefix` null) still renders them. Docblocks show `<x-ichava-core::icon>`, core's canonical tag. `tests/ShortPrefixOff` boots a host with the short prefix off.
@@ -67,17 +68,9 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
 - **The stylesheet is minified with Lightning CSS at Vite 8's default targets** (Chrome/Edge 111, Firefox 114, Safari 16.4, no lower than Tailwind v4's own floor), replacing the esbuild minifier and Vite 7's targets kept since the Vite 8 upgrade. `inertia-app.css` is 26.4 KB gzipped instead of 27.8 KB: duplicate Tailwind layers merge and 21 obsolete `-moz-` prefixes go. Normalized with Lightning CSS, the old and new stylesheets match rule for rule. The only differences are `calc()` expressions that esbuild folded and Lightning CSS keeps inside custom properties, which resolve to the same values. The 26 leftover `:deep()` selectors are untouched. The JavaScript bundle is unchanged.
 - **The author and contact address is `ichava@simtabi.com`** (W-11, Sim 2026-11-03), replacing the community address `opensource@simtabi.com` wherever this repository named it. Vulnerability reports still go to `security@simtabi.com`. The test that guards the address expects `ichava@` now.
 
-## [0.1.1] - 2026-11-02
-
-### Changed
-
-- **`@untitledui/icons` is no longer a dependency.** Its only use was the heart on the icon page's favourite toggle, now an inline `HeartIcon` component. The browser itself comes from the vendored react-icon-browser library, which carries its own icons. `inertia-app.js` and `inertia-app.css` are rebuilt.
-- Re-vendored `@ichava/react-icon-browser` at `a9c247d`: its SVG policy copy now says the raster-wrapping brand logos are parked rather than shipped blank (a comment-only change; the policy is identical).
-- **Re-vendored react-icon-browser `7889fac` (#194).** The DevTools toggle moves from Mod+D, the browser's bookmark key, to Shift+Mod+D. `X-Browser-Id` becomes a stable per-install id (a random UUID kept in localStorage under `ichava.browser-id`) instead of a fingerprint that changed every day, so the session-backed library keyed on it no longer resets at midnight UTC. `IchavaStatefulGuard` and core's `IchavaSessionManager::getBrowserId()` read the header as an opaque string, so no PHP change was needed; existing visitors get a new id once, on first load after upgrading.
-
 ## [0.1.0] - TBD
 
-First release of `ichava/icon-browser`. The repository is published as a single commit; the 0.1.x tags cut between 2026-10-23 and 2026-10-28 (v0.1.0 to v0.1.1) are folded into this release, and their notes are kept below under *Archived history*.
+First release of `ichava/icon-browser`. The repository is published as a single commit; the 0.1.x tags cut between 2026-10-23 and 2026-11-02 (v0.1.0 to v0.1.1, including the release-please v0.1.1 of 2026-11-02) are folded into this release, and their notes are kept below under *Archived history*.
 
 ### Added
 
@@ -116,6 +109,9 @@ First release of `ichava/icon-browser`. The repository is published as a single 
 
 ### Changed
 
+- **`@untitledui/icons` is no longer a dependency.** Its only use was the heart on the icon page's favourite toggle, now an inline `HeartIcon` component. The browser itself comes from the vendored react-icon-browser library, which carries its own icons. `inertia-app.js` and `inertia-app.css` are rebuilt.
+- Re-vendored `@ichava/react-icon-browser` at `a9c247d`: its SVG policy copy now says the raster-wrapping brand logos are parked rather than shipped blank (a comment-only change; the policy is identical).
+- **Re-vendored react-icon-browser `7889fac` (#194).** The DevTools toggle moves from Mod+D, the browser's bookmark key, to Shift+Mod+D. `X-Browser-Id` becomes a stable per-install id (a random UUID kept in localStorage under `ichava.browser-id`) instead of a fingerprint that changed every day, so the session-backed library keyed on it no longer resets at midnight UTC. `IchavaStatefulGuard` and core's `IchavaSessionManager::getBrowserId()` read the header as an opaque string, so no PHP change was needed; existing visitors get a new id once, on first load after upgrading.
 - **The browser takes the 0.1.0 restyle** (react-icon-browser#189, re-vendored at `25de927`): warm greys, the teal `#0e7c66` default accent with violet still selectable, a 6px radius, Tabler chrome icons, square tags, segmented controls and tabs, flat buttons, no backdrop blur, and no weight above 600. A returning user still on the old violet or 8px default moves to the new one; any other stored choice is kept. The loading screen follows the accent, and the Inertia shell's `<body>` takes the browser's warm frame and ink in place of white and `#0a0d1a`. `public/assets` is rebuilt.
 
 - **Re-vendored `@ichava/react-icon-browser` at `6255af5`** (react-icon-browser#186 and #187; was `5528cd5`), with `public/assets` rebuilt. The vendored build is the one that talks to `/api/v1`: the old one defaulted its REST client to `/ichava/api`, which answers 404 since the API moved. It reads every REST URL from the bootstrap REST map, takes the host's user and features, lists a REST host's packs and opens on its default, shows variant descriptions, counts the REST tree over the selection, and shows an icon's `sub`. The vendored LICENSE keeps this repository's wording (the library's own says its repository must stay private, which is not true here).
