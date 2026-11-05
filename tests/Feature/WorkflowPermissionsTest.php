@@ -31,3 +31,18 @@ it(description: 'declares a top-level permissions block in every workflow', clos
 
     expect($missing)->toBe([]);
 });
+
+it(description: 'grants no write scope at the top level of any workflow', closure: function () {
+    // Least privilege: write access belongs to the job that needs it, never to every job.
+    $writes = [];
+
+    foreach (workflow_files() as $file) {
+        $yaml = (string) file_get_contents($file);
+
+        if (preg_match('/^permissions:[^\n]*\n((?:[ \t]+[^\n]*\n|[ \t]*\n)*)/m', $yaml, $block) && str_contains($block[0], 'write')) {
+            $writes[] = basename($file);
+        }
+    }
+
+    expect($writes)->toBe([]);
+});
