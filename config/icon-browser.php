@@ -269,7 +269,7 @@ return [
         'enabled' => env('ICHAVA_RATE_LIMITING_ENABLED', false),
         'browser' => env('ICHAVA_BROWSER_RATE_LIMIT', 300),
         'api'     => env('ICHAVA_API_RATE_LIMIT', 600),
-        // Global floor applied to the `ichava.api` middleware group on top of
+        // Global floor applied to the `ichava-icon-browser.api` middleware group on top of
         // per-endpoint limits. Acts as a safety net regardless of `enabled`.
         'api_floor' => env('ICHAVA_API_FLOOR', 300),
     ],

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Simtabi\Laranail\Ichava\IconBrowser\Http\Middleware;
 
 use Closure;
-use Throwable;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -85,6 +84,12 @@ final class IchavaApiSecurity
         '/data:text\/html/i',
         '/expression\s*\(/i',
     ];
+
+    /** Core's per-request nonce and its audit log, injected (re-audit F-10), both bound by ichava/core. */
+    public function __construct(
+        private readonly SecurityNonce $nonce,
+        private readonly AuditLogger $auditLogger,
+    ) {}
 
     /**
      * Declare that this response owns the given headers.
@@ -482,8 +487,7 @@ final class IchavaApiSecurity
      */
     private function cspNonceDirectives(): array
     {
-        $nonce = $this->resolveNonce();
-        $token = $nonce !== null ? "'nonce-{$nonce}'" : "'self'";
+        $token = "'nonce-{$this->resolveNonce()}'";
 
         return [
             'default-src'     => "'self'",
@@ -521,15 +525,9 @@ final class IchavaApiSecurity
         ];
     }
 
-    private function resolveNonce(): ?string
+    private function resolveNonce(): string
     {
-        try {
-            $nonce = app(SecurityNonce::class);
-        } catch (Throwable) {
-            return null;
-        }
-
-        return $nonce instanceof SecurityNonce ? $nonce->value() : null;
+        return $this->nonce->value();
     }
 
     private function buildHstsHeader(): ?string
@@ -556,13 +554,7 @@ final class IchavaApiSecurity
      */
     private function audit(string $event, int $severity, array $context = []): void
     {
-        try {
-            $logger = app(AuditLogger::class);
-        } catch (Throwable) {
-            return;
-        }
-
-        $logger->record($event, $severity, $context);
+        $this->auditLogger->record($event, $severity, $context);
     }
 
     /**

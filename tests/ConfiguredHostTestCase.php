@@ -24,7 +24,7 @@ class ConfiguredHostTestCase extends TestCase
 
         $app['config']->set('ichava.icon-browser.features.favorites', false);
         $app['config']->set('ichava.icon-browser.features.library', false);
-        $app['config']->set('ichava.icon-browser.routes.middleware', 'throttle:1000,1| ichava.log');
+        $app['config']->set('ichava.icon-browser.routes.middleware', 'throttle:1000,1| ichava-icon-browser.log');
         $app['config']->set('ichava.icon-browser.routes.domain', self::DOMAIN);
         $app['config']->set('ichava.icon-browser.test_component_enabled', false);
     }

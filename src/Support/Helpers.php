@@ -42,7 +42,7 @@ final class Helpers
      *
      * Reads `ichava.icon-browser.rate_limiting.enabled`. When it is off, returns
      * an empty array (the caller spreads it into ->middleware([...])). When on,
-     * returns one `ichava.throttle:<default>,1,<type>` entry: the route's own
+     * returns one `ichava-icon-browser.throttle:<default>,1,<type>` entry: the route's own
      * `$default` per minute, which `rate_limiting.{type}` may lower per request
      * but never raise (S3: it used to replace the default, so the figure each
      * route declared was never used). See {@see ThrottleRoute}.
@@ -50,7 +50,7 @@ final class Helpers
      * @param string $type Rate limit bucket (e.g. 'api').
      * @param int $default The route's own per-minute limit.
      *
-     * @return array<int, string> One `ichava.throttle:N,1,bucket` entry, or empty.
+     * @return array<int, string> One `ichava-icon-browser.throttle:N,1,bucket` entry, or empty.
      */
     public static function getRateLimit(string $type, int $default): array
     {
@@ -58,7 +58,7 @@ final class Helpers
             return [];
         }
 
-        return ["ichava.throttle:{$default},1,{$type}"];
+        return ["ichava-icon-browser.throttle:{$default},1,{$type}"];
     }
 
     /**

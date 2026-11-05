@@ -12,7 +12,7 @@ Relocated from the README, which is now a slim pointer.
 |---|---|
 | Visual browser | `@ichava/react-icon-browser`, served as Inertia pages at `/{prefix}/icons`. Search, filter by pack/variant/category, copy and export, collections, theme and appearance. See *The browser UI* below. |
 | REST API | Endpoints for icons, packages, terms, preferences, command history, cache and statistics. |
-| Middleware | The `ichava.api` and `ichava.web` groups, plus per-middleware aliases: `ichava.guard`, `ichava.security`, `ichava.json`, `ichava.log`, `ichava.session`, `ichava.validate`. |
+| Middleware | The `ichava-icon-browser.api` and `ichava-icon-browser.web` groups, plus per-middleware aliases: `ichava-icon-browser.guard`, `ichava-icon-browser.security`, `ichava-icon-browser.json`, `ichava-icon-browser.log`, `ichava-icon-browser.session`, `ichava-icon-browser.validate`. |
 | Hybrid auth | `HostCapabilities` detects Sanctum and sessions, then adapts the stack. |
 | Blade views | `<x-ichava::layouts.app>` and `<x-ichava::layouts.browser>`, plus the `<x-ichava::ichava-test-icons>` and `<x-ichava::ichava-ui-icons>` demo components. |
 | `ui-icons` pack | The bundled icon set the browser pages use. |

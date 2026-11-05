@@ -122,7 +122,7 @@ describe('IchavaStatefulGuard user helpers', function () {
         $this->actingAs(hostUser());
         $seen = null;
 
-        Route::middleware('ichava.api')->get('/probe-guard', function (Request $request) use (&$seen) {
+        Route::middleware('ichava-icon-browser.api')->get('/probe-guard', function (Request $request) use (&$seen) {
             $seen = [
                 IchavaStatefulGuard::isAuthenticated($request),
                 IchavaStatefulGuard::getUserId($request),

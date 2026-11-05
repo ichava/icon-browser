@@ -21,6 +21,7 @@ use Simtabi\Laranail\Ichava\Support\Auth\IchavaGates;
 use Simtabi\Laranail\Ichava\Services\IconCacheService;
 use Simtabi\Laranail\Ichava\Services\IconBrowserService;
 use Simtabi\Laranail\Ichava\Services\InformationService;
+use Simtabi\Laranail\Ichava\IconBrowser\Support\IconTables;
 use Simtabi\Laranail\Ichava\Services\IconPackUpdateChecker;
 use Simtabi\Laranail\Ichava\Services\IconPreferenceService;
 use Simtabi\Laranail\Ichava\IconBrowser\Support\IconSnippets;
@@ -40,6 +41,7 @@ final class InertiaBrowserController extends BaseInertiaController
         protected IconPackUpdateChecker $updateChecker,
         IchavaLogger $logger,
         private readonly DatabaseOperationsService $databaseOperations,
+        private readonly CacheAdminGate $cacheAdmin,
         private readonly InformationService $information,
         private readonly HostUser $users,
     ) {
@@ -144,7 +146,7 @@ final class InertiaBrowserController extends BaseInertiaController
 
         $icon = Icon::with([
             'terms' => function ($q) {
-                $q->select('ichava_icon_terms.id', 'type', 'slug', 'name', 'package', 'parent_id');
+                $q->select(IconTables::TERMS . '.id', 'type', 'slug', 'name', 'package', 'parent_id');
             },
             'categories',
             'variants',
@@ -212,16 +214,16 @@ final class InertiaBrowserController extends BaseInertiaController
             }
 
             $iconMorphAlias = (new Icon)->getMorphClass();
-            $topCategories = DB::table('ichava_icon_termables')
-                ->join('ichava_icon_terms', 'ichava_icon_termables.term_id', '=', 'ichava_icon_terms.id')
-                ->join('ichava_icons', function (JoinClause $join) use ($iconMorphAlias) {
-                    $join->on('ichava_icon_termables.termable_id', '=', 'ichava_icons.id')
-                        ->where('ichava_icon_termables.termable_type', '=', $iconMorphAlias);
+            $topCategories = DB::table(IconTables::TERMABLES)
+                ->join(IconTables::TERMS, IconTables::TERMABLES . '.term_id', '=', IconTables::TERMS . '.id')
+                ->join(IconTables::ICONS, function (JoinClause $join) use ($iconMorphAlias) {
+                    $join->on(IconTables::TERMABLES . '.termable_id', '=', IconTables::ICONS . '.id')
+                        ->where(IconTables::TERMABLES . '.termable_type', '=', $iconMorphAlias);
                 })
-                ->where('ichava_icon_terms.type', 'category')
-                ->select('ichava_icon_terms.name', 'ichava_icon_terms.slug', 'ichava_icons.package')
+                ->where(IconTables::TERMS . '.type', 'category')
+                ->select(IconTables::TERMS . '.name', IconTables::TERMS . '.slug', IconTables::ICONS . '.package')
                 ->selectRaw('COUNT(*) as icon_count')
-                ->groupBy('ichava_icon_terms.id', 'ichava_icon_terms.name', 'ichava_icon_terms.slug', 'ichava_icons.package')
+                ->groupBy(IconTables::TERMS . '.id', IconTables::TERMS . '.name', IconTables::TERMS . '.slug', IconTables::ICONS . '.package')
                 ->orderByDesc('icon_count')
                 ->limit(10)
                 ->get();
@@ -232,7 +234,7 @@ final class InertiaBrowserController extends BaseInertiaController
                 'topCategories' => $topCategories,
                 // Cache statistics describe the server, so only a cache administrator
                 // gets them; everyone else sees the health flag alone.
-                'cacheStats' => CacheAdminGate::allows()
+                'cacheStats' => $this->cacheAdmin->allows()
                     ? CacheStatsPayload::withoutAbsolutePaths($this->cacheService->getStats())
                     : [],
                 'cacheHealthy' => $this->cacheService->isHealthy(),

@@ -21,21 +21,6 @@ final readonly class CreateCollection
     public function __construct(private IconPreferenceService $preferences) {}
 
     /**
-     * The validation both create routes (Inertia and `/api/v1`) apply.
-     *
-     * @return array<string, string|list<string>>
-     */
-    public static function rules(): array
-    {
-        return [
-            'name'       => 'required|string|max:100',
-            'color'      => 'nullable|string|regex:/^#[a-fA-F0-9]{6}$/',
-            'icon_ids'   => ['sometimes', 'array', 'max:' . self::MAX_ICONS],
-            'icon_ids.*' => ['integer', 'min:1'],
-        ];
-    }
-
-    /**
      * @param list<int> $iconIds The icons the collection starts with, in order. An id no
      *                           icon has is skipped, as adding it on its own would refuse it.
      *

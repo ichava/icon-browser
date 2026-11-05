@@ -54,7 +54,7 @@ The guard the user is read from is core's `ICHAVA_AUTH_GUARD` (`ichava.ichava-co
 | Key | Default | Effect | Config |
 |---|---|---|---|
 | `ICHAVA_API_PRETTY_PRINT` | `true` | Indented JSON responses | `ichava.icon-browser.api.pretty_print` |
-| `ICHAVA_API_CORS_ENABLED` | `true` | Apply CORS headers from the `ichava.api` middleware group | `ichava.icon-browser.api.cors.enabled` |
+| `ICHAVA_API_CORS_ENABLED` | `true` | Apply CORS headers from the `ichava-icon-browser.api` middleware group | `ichava.icon-browser.api.cors.enabled` |
 | `ICHAVA_API_CORS_ORIGINS` | `APP_URL` | Allowed origins: one, or a comma-separated list. One is sent as is; with several the request's `Origin` is echoed when listed. Never `*` unless you set it | `ichava.icon-browser.api.cors.allowed_origins` |
 
 ## HTTP request size guard
@@ -70,7 +70,7 @@ The guard the user is read from is core's `ICHAVA_AUTH_GUARD` (`ichava.ichava-co
 | `ICHAVA_RATE_LIMITING_ENABLED` | `false` | Master switch for per-route throttle middleware | `ichava.icon-browser.rate_limiting.enabled` |
 | `ICHAVA_BROWSER_RATE_LIMIT` | `300` | Browser-route limit figure (requests per minute) | `ichava.icon-browser.rate_limiting.browser` |
 | `ICHAVA_API_RATE_LIMIT` | `600` | Ceiling for every API route's own limit (requests per minute); it can lower a route's declared limit, never raise it | `ichava.icon-browser.rate_limiting.api` |
-| `ICHAVA_API_FLOOR` | `300` | Global throttle floor on the `ichava.api` middleware group, applied regardless of the master switch | `ichava.icon-browser.rate_limiting.api_floor` |
+| `ICHAVA_API_FLOOR` | `300` | Global throttle floor on the `ichava-icon-browser.api` middleware group, applied regardless of the master switch | `ichava.icon-browser.rate_limiting.api_floor` |
 
 ## See also
 

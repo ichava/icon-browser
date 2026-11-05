@@ -88,7 +88,7 @@ GitHub's public `ichava/js-ui-kernel`.
 
 - The React + Inertia.js icon browser at `/{prefix}/icons`
 - The REST API at `/{prefix}/api/v1/...` (icons, packages, terms, preferences, cache)
-- All Ichava middleware (`ichava.api`, `ichava.web`, hybrid Sanctum/session detection)
+- All Ichava middleware (`ichava-icon-browser.api`, `ichava-icon-browser.web`, hybrid Sanctum/session detection)
 - The `<x-ichava:ichava-test-icons>` and `<x-ichava:ichava-ui-icons>` demo Blade components
 - The `ui-icons` icon set the browser pages use
 - The `ichava::icon-browser.inject-scripts` Artisan command

@@ -136,6 +136,7 @@ final readonly class FeaturesManifest
 
     public function __construct(
         private HostUser $users,
+        private CacheAdminGate $cacheAdmin,
     ) {}
 
     /** Whether the host turned a feature on in `ichava.icon-browser.features`. */
@@ -193,7 +194,7 @@ final readonly class FeaturesManifest
         $features['status'] = $this->gated('status', IchavaGates::ADMIN, self::STATUS);
 
         $features['cacheAdmin'] = self::configured('cache_admin')
-            ? self::feature(CacheAdminGate::allows(), 'gate', self::CACHE_ADMIN)
+            ? self::feature($this->cacheAdmin->allows(), 'gate', self::CACHE_ADMIN)
             : self::feature(false, 'config', []);
 
         $features['illustrations'] = self::configured('illustrations')

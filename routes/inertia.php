@@ -28,12 +28,12 @@ use Simtabi\Laranail\Ichava\IconBrowser\Http\Controllers\Web\InertiaBrowserContr
 | flash data. Validation failures redirect back with errors via the
 | shared `errors` prop automatically.
 |
-| Middleware: 'ichava.inertia' (web + shared props + prefix validation)
+| Middleware: 'ichava-icon-browser.inertia' (web + shared props + prefix validation)
 | Prefix: /ichava
 |
 */
 
-Route::group(Helpers::routeGroup(Helpers::routePrefix(), ['ichava.inertia'], 'ichava.inertia.'), function () {
+Route::group(Helpers::routeGroup(Helpers::routePrefix(), ['ichava-icon-browser.inertia'], 'ichava.inertia.'), function () {
 
     // Browser: filtered icon listing + detail + stats dashboard.
     Route::get('/icons', [InertiaBrowserController::class, 'index'])
@@ -127,7 +127,7 @@ Route::group(Helpers::routeGroup(Helpers::routePrefix(), ['ichava.inertia'], 'ic
     // pair: destructive, fails closed unless the host grants the ability.
     Route::prefix('cache')
         ->name('cache.')
-        ->middleware('ichava.cache-admin')
+        ->middleware('ichava-icon-browser.cache-admin')
         ->group(function () {
             Route::post('/clear', [CacheController::class, 'clear'])
                 ->name('clear');

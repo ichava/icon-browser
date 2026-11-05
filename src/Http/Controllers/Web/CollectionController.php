@@ -7,7 +7,6 @@ namespace Simtabi\Laranail\Ichava\IconBrowser\Http\Controllers\Web;
 use Exception;
 use Inertia\Inertia;
 use Inertia\Response;
-use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Simtabi\Laranail\Ichava\Models\Icon;
 use Simtabi\Laranail\Ichava\Services\IchavaLogger;
@@ -19,6 +18,8 @@ use Simtabi\Laranail\Ichava\IconBrowser\Actions\Library\CreateCollection;
 use Simtabi\Laranail\Ichava\IconBrowser\Actions\Library\DeleteCollection;
 use Simtabi\Laranail\Ichava\IconBrowser\Actions\Library\UpdateCollection;
 use Simtabi\Laranail\Ichava\IconBrowser\Actions\Library\AddIconToCollection;
+use Simtabi\Laranail\Ichava\IconBrowser\Http\Requests\StoreCollectionRequest;
+use Simtabi\Laranail\Ichava\IconBrowser\Http\Requests\UpdateCollectionRequest;
 use Simtabi\Laranail\Ichava\IconBrowser\Actions\Library\RemoveIconFromCollection;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Controllers\Web\Concerns\ResolvesIconsForPages;
 
@@ -74,15 +75,10 @@ final class CollectionController extends BaseInertiaController
         ]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(StoreCollectionRequest $request): RedirectResponse
     {
-        $validated = $request->validate(CreateCollection::rules());
-        /** @var array{name: string, color?: string|null, icon_ids?: list<int|string>} $validated */
-        $collection = $this->createCollection->handle(
-            $validated['name'],
-            $validated['color'] ?? null,
-            array_map(intval(...), $validated['icon_ids'] ?? []),
-        );
+        $data = $request->toData();
+        $collection = $this->createCollection->handle($data->name, $data->color, $data->iconIds);
 
         $this->logger->debug('Collection created from web', ['collection_id' => $collection['id']]);
 
@@ -97,7 +93,7 @@ final class CollectionController extends BaseInertiaController
             ->with('success', 'Collection created successfully.');
     }
 
-    public function update(Request $request, string $id): RedirectResponse
+    public function update(UpdateCollectionRequest $request, string $id): RedirectResponse
     {
         if (! $this->preferenceService->getCollection($id)) {
             return redirect()
@@ -105,13 +101,8 @@ final class CollectionController extends BaseInertiaController
                 ->with('error', "Collection [{$id}] not found.");
         }
 
-        $validated = $request->validate([
-            'name'  => 'sometimes|required|string|max:100',
-            'color' => 'nullable|string|regex:/^#[a-fA-F0-9]{6}$/',
-        ]);
-        /** @var array{name?: string, color?: string|null} $validated */
         try {
-            $this->updateCollection->handle($id, $validated);
+            $this->updateCollection->handle($id, $request->toData()->changes);
         } catch (CollectionNotFound $e) {
             return $this->collectionMissing($e);
         }

@@ -34,7 +34,7 @@ Email, passwords and tokens never leave the server. Extra attributes appear only
 | `ichava.admin` | `GET {prefix}/api/v1/status`, the `status` prop on the Stats page, the `status` feature | denied (core defines it when the host has not) |
 | `ichava.manage-cache` | cache stats, clear and rebuild | undefined, so refused; falls back to `ichava.admin` when the host defines only that |
 
-Grant both with one Gate; see [Grant admin access](../recipes/grant-admin-access.md). The `ichava.admin` middleware alias guards any route of your own the same way.
+Grant both with one Gate; see [Grant admin access](../recipes/grant-admin-access.md). The `ichava-icon-browser.admin` middleware alias guards any route of your own the same way.
 
 ## The library, kept by owner
 

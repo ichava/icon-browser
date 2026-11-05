@@ -5,10 +5,8 @@ declare(strict_types=1);
 namespace Simtabi\Laranail\Ichava\IconBrowser\Http\Controllers\Api;
 
 use Exception;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Simtabi\Laranail\Ichava\Models\Icon;
-use Illuminate\Validation\ValidationException;
 use Simtabi\Laranail\Ichava\Services\IchavaLogger;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Simtabi\Laranail\Ichava\Services\IconPreferenceService;
@@ -17,6 +15,8 @@ use Simtabi\Laranail\Ichava\IconBrowser\Actions\Library\CreateCollection;
 use Simtabi\Laranail\Ichava\IconBrowser\Actions\Library\DeleteCollection;
 use Simtabi\Laranail\Ichava\IconBrowser\Actions\Library\UpdateCollection;
 use Simtabi\Laranail\Ichava\IconBrowser\Actions\Library\AddIconToCollection;
+use Simtabi\Laranail\Ichava\IconBrowser\Http\Requests\StoreCollectionRequest;
+use Simtabi\Laranail\Ichava\IconBrowser\Http\Requests\UpdateCollectionRequest;
 use Simtabi\Laranail\Ichava\IconBrowser\Actions\Library\RemoveIconFromCollection;
 
 /**
@@ -107,22 +107,15 @@ final class CollectionsApiController extends BaseApiController
     /**
      * Create new collection
      */
-    public function store(Request $request): JsonResponse
+    public function store(StoreCollectionRequest $request): JsonResponse
     {
         try {
-            $validated = $request->validate(CreateCollection::rules());
-            /** @var array{name: string, color?: string|null, icon_ids?: list<int|string>} $validated */
-            $collection = $this->createCollection->handle(
-                $validated['name'],
-                $validated['color'] ?? null,
-                array_map(intval(...), $validated['icon_ids'] ?? []),
-            );
+            $data = $request->toData();
+            $collection = $this->createCollection->handle($data->name, $data->color, $data->iconIds);
 
             $this->logDebug('Collection created', ['collection_id' => $collection['id']]);
 
             return $this->createdResponse($collection, 'Collection created successfully');
-        } catch (ValidationException $e) {
-            return $this->handleValidationException($e);
         } catch (Exception $e) {
             return $this->handleException($e, 'Failed to create collection');
         }
@@ -131,27 +124,20 @@ final class CollectionsApiController extends BaseApiController
     /**
      * Update collection
      */
-    public function update(Request $request, string $id): JsonResponse
+    public function update(UpdateCollectionRequest $request, string $id): JsonResponse
     {
         try {
             if (! $this->preferenceService->getCollection($id)) {
                 return $this->notFoundResponse('Collection', $id);
             }
 
-            $validated = $request->validate([
-                'name'  => 'sometimes|required|string|max:100',
-                'color' => 'nullable|string|regex:/^#[a-fA-F0-9]{6}$/',
-            ]);
-            /** @var array{name?: string, color?: string|null} $validated */
-            $updated = $this->updateCollection->handle($id, $validated);
+            $updated = $this->updateCollection->handle($id, $request->toData()->changes);
 
             $this->logDebug('Collection updated', ['collection_id' => $id]);
 
             return $this->updatedResponse($updated, 'Collection updated successfully');
         } catch (CollectionNotFound $e) {
             return $this->notFoundResponse('Collection', $e->collectionId);
-        } catch (ValidationException $e) {
-            return $this->handleValidationException($e);
         } catch (Exception $e) {
             return $this->handleException($e, 'Failed to update collection');
         }
