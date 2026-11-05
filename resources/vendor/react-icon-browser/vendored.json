@@ -2,7 +2,7 @@
   "package": "@ichava/react-icon-browser",
   "version": "0.1.0",
   "repository": "https://github.com/ichava/react-icon-browser",
-  "commit": "648f92a6bd00b60cf59e670664f0664906b3b838",
+  "commit": "054c2b329b5787c75dac03bfd4b0c905fd5f2d2a",
   "builtWith": "npm run build:lib",
   "files": {
     "AboutDialog-CGqzashF.js": "349966cfe306649143afb89be5af836f520e413c4eb8f9027c42a4902af226c2",

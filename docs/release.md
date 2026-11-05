@@ -113,7 +113,8 @@ issues refer to that earlier series.
 0.1.0 is published from a single root commit whose tree is `main` at release time. The 0.1.x tags
 cut after the re-base (`v0.1.0` 2026-10-23, `v0.1.1` 2026-10-28) are folded into it: their tags and
 releases are removed, and their changelog sections sit under *Archived history*, one heading level
-down. `CHANGELOG.md` already carries the `## [0.1.0]` section, so the hand-cut `v0.1.0` tag starts
+down. The `v0.1.1` that release-please cut on 2026-11-02 is folded the same way: its notes are in
+`## [0.1.0]`. `CHANGELOG.md` already carries the `## [0.1.0]` section, so the hand-cut `v0.1.0` tag starts
 `release.yml`, which publishes that section. `.release-please-manifest.json` reads `0.1.0`, so
 release-please treats `v0.1.0` as the last release and the next release pull request proposes
 `0.1.1`.

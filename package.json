@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@ichava/icon-browser",
-  "version": "0.1.1",
+  "version": "0.1.0",
   "description": "Inertia + React adapter for the Ichava icon browser (Laravel). The browser UI is the vendored @ichava/react-icon-browser library.",
   "private": true,
   "license": "UNLICENSED",
