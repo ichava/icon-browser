@@ -6,6 +6,7 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
 
 ### Removed
 
+- **Payload schema 1.8.0: the `android-vd` (Android VectorDrawable XML) asset export is dropped**, by owner rule (Sim, 2026-11-04): the ichava icon ecosystem is strictly `*.svg`. `$defs/format` and `x-ichava-formats` lose `android-vd` (25 formats), `PayloadSchema::VERSION` is `1.8.0`, and `FormatRegistryTest` now fails if the id returns or if any asset export other than the SVG-carrying `css-mask`, `data-uri`, `flutter` and `swiftui` appears. 1.7.0 was never released, so no published payload named it.
 - **Payload schema 1.7.0: the `png-zip` asset export is dropped**, by owner decision (Sim, 2026-11-04). `$defs/format` and `x-ichava-formats` lose `png-zip` (26 formats), `PayloadSchema::VERSION` is `1.7.0`, and `FormatRegistryTest` now fails if the id comes back. 1.6.0 was never released, so no published payload named it.
 
 ### Added
