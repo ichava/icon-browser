@@ -39,6 +39,59 @@ export const LISTING_PROPS = ['icons', 'pagination', 'appliedFilters', 'tree', '
 
 const abortError = () => new DOMException('The visit was cancelled.', 'AbortError');
 
+const isRecord = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null && !Array.isArray(v);
+const isInt = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);
+const isIntOrNull = (v: unknown): v is number | null => v === null || isInt(v);
+
+function isServerIcon(v: unknown): v is ServerIcon {
+  return isRecord(v) && (typeof v.id === 'number' || typeof v.id === 'string') && typeof v.name === 'string';
+}
+
+function isPagination(v: unknown): v is ServerPagination {
+  return isRecord(v) && isInt(v.total) && isInt(v.per_page) && isInt(v.current_page) && isInt(v.last_page) && isIntOrNull(v.from) && isIntOrNull(v.to);
+}
+
+function isServerPackage(v: unknown): v is ServerPackage {
+  return isRecord(v) && typeof v.name === 'string';
+}
+
+/**
+ * The listing props of one `Browser/Index` visit, checked (re-audit F-15). They come from the
+ * server, so each prop the browser reads is checked for the shape it reads before it is used; a
+ * partial reload carries only some of them, and a prop that is absent stays absent. Throws on a
+ * prop that is present and malformed, which rejects the visit instead of rendering garbage.
+ */
+export function snapshotFromProps(props: unknown): Partial<BrowserSnapshot> {
+  const fail = (what: string): never => {
+    throw new Error(`Browser/Index props: ${what}`);
+  };
+  if (!isRecord(props)) return fail('not an object');
+  const out: Partial<BrowserSnapshot> = {};
+  if ('icons' in props) {
+    if (!Array.isArray(props.icons) || !props.icons.every(isServerIcon)) fail('icons is not a list of icons');
+    out.icons = props.icons as ServerIcon[];
+  }
+  if ('pagination' in props) {
+    if (!isPagination(props.pagination)) fail('pagination is not a paginator');
+    out.pagination = props.pagination as ServerPagination;
+  }
+  if ('packages' in props) {
+    if (!Array.isArray(props.packages) || !props.packages.every(isServerPackage)) fail('packages is not a list of packages');
+    out.packages = props.packages as ServerPackage[];
+  }
+  if ('appliedFilters' in props) {
+    const applied = props.appliedFilters;
+    // Laravel serializes an empty associative array as `[]`, so a list is the empty case.
+    if (applied !== null && !Array.isArray(applied) && !isRecord(applied)) fail('appliedFilters is not an object');
+    out.appliedFilters = applied as AppliedFilters | unknown[] | null;
+  }
+  // The rest are read by code that checks them itself (toCategoryGroups and the meta readers).
+  if ('tree' in props) out.tree = props.tree;
+  if ('filterOptions' in props) out.filterOptions = props.filterOptions;
+  if ('statistics' in props) out.statistics = props.statistics;
+  return out;
+}
+
 /**
  * `router.get` as a promise: resolves with the new page props, rejects when the visit fails or
  * is cancelled. The browser cancels a listing request whenever a newer one supersedes it, and
@@ -69,7 +122,14 @@ export const inertiaVisit: VisitFn = (url, query, signal) =>
       onCancelToken: (token) => {
         cancel = () => token.cancel();
       },
-      onSuccess: (page) => settle(() => resolve(page.props as unknown as Partial<BrowserSnapshot>)),
+      onSuccess: (page) =>
+        settle(() => {
+          try {
+            resolve(snapshotFromProps(page.props));
+          } catch (error) {
+            reject(error);
+          }
+        }),
       onError: (errors) => settle(() => reject(new Error(Object.values(errors).join(' ') || 'The server rejected the filters.'))),
       onCancel: () => settle(() => reject(abortError())),
       onFinish: () => settle(() => reject(abortError())),
