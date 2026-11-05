@@ -8,17 +8,19 @@ import type { Icon } from '@ichava/js-ui-kernel';
 export declare const ASSET_EXPORT_FORMATS: readonly ['css-mask', 'data-uri'];
 export type AssetExportFormat = (typeof ASSET_EXPORT_FORMATS)[number];
 /**
- * The registry's native asset formats (`native: true`). A browser cannot build an Xcode asset
- * catalogue or an Android VectorDrawable, so the app points at the generator's downloads instead
- * (`toolbar.nativeExports`) and never offers a file of its own.
+ * The registry's native asset formats (`native: true`), both of which ship the original `.svg`
+ * files. A browser cannot build an Xcode asset catalogue or a Flutter asset index, so the app points
+ * at the generator's downloads instead (`toolbar.nativeExports`) and never offers a file of its own.
+ * A third, non-SVG native format was dropped with schema 1.8.0: the ichava icon ecosystem is
+ * strictly SVG (svgOnly.test.ts).
  */
-export declare const NATIVE_EXPORT_FORMATS: readonly ['flutter', 'swiftui', 'android-vd'];
+export declare const NATIVE_EXPORT_FORMATS: readonly ['flutter', 'swiftui'];
 export type NativeExportFormat = (typeof NATIVE_EXPORT_FORMATS)[number];
 /** The four bundle exports that predate the format registry, and the two asset exports. */
 export type ExportFormat = 'files' | 'sprite' | 'manifest' | 'zip' | AssetExportFormat;
 /**
  * The SVG sanitiser, as a port (the svg module's `sanitizeSvg`, in the app). The asset exports
- * encode markup into CSS and PNG, so they refuse to run without one.
+ * encode markup into CSS, so they refuse to run without one.
  */
 export interface ExportSanitizer {
     sanitize(svg: string): string;

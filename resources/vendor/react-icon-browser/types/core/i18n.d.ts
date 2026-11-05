@@ -272,8 +272,6 @@ declare const EN: {
     'detail.addToCollection': string;
     'detail.newCollection': string;
     'detail.noSvg': string;
-    'detail.pngNoSvg': string;
-    'detail.pngFailed': string;
     'detail.addedTo': string;
     'detail.removedFrom': string;
     'detail.motionDefault': string;
@@ -423,7 +421,6 @@ declare const EN: {
     'format.data-uri': string;
     'format.flutter': string;
     'format.swiftui': string;
-    'format.android-vd': string;
     'export.css-mask': string;
     'export.css-maskDesc': string;
     'export.data-uri': string;
@@ -433,8 +430,6 @@ declare const EN: {
     'export.flutterDesc': string;
     'export.swiftui': string;
     'export.swiftuiDesc': string;
-    'export.android-vd': string;
-    'export.android-vdDesc': string;
     'detail.cssMask': string;
     'detail.copyDataUri': string;
     'about.landing': string;
@@ -443,7 +438,6 @@ declare const EN: {
     'task.working': string;
     'task.export': string;
     'task.copyNames': string;
-    'task.png': string;
     'task.selectAll': string;
 };
 /**
