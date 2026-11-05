@@ -13,10 +13,9 @@ import { join, relative, resolve, sep } from 'node:path';
  * the vendored files.
  */
 const dir = resolve(process.cwd(), 'resources/vendor/react-icon-browser');
-// vendored.json first; the old VENDORED.json is still read, and that fallback can go after v0.1.0.
-const MANIFESTS = ['vendored.json', 'VENDORED.json'];
-const manifestName = MANIFESTS.find((name) => readdirSync(dir).includes(name)) ?? MANIFESTS[0];
-const manifest = JSON.parse(readFileSync(join(dir, manifestName), 'utf8')) as {
+// The manifest is vendored.json and nothing else: the sync writes only that name.
+const MANIFEST = 'vendored.json';
+const manifest = JSON.parse(readFileSync(join(dir, MANIFEST), 'utf8')) as {
   package: string;
   commit: string;
   files: Record<string, string>;
@@ -27,7 +26,7 @@ const walk = (d: string): string[] =>
 
 const onDisk = walk(dir)
   .map((f) => relative(dir, f).split(sep).join('/'))
-  .filter((f) => !MANIFESTS.includes(f))
+  .filter((f) => f !== MANIFEST)
   .sort();
 
 describe('vendored react-icon-browser', () => {
