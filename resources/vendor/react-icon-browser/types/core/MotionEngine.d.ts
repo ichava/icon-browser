@@ -78,3 +78,18 @@ export interface PlayOptions {
  * `playSpec()` plays its keyframes directly, by value, with no id lookup at all.
  */
 export declare function play(el: Element, preset: MotionPreset, opts: PlayOptions): Animation | null;
+/**
+ * Pause every preview this browser has playing, holding each at its current frame
+ * (WCAG 2.2.2). js-motion tracks every animation it started, so this reaches the
+ * per-child group handles of the layered and Draw families too, which `play()` returns
+ * as one handle.
+ */
+export declare function pauseMotion(): void;
+/** Carry on from where `pauseMotion()` held them. A no-op while reduced motion is on. */
+export declare function resumeMotion(): void;
+/**
+ * Stop what is playing and detach js-motion's listeners. Call it when the preview or the
+ * whole browser unmounts, so a host that mounts and unmounts the browser leaks none.
+ * The engine stays usable: the next `play()` binds again.
+ */
+export declare function destroyMotion(): void;

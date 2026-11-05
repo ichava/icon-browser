@@ -1,5 +1,5 @@
 /** The schema version these types describe (`schemaVersion` in the session and bootstrap documents). */
-export declare const PAYLOAD_SCHEMA_VERSION = "1.5.0";
+export declare const PAYLOAD_SCHEMA_VERSION = "1.7.0";
 /** The host's signed-in user as presented by core's UserData. Never carries email, password or tokens; extra keys only when the host lists them in ichava.ichava-core.auth.expose. */
 export type User = {
     id: string;
@@ -33,8 +33,8 @@ export type ThemeVariant = {
     svg_url: string | null;
     svg_content?: string | null;
 };
-/** Code-tab and copy-format ids. The registry is x-ichava-formats at the schema root. Added in 1.4.0; reactNative, angular, solid, preact and astro added in 1.5.0. */
-export type Format = "svg" | "motion" | "helper" | "blade" | "bladeGeneric" | "livewire" | "alpine" | "vue" | "react" | "svelte" | "webcomponent" | "reactNative" | "angular" | "solid" | "preact" | "astro" | "api" | "name";
+/** Code-tab and copy-format ids. The registry is x-ichava-formats at the schema root. Added in 1.4.0; reactNative, angular, solid, preact and astro added in 1.5.0; qwik, ember, elm, css-mask, data-uri, flutter, swiftui and android-vd added in 1.6.0; png-zip removed in 1.7.0. */
+export type Format = "svg" | "motion" | "helper" | "blade" | "bladeGeneric" | "livewire" | "alpine" | "vue" | "react" | "svelte" | "webcomponent" | "reactNative" | "angular" | "solid" | "preact" | "astro" | "qwik" | "ember" | "elm" | "css-mask" | "data-uri" | "flutter" | "swiftui" | "android-vd" | "api" | "name";
 /** One icon, as IconResource (REST) and IconSnippets::transform (Inertia) send it. */
 export type Icon = {
     id: number;
@@ -450,10 +450,12 @@ export interface FormatEntry {
     id: Format;
     label: string;
     group: string;
-    delivery: "laravel" | "client" | "generated";
+    delivery: "laravel" | "client" | "generated" | "asset";
     kinds: readonly Kind[];
     copy: boolean;
     defaultCopy: boolean;
+    /** An asset only a native toolchain builds (schema 1.6.0): the browser points at it, it cannot make it. */
+    native?: true;
 }
 /** The code-tab and copy-format registry (`x-ichava-formats`), in tab order. */
 export declare const FORMATS: readonly FormatEntry[];

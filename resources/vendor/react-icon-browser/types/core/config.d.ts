@@ -193,6 +193,16 @@ export interface AppConfig {
             desc: string;
             icon?: string;
         }[];
+        /**
+         * The registry's native asset formats (schema 1.6.0: flutter, swiftui, android-vd), shown
+         * in the Export menu as "Download for …" links to where the generator publishes them. The
+         * browser cannot build these itself. Optional so a host's own AppConfig written before it
+         * existed still type-checks.
+         */
+        nativeExports?: {
+            id: string;
+            href: string;
+        }[];
     };
     about: {
         description: string;

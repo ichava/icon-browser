@@ -1,12 +1,14 @@
 import type { Icon } from '@ichava/js-ui-kernel';
 import type { SnippetConfig } from '../../../core/types';
 /**
- * The formats the browser builds itself: the ids of the format registry
- * (`x-ichava-formats` in icon-browser's schema, vendored as `FORMATS`), kept as a literal
- * tuple because it is public API. formatRegistry.test.ts holds the two equal, at run time
- * and in the typecheck.
+ * The formats the browser builds itself: the copyable ids of the format registry
+ * (`x-ichava-formats` in icon-browser's schema, vendored as `FORMATS`, where `copy` is true),
+ * kept as a literal tuple because it is public API. The registry's asset formats (schema
+ * 1.6.0) are exports, not tabs: `ASSET_EXPORT_FORMATS` and `NATIVE_EXPORT_FORMATS` in the
+ * export module. formatRegistry.test.ts holds the three together equal to the registry, at
+ * run time and in the typecheck.
  */
-export declare const BUILTIN_SNIPPET_FORMATS: readonly ['svg', 'motion', 'helper', 'blade', 'bladeGeneric', 'livewire', 'alpine', 'vue', 'react', 'svelte', 'webcomponent', 'reactNative', 'angular', 'solid', 'preact', 'astro', 'api', 'name'];
+export declare const BUILTIN_SNIPPET_FORMATS: readonly ['svg', 'motion', 'helper', 'blade', 'bladeGeneric', 'livewire', 'alpine', 'vue', 'react', 'svelte', 'webcomponent', 'reactNative', 'angular', 'solid', 'preact', 'astro', 'qwik', 'ember', 'elm', 'api', 'name'];
 export type BuiltinSnippetFormat = (typeof BUILTIN_SNIPPET_FORMATS)[number];
 /** A built-in format, or any id a host adds through `config.snippets.templates` or `register()`. */
 export type SnippetFormat = BuiltinSnippetFormat | (string & {});
@@ -20,6 +22,8 @@ export interface SnippetMotion {
     speed: number;
     direction?: string;
     iterations?: number;
+    /** JSON · Custom: keyframes pasted by the user, so there is no preset id to wire declaratively. */
+    custom?: boolean;
 }
 export interface SnippetOptions {
     size: number;
