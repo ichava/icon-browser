@@ -1,1 +1,0 @@
-import{lt as e}from"./inertia-app.js";import{t}from"./inertia-app-jsx-runtime-CS4hA3mQ.js";var n=t();function r({icon:t,size:r,label:i}){let a=e.toStyle(e.resolve(t,null),r);return(0,n.jsx)(`span`,{role:i?`img`:void 0,"aria-label":i,"aria-hidden":!i||void 0,style:{display:`inline-block`,flex:`none`,...a}})}export{r as t};

@@ -48,6 +48,8 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
 
 ### Changed
 
+- **The Inertia listing props are checked, not cast** (re-audit F-15): `snapshotFromProps` checks `icons`, `pagination`, `packages` and `appliedFilters` for the shapes the browser reads; a malformed prop rejects the visit.
+- **react-icon-browser vendored at `6217b2b`**: the six non-default locale catalogs load on demand (F-12), the library rows are react-aria GridLists (F-20), the window globals are declared. Page first load: 1,411,528 B (408,868 gzip) before, 1,289,667 B (380,135 gzip) after.
 - **Blade components carry this package's prefix** (forward only): `<x-ichava-icon-browser::prepaint />`, `::sri-asset`, `::ui-icons` and `::test-icons` replace the `ichava::` aliases, so a host that turns core's short prefix off (`ichava.ichava-core.components.short_prefix` null) still renders them. Docblocks show `<x-ichava-core::icon>`, core's canonical tag. `tests/ShortPrefixOff` boots a host with the short prefix off.
 - **The demo test-icons component follows core's `components.test_icons`**; `ichava.icon-browser.test_component_enabled` is gone (forward only). Core's default is on in `local` only (it was on everywhere here); `ICHAVA_TEST_COMPONENT_ENABLED` still sets it.
 - **Core's contracts, not its classes**: `UpdateStatusApiController` and `InertiaBrowserController` type-hint `Contracts\ChecksPackUpdates` and `Contracts\DatabaseOperations` (core#172); `UpdateStatusApiTest` binds the contract.

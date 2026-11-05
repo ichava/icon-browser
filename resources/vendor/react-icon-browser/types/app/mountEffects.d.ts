@@ -1,5 +1,5 @@
 import type { Catalog } from '../modules/catalog';
-import { type Logger } from '../modules/telemetry';
+import { type Logger, type LogLevel } from '../modules/telemetry';
 import { type Locale, type TranslationOverrides } from '../core/i18n';
 import type { Density, Scale, Theme } from '../core/types';
 import { type AppConfig, type BrowserStoreHook } from '../store';
@@ -8,6 +8,15 @@ import { type IconCatalog } from '../core/api/ApiClient';
 export declare const BASE_FONT: number;
 /** Browser default root font size; UI scale multiplies this. */
 export declare const BASE_REM_PX = 16;
+/** The dev console handle for one mount. */
+export interface DevHandle {
+    id: string;
+    store: BrowserStoreHook;
+    config: AppConfig | null;
+    runRegression: () => unknown;
+    logs: () => readonly unknown[];
+    setLogLevel: (l: LogLevel) => void;
+}
 export declare function useHostLocale(storeApi: BrowserStoreHook, hostLocale: Locale | undefined): void;
 export declare function useMountData(storeApi: BrowserStoreHook, mountLogger: Logger, { catalog, config, manageDocument }: {
     catalog: Catalog | null;
