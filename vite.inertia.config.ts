@@ -59,7 +59,9 @@ export default defineConfig({
             input: 'resources/js/app.tsx',
             output: {
                 entryFileNames: 'assets/js/inertia-app.js',
-                chunkFileNames: 'assets/js/inertia-app-[name].js',
+                // Content-addressed: the entry is versioned by `?v=` in app.blade.php, but a chunk it
+                // imports is fetched by name, so the name carries the hash.
+                chunkFileNames: 'assets/js/inertia-app-[name]-[hash].js',
                 assetFileNames: (info) => {
                     if (info.names?.some((n) => n.endsWith('.css'))) return 'assets/css/inertia-app.css';
                     if (info.names?.some((n) => /\.(woff2?|ttf|otf)$/.test(n))) return 'assets/fonts/[name][extname]';

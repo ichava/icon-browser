@@ -20,18 +20,20 @@ void createInertiaApp({
     title: (title) => (title ? `${title} - Ichava` : 'Ichava'),
 
     resolve: (name) => {
-        const pages = import.meta.glob(['./pages/**/*.tsx', '!./pages/**/*.test.tsx', '!./pages/**/__tests__/**'], { eager: true }) as Record<
+        // Each page is its own chunk, loaded when Inertia visits it (re-audit F-12): the first
+        // load no longer carries every page's code.
+        const pages = import.meta.glob(['./pages/**/*.tsx', '!./pages/**/*.test.tsx', '!./pages/**/__tests__/**']) as Record<
             string,
-            { default: React.ComponentType }
+            () => Promise<{ default: React.ComponentType }>
         >;
 
-        const page = pages[`./pages/${name}.tsx`];
+        const load = pages[`./pages/${name}.tsx`];
 
-        if (!page) {
+        if (!load) {
             throw new Error(`Unknown Inertia page component: ${name}`);
         }
 
-        return page;
+        return load().then((m) => m.default);
     },
 
     setup({ el, App, props }) {

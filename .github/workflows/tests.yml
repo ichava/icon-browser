@@ -47,6 +47,11 @@ jobs:
       - name: Vitest
         run: npm run test:js
 
+      # eslint.base.js and .dev/tools/{sync-vendored-library,check-config-drift}.mjs are copies of
+      # ichava/js-ui-kernel's config/; this fails when one stops matching (re-audit F-18).
+      - name: Shared config matches the kernel
+        run: npm run check:config-drift
+
       # The committed bundle is what hosts receive, so it must at least build from this tree.
       # The vendored react-icon-browser build is checked against its manifest by Vitest above.
       - name: Build the browser bundle

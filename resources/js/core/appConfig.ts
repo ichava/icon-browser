@@ -8,12 +8,24 @@ import type { AuthUser, IchavaShared } from '@/types';
  * `features.*` flag), sign-in and sign-out links, storage tier, theme, page size and locale.
  * Props with no features manifest add nothing, so the browser keeps its defaults.
  */
-export function browserConfig(page: { auth?: AuthUser | null; ichava?: Partial<IchavaShared> | null } | null | undefined): PartialConfig {
+export function browserConfig(
+  page: { auth?: AuthUser | null; ichava?: Partial<IchavaShared> | null; packages?: ReadonlyArray<{ name: string }> | null } | null | undefined,
+): PartialConfig {
   const ichava = page?.ichava ?? null;
   // The server's props are the schema's shapes (`UserData`, the `ichava` prop); this
   // package's own types for them are looser, so they are passed as the library's.
   const host = hostConfigFromProps({ auth: (page?.auth ?? null) as HostUser | null, ichava: ichava as Partial<HostIchavaProp> | null });
-  return mergeConfig(appConfig(ichava), host);
+  return mergeConfig(mergeConfig(appConfig(ichava), openingPacks(page?.packages)), host);
+}
+
+/**
+ * The packs the browser opens on (Q42): every pack the host has installed, which is the page's
+ * `packages` prop (the packs ichava/core registered). Nothing when the page sends none: the
+ * library then opens on every installed pack its packages API reports.
+ */
+function openingPacks(packages: ReadonlyArray<{ name: string }> | null | undefined): PartialConfig {
+  const names = (packages ?? []).map((p) => p.name).filter((n) => typeof n === 'string' && n !== '');
+  return names.length ? { defaults: { packages: names } } : {};
 }
 
 /**

@@ -55,3 +55,21 @@ describe('browserConfig', () => {
     expect(resolveConfig(browserConfig(null)).host).toBeNull();
   });
 });
+
+/**
+ * Q42: the browser opens on every pack the host has installed. The page's `packages` prop is the
+ * packs ichava/core registered (`IconBrowserService::getFilters()`), so it becomes the library's
+ * `defaults.packages`; no pack name is written in this package or the library.
+ */
+describe('browserConfig opening packs', () => {
+  const packages = [{ name: 'ichava/icon-sets-tabler' }, { name: 'ichava/icon-sets-lucide' }];
+
+  it("passes the page's installed packs as the opening selection", () => {
+    expect(resolveConfig(browserConfig({ packages })).defaults.packages).toEqual(['ichava/icon-sets-tabler', 'ichava/icon-sets-lucide']);
+  });
+
+  it('passes none when the page carries no packages, so the library opens on every pack its API reports', () => {
+    expect(browserConfig({}).defaults).toBeUndefined();
+    expect(browserConfig({ packages: [] }).defaults).toBeUndefined();
+  });
+});
