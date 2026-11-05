@@ -19,6 +19,8 @@
 | `format` and the root `x-ichava-formats` | The code-tab and copy-format registry |
 | `*Response` | The `{ success, data, message }` envelope around each REST document |
 
+Its `$id` is the file's published address, `https://raw.githubusercontent.com/ichava/icon-browser/main/resources/schema/icon-browser.schema.json`, which serves the schema itself. Two repositories keep a copy instead of reading a sibling checkout: react-icon-browser (`schema/icon-browser.schema.json`, with the commit and SHA-256 in `schema/source.json`) and js-icon-components (`vendor/icon-browser.schema.json`, pinned by digest in `tests/vendored.test.ts`). Each fails when its copy is edited, and fails when this repository is checked out beside it and the copy has drifted from this file.
+
 react-icon-browser generates its TypeScript types from this file. `tests/Feature/PayloadSchemaTest.php` validates real responses and page props against it, so a renamed or dropped field fails the suite.
 
 Bump the major version for a removed or retyped field and the minor for an added one, in `PayloadSchema::VERSION` and the file's `version` together.
