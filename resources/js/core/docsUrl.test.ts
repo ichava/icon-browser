@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { resolveConfig } from '@/lib/browser';
 import { appConfig } from './appConfig';
@@ -34,10 +34,12 @@ describe('docs link', () => {
   });
 
   it('matches the fallback built into the vendored library', () => {
-    const bundle = readFileSync(resolve(process.cwd(), 'resources/vendor/react-icon-browser/index.js'), 'utf8');
+    // The library ships index.js plus the chunks its on-demand layers load; the defaults may sit in either.
+    const dir = resolve(process.cwd(), 'resources/vendor/react-icon-browser');
+    const bundle = readdirSync(dir).filter((f) => f.endsWith('.js')).map((f) => readFileSync(resolve(dir, f), 'utf8')).join('\n');
     const urls = bundle.match(/https:\/\/github\.com\/ichava\/icon-browser\/tree\/main\/docs/g) ?? [];
 
-    // Floor: the default links and HelpMenu's fallback. A pattern that stops matching must fail.
+    // Floor: the default Docs link and HelpMenu's fallback. A pattern that stops matching must fail.
     expect(urls.length).toBeGreaterThanOrEqual(2);
     expect(new Set(urls)).toEqual(new Set([expected]));
   });
