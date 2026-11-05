@@ -108,7 +108,7 @@ export declare const snippets: SnippetFactory;
 /**
  * The path Laravel resolves for `icon`: the server's `icon_path` when it sent one, else
  * `vendor/package::<variant or category>/<name>`, which is how a one-folder pack lays its
- * files out (tabler's `outline/home`, emoji's `twemoji/1f600`).
+ * files out (tabler's `outline/home`, twemoji's `twemoji/1f600`).
  */
 export declare function iconPath(icon: Icon): string;
 /**
