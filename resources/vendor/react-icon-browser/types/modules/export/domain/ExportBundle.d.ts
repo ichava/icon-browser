@@ -1,5 +1,28 @@
 import type { Icon } from '@ichava/js-ui-kernel';
-export type ExportFormat = 'files' | 'sprite' | 'manifest' | 'zip';
+/**
+ * The registry's asset exports (`x-ichava-formats`, delivery `asset`, schema 1.6.0) that the
+ * browser builds itself, from sanitised SVG: a CSS mask sheet and a data-URI sheet (`png-zip`
+ * was dropped with schema 1.7.0). formatRegistry.test.ts holds this list, the snippet tabs and the native entries
+ * together equal to the registry.
+ */
+export declare const ASSET_EXPORT_FORMATS: readonly ['css-mask', 'data-uri'];
+export type AssetExportFormat = (typeof ASSET_EXPORT_FORMATS)[number];
+/**
+ * The registry's native asset formats (`native: true`). A browser cannot build an Xcode asset
+ * catalogue or an Android VectorDrawable, so the app points at the generator's downloads instead
+ * (`toolbar.nativeExports`) and never offers a file of its own.
+ */
+export declare const NATIVE_EXPORT_FORMATS: readonly ['flutter', 'swiftui', 'android-vd'];
+export type NativeExportFormat = (typeof NATIVE_EXPORT_FORMATS)[number];
+/** The four bundle exports that predate the format registry, and the two asset exports. */
+export type ExportFormat = 'files' | 'sprite' | 'manifest' | 'zip' | AssetExportFormat;
+/**
+ * The SVG sanitiser, as a port (the svg module's `sanitizeSvg`, in the app). The asset exports
+ * encode markup into CSS and PNG, so they refuse to run without one.
+ */
+export interface ExportSanitizer {
+    sanitize(svg: string): string;
+}
 /** One icon ready to export: its body, viewBox and root paint attributes. */
 export interface ExportEntry {
     icon: Icon;
@@ -32,7 +55,7 @@ export interface ExportNaming {
  */
 export declare class ExportBundle {
     #private;
-    constructor(naming: ExportNaming);
+    constructor(naming: ExportNaming, sanitizer?: ExportSanitizer);
     sprite(entries: ExportEntry[]): string;
     manifest(icons: Icon[]): string;
     /**
@@ -44,6 +67,21 @@ export declare class ExportBundle {
      * that old default, so its output is unchanged.
      */
     standaloneSvg(e: ExportEntry): string;
+    /**
+     * One icon's standalone SVG after the sanitiser, as the asset exports encode it. Throws when
+     * the bundle has no sanitiser: raw source is never encoded.
+     */
+    cleanSvg(e: ExportEntry): string;
+    /** One icon as a percent-encoded `data:image/svg+xml,…` URI ("Copy as data URI"). */
+    dataUri(e: ExportEntry): string;
+    /**
+     * A CSS mask sheet: one `.i-<name>` class per icon that paints it in `currentColor`, as
+     * unplugin-icons and @iconify/tailwind do. A mask keeps only the shape, so a flag or emoji
+     * paints in one colour; the data-URI sheet keeps their colours.
+     */
+    cssMask(entries: ExportEntry[]): string;
+    /** A data-URI sheet: one `--i-<name>` custom property per icon, colours kept. */
+    dataUriCss(entries: ExportEntry[]): string;
     /**
      * The file names / symbol ids for one export, in order.
      *
@@ -59,3 +97,10 @@ export declare class ExportBundle {
      */
     build(format: ExportFormat, entries: ExportEntry[]): ExportFile;
 }
+/**
+ * `svg` as a `data:image/svg+xml,…` URI, percent-encoded rather than base64 (smaller, and the
+ * same approach as mini-svg-data-uri). Runs of whitespace collapse to one space. Nothing that
+ * could close a quoted CSS `url("…")` survives: quotes, backslashes and newlines are all
+ * encoded. Encode only sanitised SVG.
+ */
+export declare function encodeSvgDataUri(svg: string): string;

@@ -47,3 +47,9 @@ export declare function usePrepaintHandoff(): void;
  * through its own page code, and the standalone app keeps the library in the browser.
  */
 export declare function useHostLibrarySync(storeApi: BrowserStoreHook, config: AppConfig | null, client: IconCatalog | null): void;
+/**
+ * A host that mounts and unmounts the browser must not keep js-motion's listeners alive.
+ * The detail dialog tears it down when it closes; this covers a mount that goes away with
+ * the dialog never opened, or with a preview still running.
+ */
+export declare function useMotionTeardown(): void;
