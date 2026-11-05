@@ -194,7 +194,7 @@ export interface AppConfig {
             icon?: string;
         }[];
         /**
-         * The registry's native asset formats (schema 1.6.0: flutter, swiftui, android-vd), shown
+         * The registry's native asset formats (schema 1.8.0: flutter, swiftui), shown
          * in the Export menu as "Download for …" links to where the generator publishes them. The
          * browser cannot build these itself. Optional so a host's own AppConfig written before it
          * existed still type-checks.
