@@ -15,10 +15,12 @@ export interface RestRepoState {
     error: unknown;
 }
 /**
- * The packs to open on, once the host's packs are known: its default pack, when the
- * selection is still the one a fresh browser starts with (`configured`) or names no pack
- * the host serves. Null to leave the selection alone: a choice the user made, or a host
- * that marks no default.
+ * The packs to open on, once the host's packs are known (Q42). A fresh browser opens on every
+ * pack the host has installed: the list the host configured (`config.defaults.packages`, the
+ * packs core discovered), less any it does not serve, or, with none configured, every installed
+ * pack the catalog or packages API reports. Applies while the selection is still the configured
+ * one, or names no pack the host serves. Null to leave the selection alone: a choice the user
+ * made, a selection already equal to the opening one, or a host that reports no installed pack.
  */
 export declare function openingPacks(selection: readonly string[], configured: readonly string[], packs: readonly PackageMeta[]): string[] | null;
 /**

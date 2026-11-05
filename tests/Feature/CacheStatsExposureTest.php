@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Gate;
  * `GET ichava/api/v1/cache/stats` had a rate limit and nothing else, and its payload
  * listed every watched icon directory as an absolute path on the server. The
  * Inertia stats page put the same payload in its props for any visitor. Both now
- * answer to the `ichava.cache-admin` decision the cache write routes use, and the
+ * answer to the `ichava-icon-browser.cache-admin` decision the cache write routes use, and the
  * payload names directories relative to the application root, or not at all.
  */
 const WATCHED_FINGERPRINTS_KEY = 'ichava.directory.fingerprints';

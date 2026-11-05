@@ -29,13 +29,13 @@ use Simtabi\Laranail\Ichava\IconBrowser\Http\Controllers\Api\CommandHistoryApiCo
 */
 
 // Ichava API Routes
-// Uses 'ichava.api' middleware group which includes:
+// Uses 'ichava-icon-browser.api' middleware group which includes:
 // - web (session, CSRF, cookies)
-// - ichava.session (ensure session started)
-// - ichava.security (XSS, SQL injection protection)
-// - ichava.json (force JSON responses)
-// - ichava.log (request logging in debug mode)
-Route::group(Helpers::routeGroup(Helpers::routePrefix() . '/api/v1', ['ichava.api'], 'ichava.api.v1.'), function () {
+// - ichava-icon-browser.session (ensure session started)
+// - ichava-icon-browser.security (XSS, SQL injection protection)
+// - ichava-icon-browser.json (force JSON responses)
+// - ichava-icon-browser.log (request logging in debug mode)
+Route::group(Helpers::routeGroup(Helpers::routePrefix() . '/api/v1', ['ichava-icon-browser.api'], 'ichava.api.v1.'), function () {
 
     // =====================================================================
     // SESSION: the host's signed-in user and where the library is kept
@@ -51,7 +51,7 @@ Route::group(Helpers::routeGroup(Helpers::routePrefix() . '/api/v1', ['ichava.ap
 
     // Core's StatusData, for administrators only (`ichava.admin`, default deny).
     Route::get('/status', [HostApiController::class, 'status'])
-        ->middleware('ichava.admin')
+        ->middleware('ichava-icon-browser.admin')
         ->middleware(Helpers::getRateLimit('api', 30))
         ->name('status');
 
@@ -174,19 +174,19 @@ Route::group(Helpers::routeGroup(Helpers::routePrefix() . '/api/v1', ['ichava.ap
     // =====================================================================
     // Get cache statistics. Read-only, but it describes the server's cache
     // configuration and watched directories, so it answers to the same
-    // fail-closed `ichava.cache-admin` decision as the write routes below.
+    // fail-closed `ichava-icon-browser.cache-admin` decision as the write routes below.
     Route::get('/cache/stats', [IconBrowserApiController::class, 'cacheStats'])
-        ->middleware('ichava.cache-admin')
+        ->middleware('ichava-icon-browser.cache-admin')
         ->middleware(Helpers::getRateLimit('api', 60))
         ->name('cache.stats');
 
     // Cache write operations
     // Destructive: `clear` flushes the icon cache and `rebuild` additionally resets
     // every stored preference. A rate limit slows repetition; it does not decide who
-    // is allowed. `ichava.cache-admin` fails closed unless the host grants the ability.
+    // is allowed. `ichava-icon-browser.cache-admin` fails closed unless the host grants the ability.
     Route::prefix('cache')
         ->name('cache.')
-        ->middleware(['ichava.cache-admin', ...Helpers::getRateLimit('api', 10)])
+        ->middleware(['ichava-icon-browser.cache-admin', ...Helpers::getRateLimit('api', 10)])
         ->group(function () {
             Route::post('/clear', [IconBrowserApiController::class, 'clearCache'])
                 ->name('clear');

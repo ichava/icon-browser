@@ -7,6 +7,7 @@ namespace Simtabi\Laranail\Ichava\IconBrowser\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Simtabi\Laranail\Ichava\IconBrowser\Support\Helpers;
+use Simtabi\Laranail\Ichava\IconBrowser\Support\IconSnippets;
 
 /**
  * IconCollection - Transform Icon collections with metadata
@@ -27,6 +28,16 @@ class IconCollection extends ResourceCollection
      */
     protected ?string $groupBy = null;
 
+    private ?IconSnippets $snippets = null;
+
+    /** Hands the snippet builder to every icon this collection renders (re-audit F-10). */
+    public function withSnippets(IconSnippets $snippets): static
+    {
+        $this->snippets = $snippets;
+
+        return $this;
+    }
+
     /**
      * Set the grouping key
      */
@@ -44,6 +55,14 @@ class IconCollection extends ResourceCollection
      */
     public function toArray(Request $request): array
     {
+        if ($this->snippets !== null) {
+            foreach ($this->collection ?? [] as $resource) {
+                if ($resource instanceof IconResource) {
+                    $resource->withSnippets($this->snippets);
+                }
+            }
+        }
+
         // A resource collection always transforms to an array.
         $data = parent::toArray($request);
         $data = is_array($data) ? $data : [];

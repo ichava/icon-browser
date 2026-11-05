@@ -58,8 +58,21 @@ Creates `config/ichava/icon-browser.php`. See [configuration](configuration.md) 
 php artisan vendor:publish --tag=ichava::icon-browser-assets
 ```
 
-Copies the pre-built bundle (`assets/js/inertia-app.js`, `assets/css/inertia-app.css` and the
-Geist fonts) into `public/vendor/ichava/`. Do this after every `composer update` of the package.
+Copies the pre-built bundle (`assets/js/inertia-app.js`, its `inertia-app-*.js` chunks,
+`assets/css/inertia-app.css` and the Geist fonts) into `public/vendor/ichava/`. Do this after every
+`composer update` of the package.
+
+### Run the migrations after every update
+
+```bash
+php artisan migrate
+```
+
+Core's migrations change existing rows, not only the schema. Since core's
+`2026_11_05_000001_namespace_icon_morph_alias` the polymorphic alias for icons is `ichava-icon`
+(it was `icon`): until that migration runs, the term counts the browser shows (categories,
+variants, the package page) read zero, because the stored `termable_type` no longer matches the
+alias core registers.
 
 ## 4. Visit the browser
 
@@ -88,7 +101,7 @@ GitHub's public `ichava/js-ui-kernel`.
 
 - The React + Inertia.js icon browser at `/{prefix}/icons`
 - The REST API at `/{prefix}/api/v1/...` (icons, packages, terms, preferences, cache)
-- All Ichava middleware (`ichava.api`, `ichava.web`, hybrid Sanctum/session detection)
+- All Ichava middleware (`ichava-icon-browser.api`, `ichava-icon-browser.web`, hybrid Sanctum/session detection)
 - The `<x-ichava:ichava-test-icons>` and `<x-ichava:ichava-ui-icons>` demo Blade components
 - The `ui-icons` icon set the browser pages use
 - The `ichava::icon-browser.inject-scripts` Artisan command

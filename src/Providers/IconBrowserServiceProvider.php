@@ -54,6 +54,9 @@ use Simtabi\Laranail\Ichava\IconBrowser\Support\Storage\DatabaseOwnerPreferenceS
  */
 class IconBrowserServiceProvider extends PackageServiceProvider
 {
+    /** The Blade component prefix this package registers its tags under. */
+    public const string COMPONENT_PREFIX = 'ichava-icon-browser';
+
     /** The publish tag for the built browser assets. */
     public const ASSETS_TAG = 'ichava::icon-browser-assets';
 
@@ -116,7 +119,7 @@ class IconBrowserServiceProvider extends PackageServiceProvider
 
     public function bootingPackage(): void
     {
-        // Register HTTP middleware aliases + the ichava.api / ichava.web groups.
+        // Register HTTP middleware aliases + the ichava-icon-browser.api / ichava-icon-browser.web groups.
         // This is the entire HTTP layer for the Ichava ecosystem, core ships
         // none of it.
         $this->registerMiddleware();
@@ -126,25 +129,25 @@ class IconBrowserServiceProvider extends PackageServiceProvider
         // domains. Auto-skips when no domains are configured.
         $this->registerRoutesOnConfiguredDomains();
 
-        // Browser-only shorthand Blade components for the bundled demo icons.
-        // `test_component_enabled` was read by nothing: the demo component was
-        // registered everywhere. It is honoured now (default on, as before).
-        if (filter_var(config('ichava.icon-browser.test_component_enabled', true), FILTER_VALIDATE_BOOL)) {
-            Blade::component('ichava::ichava-test-icons', IchavaTestIconComponent::class);
+        // This package's Blade components, under its own prefix `ichava-icon-browser::` (the
+        // vendor-names rule; Blade's tag parser admits no slash, so not `ichava/icon-browser::`).
+        // Never under core's short prefix `ichava::`: a host may turn that off
+        // (`ichava.ichava-core.components.short_prefix` null), and the tag would then render as
+        // text. The demo test-icon component follows core's own switch,
+        // `ichava.ichava-core.components.test_icons`.
+        if (filter_var(config('ichava.ichava-core.components.test_icons', false), FILTER_VALIDATE_BOOL)) {
+            Blade::component(self::COMPONENT_PREFIX . '::test-icons', IchavaTestIconComponent::class);
         }
-        Blade::component('ichava::ichava-ui-icons', IchavaUiIconComponent::class);
+        Blade::component(self::COMPONENT_PREFIX . '::ui-icons', IchavaUiIconComponent::class);
 
         // SRI-aware <script>/<link> emitter; reads the manifest configured at
         // `ichava-browser.security.sri.manifest` or computes the digest from
         // the public-path file at render time.
-        Blade::component(
-            'ichava::sri-asset',
-            SriAsset::class,
-        );
+        Blade::component(self::COMPONENT_PREFIX . '::sri-asset', SriAsset::class);
 
         // react-icon-browser's static loader, inlined first in <body> so it paints before
         // the bundle runs (resources/vendor/react-icon-browser/prepaint.html).
-        Blade::component('ichava::prepaint', Prepaint::class);
+        Blade::component(self::COMPONENT_PREFIX . '::prepaint', Prepaint::class);
 
         // Publish the Vite-built browser bundle (CSS/JS/fonts) into the host's
         // public/vendor/ichava/ namespace. The asset HTTP path stays under
@@ -173,8 +176,8 @@ class IconBrowserServiceProvider extends PackageServiceProvider
      *
      * Hybrid architecture (via core's `HostCapabilities`):
      *  • Sanctum + sessions → full `web` middleware stack with CSRF.
-     *  • Sessions only      → `StartSession` + ichava.* middleware, no CSRF.
-     *  • Stateless host     → ichava.* only (treat as public JSON API).
+     *  • Sessions only      → `StartSession` + ichava-icon-browser.* middleware, no CSRF.
+     *  • Stateless host     → ichava-icon-browser.* only (treat as public JSON API).
      *
      * Always works, never fails, gracefully degrades to the simplest mode.
      */
@@ -183,16 +186,16 @@ class IconBrowserServiceProvider extends PackageServiceProvider
         $router = $this->app->make(Router::class);
 
         // Per-middleware aliases.
-        $router->aliasMiddleware('ichava.session', EnsureSession::class);
-        $router->aliasMiddleware('ichava.security', IchavaApiSecurity::class);
-        $router->aliasMiddleware('ichava.json', ForceJsonResponse::class);
-        $router->aliasMiddleware('ichava.log', LogRequests::class);
-        $router->aliasMiddleware('ichava.validate', ValidateIchavaRoute::class);
-        $router->aliasMiddleware('ichava.guard', IchavaStatefulGuard::class);
-        $router->aliasMiddleware('ichava.cache-admin', AuthorizeCacheAdmin::class);
-        $router->aliasMiddleware('ichava.admin', AuthorizeAdmin::class);
-        $router->aliasMiddleware('ichava.throttle', ThrottleRoute::class);
-        $router->aliasMiddleware('ichava.handle-inertia', HandleInertiaRequests::class);
+        $router->aliasMiddleware('ichava-icon-browser.session', EnsureSession::class);
+        $router->aliasMiddleware('ichava-icon-browser.security', IchavaApiSecurity::class);
+        $router->aliasMiddleware('ichava-icon-browser.json', ForceJsonResponse::class);
+        $router->aliasMiddleware('ichava-icon-browser.log', LogRequests::class);
+        $router->aliasMiddleware('ichava-icon-browser.validate', ValidateIchavaRoute::class);
+        $router->aliasMiddleware('ichava-icon-browser.guard', IchavaStatefulGuard::class);
+        $router->aliasMiddleware('ichava-icon-browser.cache-admin', AuthorizeCacheAdmin::class);
+        $router->aliasMiddleware('ichava-icon-browser.admin', AuthorizeAdmin::class);
+        $router->aliasMiddleware('ichava-icon-browser.throttle', ThrottleRoute::class);
+        $router->aliasMiddleware('ichava-icon-browser.handle-inertia', HandleInertiaRequests::class);
 
         // Detect host capabilities (Sanctum / session availability).
         $capabilities = HostCapabilities::getInstance();
@@ -216,28 +219,28 @@ class IconBrowserServiceProvider extends PackageServiceProvider
 
         // Ichava-specific middleware (always included).
         $apiMiddleware = array_merge($apiMiddleware, [
-            'ichava.guard',
-            'ichava.session',
-            'ichava.security',
-            'ichava.json',
-            'ichava.log',
+            'ichava-icon-browser.guard',
+            'ichava-icon-browser.session',
+            'ichava-icon-browser.security',
+            'ichava-icon-browser.json',
+            'ichava-icon-browser.log',
             'throttle:' . Helpers::configInt('ichava.icon-browser.rate_limiting.api_floor', 300) . ',1',
         ]);
 
-        $router->middlewareGroup('ichava.api', $apiMiddleware);
+        $router->middlewareGroup('ichava-icon-browser.api', $apiMiddleware);
 
         // Web routes (the SPA + cache UI), standard Laravel `web` stack.
-        $router->middlewareGroup('ichava.web', [
+        $router->middlewareGroup('ichava-icon-browser.web', [
             'web',
-            'ichava.validate',
+            'ichava-icon-browser.validate',
         ]);
 
         // Inertia routes (React pages via Inertia.js). Same `web` foundation
         // plus the shared-props middleware; validation keeps the prefix check.
-        $router->middlewareGroup('ichava.inertia', [
+        $router->middlewareGroup('ichava-icon-browser.inertia', [
             'web',
-            'ichava.handle-inertia',
-            'ichava.validate',
+            'ichava-icon-browser.handle-inertia',
+            'ichava-icon-browser.validate',
         ]);
     }
 

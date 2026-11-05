@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Simtabi\Laranail\Ichava\IconBrowser\Http\Resources;
 
+use LogicException;
 use Illuminate\Http\Request;
 use Simtabi\Laranail\Ichava\Models\Icon;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -20,6 +21,16 @@ use Simtabi\Laranail\Ichava\IconBrowser\Support\ThemeVariants;
  */
 class IconResource extends JsonResource
 {
+    /** The snippet builder, handed in by whoever renders this (re-audit F-10: never reached for). */
+    private ?IconSnippets $snippets = null;
+
+    public function withSnippets(IconSnippets $snippets): static
+    {
+        $this->snippets = $snippets;
+
+        return $this;
+    }
+
     /**
      * Transform the resource into an array.
      *
@@ -75,7 +86,7 @@ class IconResource extends JsonResource
 
             // Snippet strings: blade_clean, blade_generic, helper, and the host
             // resolver's `snippets` map when one is configured (IconSnippets).
-            ...app(IconSnippets::class)->forIcon($icon),
+            ...$this->snippetsOrFail()->forIcon($icon),
 
             // Metadata
             'set'      => $icon->package,
@@ -86,5 +97,10 @@ class IconResource extends JsonResource
             'created_at' => $icon->created_at?->toIso8601String(),
             'updated_at' => $icon->updated_at?->toIso8601String(),
         ];
+    }
+
+    private function snippetsOrFail(): IconSnippets
+    {
+        return $this->snippets ?? throw new LogicException('IconResource needs withSnippets() before it renders: the snippet strings are part of its shape.');
     }
 }

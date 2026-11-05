@@ -13,6 +13,9 @@
          cacheDirectory=".phpunit.cache"
          backupStaticProperties="false">
     <testsuites>
+        <testsuite name="ShortPrefixOff">
+            <directory>tests/ShortPrefixOff</directory>
+        </testsuite>
         <testsuite name="Feature">
             <directory>tests/Feature</directory>
         </testsuite>

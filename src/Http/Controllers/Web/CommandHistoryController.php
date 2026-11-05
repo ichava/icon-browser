@@ -7,11 +7,11 @@ namespace Simtabi\Laranail\Ichava\IconBrowser\Http\Controllers\Web;
 use Exception;
 use Inertia\Inertia;
 use Inertia\Response;
-use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Simtabi\Laranail\Ichava\Services\IchavaLogger;
 use Simtabi\Laranail\Ichava\Services\IconPreferenceService;
 use Simtabi\Laranail\Ichava\IconBrowser\Actions\Library\RecordCommand;
+use Simtabi\Laranail\Ichava\IconBrowser\Http\Requests\RecordCommandRequest;
 use Simtabi\Laranail\Ichava\IconBrowser\Actions\Library\ClearCommandHistory;
 
 final class CommandHistoryController extends BaseInertiaController
@@ -49,19 +49,10 @@ final class CommandHistoryController extends BaseInertiaController
         return Inertia::render('CommandHistory/Index', $props);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(RecordCommandRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'command'  => 'required|string|max:255',
-            'type'     => 'required|string|in:' . implode(',', RecordCommand::TYPES),
-            'metadata' => 'sometimes|array',
-        ]);
-        /** @var array{command: string, type: string, metadata?: array<mixed>} $validated */
-        $this->recordCommand->handle(
-            $validated['command'],
-            $validated['type'],
-            $validated['metadata'] ?? [],
-        );
+        $data = $request->toData();
+        $this->recordCommand->handle($data->command, $data->type, $data->metadata);
 
         return redirect()->back();
     }

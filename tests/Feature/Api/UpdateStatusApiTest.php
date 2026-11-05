@@ -2,23 +2,21 @@
 
 declare(strict_types=1);
 
-use Simtabi\Laranail\Ichava\Services\IconPackUpdateChecker;
+use Simtabi\Laranail\Ichava\Contracts\ChecksPackUpdates;
 
 /**
  * Feature tests for the GET /{prefix}/api/v1/icons/update-status endpoint.
  *
- * The underlying IconPackUpdateChecker is unit-tested in core; here we
+ * The underlying checker (core's ChecksPackUpdates) is unit-tested in core; here we
  * pin (a) the JSON envelope shape, (b) the summary tallies, and (c)
  * that the ?package= query forwards correctly.
  */
 beforeEach(function () {
     // Swap the real checker with a tiny stub. The endpoint should never
     // hit the network during tests.
-    $this->app->singleton(IconPackUpdateChecker::class, function () {
-        return new class extends IconPackUpdateChecker
+    $this->app->singleton(ChecksPackUpdates::class, function () {
+        return new class implements ChecksPackUpdates
         {
-            public function __construct() {}
-
             public function checkAll(?string $packageFilter = null): array
             {
                 $base = [
@@ -41,7 +39,7 @@ beforeEach(function () {
                         'reason'      => null,
                     ],
                     [
-                        'package'     => 'ichava/icon-sets-metronic',
+                        'package'     => 'ichava/icon-sets-lucide',
                         'source'      => 'primary',
                         'status'      => 'no-upstream',
                         'current'     => null,
@@ -58,6 +56,16 @@ beforeEach(function () {
                 }
 
                 return $base;
+            }
+
+            public function checkPackage(string $packageName): array
+            {
+                return $this->checkAll($packageName)[0] ?? [];
+            }
+
+            public function checkOne(string $packageName): array
+            {
+                return $this->checkPackage($packageName);
             }
         };
     });

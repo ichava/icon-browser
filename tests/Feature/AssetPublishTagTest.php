@@ -30,7 +30,7 @@ it('no longer registers the bare ichava-assets tag', function (): void {
 it('no longer registers the ichava.api.security middleware alias', function (): void {
     $aliases = app('router')->getMiddleware();
 
-    $this->assertArrayHasKey('ichava.security', $aliases);
+    $this->assertArrayHasKey('ichava-icon-browser.security', $aliases);
     $this->assertArrayNotHasKey('ichava.api.security', $aliases);
 });
 

@@ -20,8 +20,8 @@ use Illuminate\Contracts\Filesystem\FileNotFoundException;
  * out of band.
  *
  * Usage:
- *   <x-ichava::sri-asset src="vendor/ichava/spa.js" />
- *   <x-ichava::sri-asset href="vendor/ichava/spa.css" rel="stylesheet" />
+ *   <x-ichava-icon-browser::sri-asset src="vendor/ichava/spa.js" />
+ *   <x-ichava-icon-browser::sri-asset href="vendor/ichava/spa.css" rel="stylesheet" />
  *
  * If `ichava.icon-browser.security.sri.manifest` points at a JSON map of
  * `{ "vendor/ichava/spa.js": "sha384-..." }` the hash is read from there.

@@ -1,5 +1,5 @@
 /**
- * Hand over from the static loader that `<x-ichava::prepaint />` inlines in the layout.
+ * Hand over from the static loader that `<x-ichava-icon-browser::prepaint />` inlines in the layout.
  *
  * react-icon-browser removes it when IchavaBrowser mounts, but only the Browser page mounts
  * IchavaBrowser. Every other Inertia page (Settings, Collections, Stats…) would sit under a

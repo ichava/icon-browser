@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Simtabi\Laranail\Ichava\IconBrowser\Support;
 
 use Simtabi\Laranail\Ichava\Enums\IconKind;
+use Illuminate\Contracts\Translation\Translator;
 use Simtabi\Laranail\Ichava\Constants\IchavaConstants;
 use Simtabi\Laranail\Ichava\Services\IconBrowserService;
 
@@ -18,6 +19,7 @@ final readonly class BrowserBootstrap
         private HostSession $session,
         private FeaturesManifest $features,
         private IconBrowserService $browser,
+        private Translator $translator,
     ) {}
 
     /**
@@ -77,7 +79,7 @@ final readonly class BrowserBootstrap
         return [
             'schemaVersion' => PayloadSchema::VERSION,
             // The host's locale: the browser follows it rather than guessing.
-            'locale'   => app()->getLocale(),
+            'locale'   => $this->translator->getLocale(),
             'modes'    => self::modes(),
             'session'  => $this->session->toArray(),
             'features' => $features = $this->features->toArray(),

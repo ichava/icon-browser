@@ -12,7 +12,7 @@ use Simtabi\Laranail\Ichava\Support\Auth\HostUser;
 use Simtabi\Laranail\Ichava\Support\Auth\IchavaGates;
 
 /**
- * `ichava.admin`: let a request through only when the host grants the
+ * `ichava-icon-browser.admin`: let a request through only when the host grants the
  * `ichava.admin` ability to its signed-in user.
  *
  * Fails closed. Core defines `ichava.admin` as a denial when the host has not

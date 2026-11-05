@@ -13,7 +13,7 @@ use Simtabi\Laranail\Ichava\Support\SecurityNonce;
  * instead of after the bundle has downloaded and run.
  *
  * Usage, as the first child of <body>:
- *   <x-ichava::prepaint />
+ *   <x-ichava-icon-browser::prepaint />
  *
  * The markup is the vendored `prepaint.html` (resources/vendor/react-icon-browser), read as
  * is and never compiled as Blade, since its CSS carries `@media` and `@keyframes`. Under the

@@ -9,7 +9,7 @@ use Illuminate\Routing\Middleware\ThrottleRequests;
 use Simtabi\Laranail\Ichava\IconBrowser\Support\Helpers;
 
 /**
- * The per-route throttle: `ichava.throttle:<declared limit>,1,<bucket>`.
+ * The per-route throttle: `ichava-icon-browser.throttle:<declared limit>,1,<bucket>`.
  *
  * Laravel's `throttle:N,1` has two properties that made this package's
  * per-route limits decorative (S3). It keys the counter on domain and IP alone,

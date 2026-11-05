@@ -7,7 +7,6 @@ namespace Simtabi\Laranail\Ichava\IconBrowser\Http\Controllers\Web;
 use Exception;
 use Inertia\Inertia;
 use Inertia\Response;
-use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Simtabi\Laranail\Ichava\Models\Icon;
 use Simtabi\Laranail\Ichava\Services\IchavaLogger;
@@ -16,6 +15,7 @@ use Simtabi\Laranail\Ichava\Services\IconPreferenceService;
 use Simtabi\Laranail\Ichava\IconBrowser\Support\IconSnippets;
 use Simtabi\Laranail\Ichava\IconBrowser\Actions\Library\ClearHistory;
 use Simtabi\Laranail\Ichava\IconBrowser\Actions\Library\RecordHistory;
+use Simtabi\Laranail\Ichava\IconBrowser\Http\Requests\RecordHistoryRequest;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Controllers\Web\Concerns\ResolvesIconsForPages;
 
 final class HistoryController extends BaseInertiaController
@@ -64,20 +64,16 @@ final class HistoryController extends BaseInertiaController
         return Inertia::render('History/Index', $props);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(RecordHistoryRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'icon_id' => 'required|integer',
-            'action'  => 'required|string|in:' . implode(',', RecordHistory::ACTIONS),
-        ]);
-        /** @var array{icon_id: int|string, action: string} $validated */
-        $icon = Icon::find((int) $validated['icon_id']);
+        $data = $request->toData();
+        $icon = Icon::find($data->iconId);
 
         if (! $icon instanceof Icon) {
-            return redirect()->back()->with('error', "Icon [{$validated['icon_id']}] not found.");
+            return redirect()->back()->with('error', "Icon [{$data->iconId}] not found.");
         }
 
-        $this->recordHistory->handle($icon, $validated['action']);
+        $this->recordHistory->handle($icon, $data->action);
 
         return redirect()->back();
     }

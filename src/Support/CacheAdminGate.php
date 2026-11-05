@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Gate;
 use Simtabi\Laranail\Ichava\Support\Auth\HostUser;
 
 /**
- * The cache-administration decision, shared by the `ichava.cache-admin`
+ * The cache-administration decision, shared by the `ichava-icon-browser.cache-admin`
  * middleware and any handler that has to make the same call without aborting.
  *
  * It fails closed: with no ability defined the answer is a refusal, unless
@@ -21,11 +21,13 @@ use Simtabi\Laranail\Ichava\Support\Auth\HostUser;
  */
 final class CacheAdminGate
 {
+    public function __construct(private readonly HostUser $users) {}
+
     /**
      * Null when the current request may administer the icon cache; otherwise
      * the reason it may not, worded for a 403.
      */
-    public static function refusal(): ?string
+    public function refusal(): ?string
     {
         $config = config('ichava.icon-browser.security.cache_admin', []);
         $config = is_array($config) ? $config : [];
@@ -50,7 +52,7 @@ final class CacheAdminGate
             );
         }
 
-        if (Gate::forUser(app(HostUser::class)->user())->denies($ability)) {
+        if (Gate::forUser($this->users->user())->denies($ability)) {
             return 'You are not authorised to administer the Ichava icon cache.';
         }
 
@@ -58,8 +60,8 @@ final class CacheAdminGate
     }
 
     /** Whether the current request may administer the icon cache. */
-    public static function allows(): bool
+    public function allows(): bool
     {
-        return self::refusal() === null;
+        return $this->refusal() === null;
     }
 }

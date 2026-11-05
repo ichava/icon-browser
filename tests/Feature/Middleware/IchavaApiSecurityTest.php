@@ -10,7 +10,7 @@ use Simtabi\Laranail\Ichava\IconBrowser\Http\Middleware\IchavaApiSecurity;
 /**
  * IchavaApiSecurity middleware coverage.
  *
- * Hits real API routes (which sit behind the middleware via `ichava.api`) with
+ * Hits real API routes (which sit behind the middleware via `ichava-icon-browser.api`) with
  * malicious payloads and verifies the middleware blocks them. Also verifies
  * that the security response headers (CSP, X-Frame-Options, etc.) are emitted
  * on the happy path.
@@ -142,7 +142,7 @@ describe('IchavaApiSecurity::claimHeaders', function () {
         ]);
         IchavaApiSecurity::claimHeaders($response, 'Cache-Control');
 
-        $out = (new IchavaApiSecurity)->handle(Request::create('/ichava/api/v1/icons/1/svg'), fn () => $response);
+        $out = app(IchavaApiSecurity::class)->handle(Request::create('/ichava/api/v1/icons/1/svg'), fn () => $response);
 
         expect($out->headers->get('Cache-Control'))->toContain('immutable');
         expect($out->headers->has('X-Ichava-Own-Headers'))->toBeFalse();
@@ -153,7 +153,7 @@ describe('IchavaApiSecurity::claimHeaders', function () {
             'Cache-Control' => 'public, max-age=31536000, immutable',
         ]);
 
-        $out = (new IchavaApiSecurity)->handle(Request::create('/ichava/api/v1/packages'), fn () => $response);
+        $out = app(IchavaApiSecurity::class)->handle(Request::create('/ichava/api/v1/packages'), fn () => $response);
 
         expect($out->headers->get('Cache-Control'))->toContain('no-store');
     });
@@ -176,7 +176,7 @@ describe('IchavaApiSecurity::claimHeaders', function () {
         $response = new SymfonyResponse('{}', 200);
         IchavaApiSecurity::claimHeaders($response, 'X-Frame-Options', 'X-Content-Type-Options');
 
-        $out = (new IchavaApiSecurity)->handle(Request::create('/ichava/api/v1/packages'), fn () => $response);
+        $out = app(IchavaApiSecurity::class)->handle(Request::create('/ichava/api/v1/packages'), fn () => $response);
 
         expect($out->headers->get('X-Content-Type-Options'))->toBe('nosniff');
         expect($out->headers->get('X-Frame-Options'))->not->toBeNull();

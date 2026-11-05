@@ -19,8 +19,9 @@
   },
   "type": "module",
   "scripts": {
+      "check:config-drift": "node .dev/tools/check-config-drift.mjs eslint.base.js=config/eslint.base.js .dev/tools/sync-vendored-library.mjs=config/tools/sync-vendored-library.mjs .dev/tools/check-config-drift.mjs=config/check-config-drift.mjs",
     "// clean": "Narrow on purpose. inertia-app.js/.css are CHECKED IN and no npm script or CI job rebuilds them -- only build does. rm -rf public/* destroyed them, and a failing vite build destroyed them for nothing. Delete only what the build re-emits. See issue #26.",
-    "clean": "rm -rf public/assets/js/inertia-app.js public/assets/css/inertia-app.css public/.vite 2>/dev/null || true",
+    "clean": "rm -rf public/assets/js/inertia-app*.js public/assets/css/inertia-app.css public/.vite 2>/dev/null || true",
     "build": "npm run clean && echo '' && echo '🔨 Building Ichava (dev)...' && NODE_ENV=development vite build --config vite.inertia.config.ts",
     "build:prod": "npm run clean && echo '' && echo '🚀 Building Ichava (production)...' && NODE_ENV=production vite build --config vite.inertia.config.ts",
     "watch": "echo '' && echo '👀 Watching Ichava for changes...' && vite build --watch --config vite.inertia.config.ts",

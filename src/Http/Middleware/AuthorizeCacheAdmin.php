@@ -36,12 +36,14 @@ use Simtabi\Laranail\Ichava\IconBrowser\Support\CacheAdminGate;
  */
 final class AuthorizeCacheAdmin
 {
+    public function __construct(private readonly CacheAdminGate $gate) {}
+
     /**
      * @param Closure(Request): Response $next
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $refusal = CacheAdminGate::refusal();
+        $refusal = $this->gate->refusal();
 
         if ($refusal !== null) {
             abort(403, $refusal);

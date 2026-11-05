@@ -48,8 +48,8 @@ return [
         'store' => env('ICHAVA_LIBRARY_STORE', 'database'),
     ],
 
-    // Demo Blade components (<x-ichava::ichava-test-icons>, <x-ichava::ichava-ui-icons>)
-    'test_component_enabled' => env('ICHAVA_TEST_COMPONENT_ENABLED', true),
+    // The demo <x-ichava-icon-browser::test-icons> component follows core's
+    // `ichava.ichava-core.components.test_icons` (ICHAVA_TEST_COMPONENT_ENABLED).
 
     // Multi-domain restriction (empty = every domain)
     'domains' => env('ICHAVA_DOMAINS', []),
