@@ -26,6 +26,8 @@ export interface SvgPolicy {
         block: string[];
     };
 }
+/** Whether the parsed policy has the shape this runtime interprets; checked once, at load. */
+export declare function isSvgPolicy(value: unknown): value is SvgPolicy;
 export declare const svgPolicy: SvgPolicy;
 /**
  * The by-name allow-list, which is NOT simply `policy.allowedAttributes`.

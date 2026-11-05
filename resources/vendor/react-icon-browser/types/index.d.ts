@@ -25,3 +25,4 @@ export { mergeConfig } from './core/config';
 export { emptyReasonFor, type ListedPage } from './core/api/ApiClient';
 export { PAYLOAD_SCHEMA_VERSION } from './core/api/schema.gen';
 export type { Bootstrap as HostBootstrap, Session as HostSession, User as HostUser, Feature as HostFeature, Features as HostFeatures, Ichava as HostIchavaProp, ApiManifest as HostApiManifest, SharedProps as HostSharedProps, EmptyReason, } from './core/api/schema.gen';
+export { loadLocale, loadAllLocales } from './core/i18n';
