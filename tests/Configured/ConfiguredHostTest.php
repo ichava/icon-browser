@@ -45,6 +45,6 @@ it('shares null for a page a disabled feature left unmounted, and says why', fun
 });
 
 it('does not register the demo component when it is turned off', function () {
-    expect(Blade::getClassComponentAliases())->not->toHaveKey('ichava::ichava-test-icons')
-        ->and(Blade::getClassComponentAliases())->toHaveKey('ichava::ichava-ui-icons');
+    expect(Blade::getClassComponentAliases())->not->toHaveKey('ichava-icon-browser::test-icons')
+        ->and(Blade::getClassComponentAliases())->toHaveKey('ichava-icon-browser::ui-icons');
 });

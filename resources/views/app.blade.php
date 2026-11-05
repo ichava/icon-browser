@@ -51,7 +51,7 @@
 {{-- The browser's warm frame (`--canvas`) and ink, so nothing flashes between the prepaint and the mount. --}}
 <body class="antialiased h-full bg-[#ece8de] text-[#1f1c17] dark:bg-[#14120e] dark:text-[#f6f4ee]">
     {{-- First, so the loader paints before the bundle downloads; the app removes it on mount. --}}
-    <x-ichava::prepaint />
+    <x-ichava-icon-browser::prepaint />
 
     <div class="flex min-h-dvh flex-col">
         @inertia

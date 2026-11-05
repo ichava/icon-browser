@@ -15,10 +15,10 @@ use Simtabi\Laranail\Ichava\View\Components\IconComponent as BaseIconComponent;
  * Icons are organized in the 'ui-icons' subdirectory (category).
  *
  * Recommended Usage (full path syntax):
- * <x-ichava::icon name="ichava/ui-icons::search" />
- * <x-ichava::icon name="ichava/ui-icons::filter" class="w-5 h-5" />
- * <x-ichava::icon name="ichava/ui-icons::moon" />
- * <x-ichava::icon name="ichava/ui-icons::sun" />
+ * <x-ichava-core::icon name="ichava/ui-icons::search" />
+ * <x-ichava-core::icon name="ichava/ui-icons::filter" class="w-5 h-5" />
+ * <x-ichava-core::icon name="ichava/ui-icons::moon" />
+ * <x-ichava-core::icon name="ichava/ui-icons::sun" />
  */
 class IchavaUiIconComponent extends BaseIconComponent
 {

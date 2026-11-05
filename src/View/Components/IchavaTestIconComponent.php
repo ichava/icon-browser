@@ -14,9 +14,9 @@ use Simtabi\Laranail\Ichava\View\Components\IconComponent as BaseIconComponent;
  * Icons are organized in the 'test-icons' subdirectory (category).
  *
  * Recommended Usage (full path syntax):
- * <x-ichava::icon name="ichava/test-icons::check" />
- * <x-ichava::icon name="ichava/test-icons::circle" class="w-6 h-6" />
- * <x-ichava::icon name="ichava/test-icons::square" />
+ * <x-ichava-core::icon name="ichava/test-icons::check" />
+ * <x-ichava-core::icon name="ichava/test-icons::circle" class="w-6 h-6" />
+ * <x-ichava-core::icon name="ichava/test-icons::square" />
  */
 class IchavaTestIconComponent extends BaseIconComponent
 {

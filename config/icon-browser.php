@@ -189,15 +189,9 @@ return [
         'resolver'   => null,
     ],
 
-    /*
-    |--------------------------------------------------------------------------
-    | Demo / test components
-    |--------------------------------------------------------------------------
-    | The `<x-ichava::ichava-test-icons>` and `<x-ichava::ichava-ui-icons>`
-    | shorthand components are registered by this package. Toggle off in
-    | production if you don't want them rendered.
-    */
-    'test_component_enabled' => env('ICHAVA_TEST_COMPONENT_ENABLED', true),
+    // The demo `<x-ichava-icon-browser::test-icons>` component follows core's
+    // `ichava.ichava-core.components.test_icons` (ICHAVA_TEST_COMPONENT_ENABLED).
+    // This package keeps no key of its own for it.
 
     /*
     |--------------------------------------------------------------------------

@@ -14,7 +14,7 @@ Relocated from the README, which is now a slim pointer.
 | REST API | Endpoints for icons, packages, terms, preferences, command history, cache and statistics. |
 | Middleware | The `ichava-icon-browser.api` and `ichava-icon-browser.web` groups, plus per-middleware aliases: `ichava-icon-browser.guard`, `ichava-icon-browser.security`, `ichava-icon-browser.json`, `ichava-icon-browser.log`, `ichava-icon-browser.session`, `ichava-icon-browser.validate`. |
 | Hybrid auth | `HostCapabilities` detects Sanctum and sessions, then adapts the stack. |
-| Blade views | `<x-ichava::layouts.app>` and `<x-ichava::layouts.browser>`, plus the `<x-ichava::ichava-test-icons>` and `<x-ichava::ichava-ui-icons>` demo components. |
+| Blade views | `<x-ichava::layouts.app>` and `<x-ichava::layouts.browser>`, plus the `<x-ichava-icon-browser::test-icons>` and `<x-ichava-icon-browser::ui-icons>` demo components. |
 | `ui-icons` pack | The bundled icon set the browser pages use. |
 | Asset publish | `vendor:publish --tag=ichava::icon-browser-assets` copies the pre-built bundle into `public/vendor/ichava/`. |
 | `inject-npm-scripts` | Adds the `ichava:dev`, `ichava:build` and watch scripts to the host application's `package.json`. |

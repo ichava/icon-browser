@@ -495,9 +495,9 @@ final class IconBrowserApiController extends BaseApiController
         try {
             $this->logDebug('Building terms hierarchy');
 
-            // Get the morph type from the database or use 'icon' as default
-            // The termable_type in the database is 'icon', not the full class name
-            $iconMorphType = 'icon';
+            // The morph alias core registers for Icon (`ichava-icon` since core's
+            // 2026_11_05_000001 migration), never a literal that can drift from it.
+            $iconMorphType = (new Icon)->getMorphClass();
 
             // OPTIMIZED: Get all term icon counts in a single query
             $termIconCounts = DB::table(IconTables::TERMABLES)

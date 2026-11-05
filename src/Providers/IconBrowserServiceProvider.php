@@ -54,6 +54,9 @@ use Simtabi\Laranail\Ichava\IconBrowser\Support\Storage\DatabaseOwnerPreferenceS
  */
 class IconBrowserServiceProvider extends PackageServiceProvider
 {
+    /** The Blade component prefix this package registers its tags under. */
+    public const string COMPONENT_PREFIX = 'ichava-icon-browser';
+
     /** The publish tag for the built browser assets. */
     public const ASSETS_TAG = 'ichava::icon-browser-assets';
 
@@ -126,25 +129,25 @@ class IconBrowserServiceProvider extends PackageServiceProvider
         // domains. Auto-skips when no domains are configured.
         $this->registerRoutesOnConfiguredDomains();
 
-        // Browser-only shorthand Blade components for the bundled demo icons.
-        // `test_component_enabled` was read by nothing: the demo component was
-        // registered everywhere. It is honoured now (default on, as before).
-        if (filter_var(config('ichava.icon-browser.test_component_enabled', true), FILTER_VALIDATE_BOOL)) {
-            Blade::component('ichava::ichava-test-icons', IchavaTestIconComponent::class);
+        // This package's Blade components, under its own prefix `ichava-icon-browser::` (the
+        // vendor-names rule; Blade's tag parser admits no slash, so not `ichava/icon-browser::`).
+        // Never under core's short prefix `ichava::`: a host may turn that off
+        // (`ichava.ichava-core.components.short_prefix` null), and the tag would then render as
+        // text. The demo test-icon component follows core's own switch,
+        // `ichava.ichava-core.components.test_icons`.
+        if (filter_var(config('ichava.ichava-core.components.test_icons', false), FILTER_VALIDATE_BOOL)) {
+            Blade::component(self::COMPONENT_PREFIX . '::test-icons', IchavaTestIconComponent::class);
         }
-        Blade::component('ichava::ichava-ui-icons', IchavaUiIconComponent::class);
+        Blade::component(self::COMPONENT_PREFIX . '::ui-icons', IchavaUiIconComponent::class);
 
         // SRI-aware <script>/<link> emitter; reads the manifest configured at
         // `ichava-browser.security.sri.manifest` or computes the digest from
         // the public-path file at render time.
-        Blade::component(
-            'ichava::sri-asset',
-            SriAsset::class,
-        );
+        Blade::component(self::COMPONENT_PREFIX . '::sri-asset', SriAsset::class);
 
         // react-icon-browser's static loader, inlined first in <body> so it paints before
         // the bundle runs (resources/vendor/react-icon-browser/prepaint.html).
-        Blade::component('ichava::prepaint', Prepaint::class);
+        Blade::component(self::COMPONENT_PREFIX . '::prepaint', Prepaint::class);
 
         // Publish the Vite-built browser bundle (CSS/JS/fonts) into the host's
         // public/vendor/ichava/ namespace. The asset HTTP path stays under

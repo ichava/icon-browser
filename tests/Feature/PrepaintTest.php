@@ -7,7 +7,7 @@ use Simtabi\Laranail\Ichava\Support\SecurityNonce;
 use Simtabi\Laranail\Ichava\IconBrowser\View\Components\Prepaint;
 
 it('inlines the vendored loader markup', function (): void {
-    $html = Blade::render('<x-ichava::prepaint />');
+    $html = Blade::render('<x-ichava-icon-browser::prepaint />');
 
     expect(is_file(Prepaint::path()))->toBeTrue();
     expect($html)->toContain('id="ichava-prepaint"');
@@ -19,7 +19,7 @@ it('puts the request nonce on its style and script under the nonce CSP mode', fu
     config(['ichava.icon-browser.security.csp.mode' => 'nonce']);
     $nonce = app(SecurityNonce::class)->value();
 
-    $html = Blade::render('<x-ichava::prepaint />');
+    $html = Blade::render('<x-ichava-icon-browser::prepaint />');
 
     $this->assertStringContainsString("<style nonce=\"{$nonce}\">", $html, 'style carries the nonce');
     $this->assertStringContainsString("<script nonce=\"{$nonce}\">", $html, 'script carries the nonce');
@@ -32,5 +32,5 @@ it('is the first thing in the layout body', function (): void {
     $afterBody = preg_replace('/^.*?<body\b[^>]*>/s', '', $layout);
     $firstTag = preg_replace('/\{\{--.*?--\}\}/s', '', (string) $afterBody);
 
-    $this->assertStringStartsWith('<x-ichava::prepaint />', ltrim((string) $firstTag), 'the loader is the first child of <body>');
+    $this->assertStringStartsWith('<x-ichava-icon-browser::prepaint />', ltrim((string) $firstTag), 'the loader is the first child of <body>');
 });

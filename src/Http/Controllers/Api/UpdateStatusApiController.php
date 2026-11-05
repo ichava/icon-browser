@@ -7,13 +7,13 @@ namespace Simtabi\Laranail\Ichava\IconBrowser\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Simtabi\Laranail\Ichava\Services\IchavaLogger;
-use Simtabi\Laranail\Ichava\Services\IconPackUpdateChecker;
+use Simtabi\Laranail\Ichava\Contracts\ChecksPackUpdates;
 
 /**
  * Surfaces the upstream-tracking checker over HTTP for host apps that
  * want to display pack health on a dashboard / admin panel.
  *
- * Wraps `IconPackUpdateChecker` (lives in `ichava/core`); response shape
+ * Wraps core's `ChecksPackUpdates` contract (`IconPackUpdateChecker` by default); response shape
  * mirrors the Artisan command `ichava:icons:check-updates --format=json`
  * so any consumer of one trivially consumes the other.
  *
@@ -29,7 +29,7 @@ final class UpdateStatusApiController extends BaseApiController
 {
     public function __construct(
         IchavaLogger $logger,
-        protected IconPackUpdateChecker $checker,
+        protected ChecksPackUpdates $checker,
     ) {
         parent::__construct($logger);
     }

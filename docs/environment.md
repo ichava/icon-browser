@@ -41,7 +41,7 @@ The guard the user is read from is core's `ICHAVA_AUTH_GUARD` (`ichava.ichava-co
 
 | Key | Default | Effect | Config |
 |---|---|---|---|
-| `ICHAVA_TEST_COMPONENT_ENABLED` | `true` | Register the bundled `<x-ichava::ichava-test-icons>` and `<x-ichava::ichava-ui-icons>` Blade components | `ichava.icon-browser.test_component_enabled` |
+| `ICHAVA_TEST_COMPONENT_ENABLED` | `local` env only | Register the demo `<x-ichava-icon-browser::test-icons>` component (core's switch; `<x-ichava-icon-browser::ui-icons>` is always registered) | `ichava.ichava-core.components.test_icons` |
 
 ## Multi-domain support
 

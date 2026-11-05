@@ -33,25 +33,20 @@ it('resolves every view this package renders', function () {
     }
 });
 
-it('leaves the Blade component registries alone', function () {
-    // Decision B, deferred: <x-ichava::icon> is the ecosystem's documented
-    // public API across ~109 references. It is a different registry from the
-    // view hints and must not move with them.
-    //
-    // All three this package registers, not a representative one: a guard
-    // naming a single alias passes while the other two are renamed, which is
-    // most of what it exists to prevent. The Vue-era layout aliases are gone
-    // with the layouts themselves.
-    //
-    // `ichava::icon` is core's registration, so it is not listed here. Core
-    // covers it by rendering the tag -- Blade::render('<x-ichava::icon ... />')
-    // in IconComponentAttributesTest -- rather than by asserting the alias key.
-    expect(array_keys(app('blade.compiler')->getClassComponentAliases()))
-        ->toContain(
-            'ichava::ichava-test-icons',
-            'ichava::ichava-ui-icons',
-            'ichava::sri-asset',
-        );
+it('registers its Blade components under its own prefix, never core\'s short one', function () {
+    // `ichava::` is core's short prefix, which a host may turn off (ShortPrefixOff covers that
+    // host). This package's tags carry `ichava-icon-browser::` instead (the vendor-names rule).
+    // Every alias it registers, not a representative one: a guard naming one alias passes
+    // while the others are renamed. The demo test-icons tag follows core's
+    // `components.test_icons`, off outside `local`, so it is asserted where it is on.
+    $aliases = array_keys(app('blade.compiler')->getClassComponentAliases());
+
+    expect($aliases)->toContain(
+        'ichava-icon-browser::ui-icons',
+        'ichava-icon-browser::sri-asset',
+        'ichava-icon-browser::prepaint',
+    );
+    expect(array_values(array_filter($aliases, fn (string $a) => str_starts_with($a, 'ichava::') && $a !== 'ichava::icon')))->toBe([]);
 });
 
 it('aliases the tag-safe hyphen form over the same paths', function () {

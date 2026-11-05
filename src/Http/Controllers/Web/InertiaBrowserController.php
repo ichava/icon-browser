@@ -19,14 +19,14 @@ use Simtabi\Laranail\Ichava\Services\IconRegistry;
 use Simtabi\Laranail\Ichava\Support\Auth\HostUser;
 use Simtabi\Laranail\Ichava\Support\Auth\IchavaGates;
 use Simtabi\Laranail\Ichava\Services\IconCacheService;
+use Simtabi\Laranail\Ichava\Contracts\ChecksPackUpdates;
 use Simtabi\Laranail\Ichava\Services\IconBrowserService;
 use Simtabi\Laranail\Ichava\Services\InformationService;
+use Simtabi\Laranail\Ichava\Contracts\DatabaseOperations;
 use Simtabi\Laranail\Ichava\IconBrowser\Support\IconTables;
-use Simtabi\Laranail\Ichava\Services\IconPackUpdateChecker;
 use Simtabi\Laranail\Ichava\Services\IconPreferenceService;
 use Simtabi\Laranail\Ichava\IconBrowser\Support\IconSnippets;
 use Simtabi\Laranail\Ichava\IconBrowser\Support\CacheAdminGate;
-use Simtabi\Laranail\Ichava\Services\DatabaseOperationsService;
 use Simtabi\Laranail\Ichava\IconBrowser\Support\CacheStatsPayload;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Requests\IconFilterRequest;
 
@@ -38,9 +38,9 @@ final class InertiaBrowserController extends BaseInertiaController
         protected IconCacheService $cacheService,
         protected IconPreferenceService $preferenceService,
         protected IconRegistry $registry,
-        protected IconPackUpdateChecker $updateChecker,
+        protected ChecksPackUpdates $updateChecker,
         IchavaLogger $logger,
-        private readonly DatabaseOperationsService $databaseOperations,
+        private readonly DatabaseOperations $databaseOperations,
         private readonly CacheAdminGate $cacheAdmin,
         private readonly InformationService $information,
         private readonly HostUser $users,
