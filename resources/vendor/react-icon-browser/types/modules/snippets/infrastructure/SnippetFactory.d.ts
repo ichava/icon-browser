@@ -54,8 +54,8 @@ export declare const SNIPPET_TABS: {
 export declare const DEFAULT_SNIPPET_CLASS = "w-6 h-6";
 /**
  * What tells two same-named icons apart within a pack: the variant (tabler `outline` /
- * `filled`, flag `4x3` / `1x1`) or, for packs without variants, the category (emoji
- * `twemoji` / `openmoji-black`). Empty when the pack has neither.
+ * `filled`, flag `4x3` / `1x1`) or, for packs without variants, the category (openmoji
+ * `openmoji-color` / `openmoji-black`). Empty when the pack has neither.
  */
 export declare function iconDetail(icon: Icon): string;
 /**
