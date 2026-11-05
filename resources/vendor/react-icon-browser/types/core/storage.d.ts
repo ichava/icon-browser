@@ -5,14 +5,6 @@ export declare function registerPreferenceKey(key: string): void;
 /** The storage the active driver writes to: sessionStorage or localStorage, or null. */
 export declare function activeStorage(): Storage | null;
 /**
- * localStorage, where preference values lived before they followed the driver; null when
- * unavailable. A supported migration path, not a deprecated one: `PreferenceStorage` reads
- * here when the active driver has no value, so a user who switched to session storage keeps
- * what they had saved. `PreferenceStorage.test.ts` pins it ("still reads a value written to
- * localStorage before it followed the driver").
- */
-export declare function legacyStorage(): Storage | null;
-/**
  * Whether `key` holds persisted state in the active driver right now. Call it before the
  * persist middleware is created: rehydration itself writes, so it answers true afterwards.
  * This is what first-run detection reads, per mount (behaviour change 2).
