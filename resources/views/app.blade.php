@@ -65,7 +65,10 @@
     </div>
 
     @if(! $viteDev)
-        <script src="{{ asset('vendor/ichava/assets/js/inertia-app.js') }}?v={{ Helpers::assetVersion('vendor/ichava/assets/js/inertia-app.js') }}" type="module" @if($pageNonce !== null) nonce="{{ $pageNonce }}" @endif></script>
+        {{-- No ?v= on the entry: its page chunks import it back as `./inertia-app.js`, and a module
+             URL with a query is a different module. Two copies of the entry meant two Inertia
+             contexts, so every page threw "usePage must be used within the Inertia component". --}}
+        <script src="{{ asset('vendor/ichava/assets/js/inertia-app.js') }}" type="module" @if($pageNonce !== null) nonce="{{ $pageNonce }}" @endif></script>
     @endif
 </body>
 </html>

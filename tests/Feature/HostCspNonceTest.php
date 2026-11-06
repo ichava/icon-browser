@@ -34,3 +34,18 @@ it('writes no csp-nonce meta when the host sends no nonce and the mode is strict
 
     $this->get('/ichava/icons')->assertOk()->assertDontSee('name="csp-nonce"', false);
 });
+
+it('loads the entry module at the URL its page chunks import it from, so there is one copy', function (): void {
+    // The page chunks import `./inertia-app.js` with no query. A `?v=` on the entry made the
+    // browser load it twice, as two modules with two Inertia contexts, and every page threw
+    // "usePage must be used within the Inertia component".
+    $chunks = glob(dirname(__DIR__, 2) . '/public/assets/js/inertia-app-*.js') ?: [];
+    expect($chunks)->not->toBeEmpty();
+    $importers = array_filter($chunks, fn (string $file): bool => str_contains((string) file_get_contents($file), '"./inertia-app.js"'));
+    expect($importers)->not->toBeEmpty();
+
+    $html = $this->get('/ichava/icons')->assertOk()->getContent();
+    preg_match('#<script src="([^"]*inertia-app\.js[^"]*)"#', (string) $html, $entry);
+
+    expect($entry[1] ?? null)->toEndWith('/vendor/ichava/assets/js/inertia-app.js');
+});
