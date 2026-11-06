@@ -26,8 +26,11 @@ export declare const MenuText: ({ children, className, ...rest }: {
     className?: string;
     dir?: 'ltr' | 'rtl';
 }) => import("react").JSX.Element;
-/** The menu's own classes: `ich-pop` is a test and positioning hook. */
-export declare const MENU_CLASS = "ich-pop p-0.5";
+/**
+ * The menu's own classes: `ich-pop` is a test and positioning hook. The menu is the scroller
+ * (`max-h-[72vh]`), because its popover no longer clips so that the caret can show.
+ */
+export declare const MENU_CLASS = "ich-pop max-h-[72vh] p-0.5";
 /**
  * Menu -- a plain action menu (the detail dialog's download menu). The public API is
  * unchanged by the move onto `Dropdown`.

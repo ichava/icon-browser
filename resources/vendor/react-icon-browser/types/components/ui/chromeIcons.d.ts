@@ -24,6 +24,7 @@ export declare const DotsVertical: ChromeIcon;
 export declare const Eye: ChromeIcon;
 export declare const EyeOff: ChromeIcon;
 export declare const Folder: ChromeIcon;
+export declare const GripHorizontal: ChromeIcon;
 export declare const HelpCircle: ChromeIcon;
 export declare const InfoCircle: ChromeIcon;
 export declare const LayoutBottom: ChromeIcon;

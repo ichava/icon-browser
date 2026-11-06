@@ -6,6 +6,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Simtabi\Laranail\Ichava\IconBrowser\Tests\TestCase;
 use Simtabi\Laranail\Ichava\IconBrowser\Tests\ApiDisabledTestCase;
 use Simtabi\Laranail\Ichava\IconBrowser\Tests\CustomPrefixTestCase;
+use Simtabi\Laranail\Ichava\IconBrowser\Tests\MovedBrowserTestCase;
 use Simtabi\Laranail\Ichava\IconBrowser\Tests\ConfiguredHostTestCase;
 use Simtabi\Laranail\Ichava\IconBrowser\Tests\ShortPrefixOffTestCase;
 use Simtabi\Laranail\Ichava\IconBrowser\Tests\InertiaDisabledTestCase;
@@ -45,3 +46,8 @@ pest()
     ->extend(ShortPrefixOffTestCase::class)
     ->use(RefreshDatabase::class)
     ->in('ShortPrefixOff');
+
+pest()
+    ->extend(MovedBrowserTestCase::class)
+    ->use(RefreshDatabase::class)
+    ->in('MovedBrowser');

@@ -1,3 +1,0 @@
-/*! @ichava/react-icon-browser | Proprietary. Copyright (c) Simtabi LLC. See LICENSE. */
-/*! @tabler/icons-react v3.50.0 | MIT | https://github.com/tabler/tabler-icons/blob/main/LICENSE */
-import{t as e}from"./Glyph-COTXfEez.js";import{jsx as t}from"react/jsx-runtime";var n=/* @__PURE__ */ new Map;function r(r){let i=n.get(r);return i||(i=({className:n})=>/* @__PURE__ */ t(e,{name:r,size:16,className:n}),i.displayName=`GlyphIcon(${r})`,n.set(r,i)),i}export{r as t};

@@ -5,6 +5,7 @@ import { FlashBanner } from '@/components/FlashBanner';
 import { normalizeRawIcon, type ServerIcon } from '@/core/propsToCatalog';
 import { toIcon, type Icon } from '@/lib/browser';
 import type { SharedProps } from '@/types';
+import { iconPageBase } from '@/core/browserPath';
 
 interface HistoryRow {
   icon_id: number;
@@ -21,7 +22,7 @@ interface HistoryIndexProps extends SharedProps {
 
 export default function HistoryIndex() {
   const { props } = usePage<HistoryIndexProps>();
-  const showBase = `/${props.ichava.prefix}/icons`;
+  const showBase = iconPageBase(props.ichava);
 
   const rows = useMemo(
     () =>

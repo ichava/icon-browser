@@ -41,11 +41,19 @@ return [
     |--------------------------------------------------------------------------
     | Browser UI
     |--------------------------------------------------------------------------
-    | Mounted at /{prefix}/icons by default ({prefix} is the value below).
-    | The same prefix is used by core's API routes (/{prefix}/api/v1/...) so
-    | the SPA and the REST API share a unified URL space.
+    | Mounted at /{prefix}/icons by default ({prefix} is core's
+    | ICHAVA_BROWSER_PREFIX). The same prefix is used by the API routes
+    | (/{prefix}/api/v1/...) so the SPA and the REST API share a URL space.
+    |
+    | `path` moves the browser page (and its /{path}/{id} icon pages) to a URL
+    | of the host's choosing, e.g. ICHAVA_BROWSER_PATH=app serves it at /app.
+    | The API and the other pages stay under the prefix, and /{prefix}/icons
+    | (with its query) and /{prefix}/icons/{id} answer with a permanent
+    | redirect to the new URLs, so old links keep working. Unset, empty or not
+    | a plain path: /{prefix}/icons, as before.
     */
     'browser' => [
+        'path'           => env('ICHAVA_BROWSER_PATH'),
         'per_page'       => env('ICHAVA_BROWSER_PER_PAGE', IchavaConstants::BROWSER_PER_PAGE),
         'cache_duration' => env('ICHAVA_BROWSER_CACHE', IchavaConstants::DEFAULT_CACHE_TTL),
         // Whether the browser shows its theme control (`features.themeToggle`).

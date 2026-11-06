@@ -59,6 +59,12 @@ export interface IchavaShared {
      * The server sends null for a route a disabled feature left unmounted. Typed as strings
      * until the browser reads `features` first (react-icon-browser's manifest-driven modules).
      */
+    /**
+     * The browser page's root-relative path (`/ichava/icons`, or wherever the host's
+     * `ICHAVA_BROWSER_PATH` moved it). Icon pages are `${browserPath}/${id}`. Optional, for a
+     * page rendered by an older server.
+     */
+    browserPath?: string;
     routes: {
         browser: string;
         stats: string;

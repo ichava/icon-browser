@@ -14,6 +14,7 @@ use Simtabi\Laranail\Ichava\IconBrowser\Http\Controllers\Web\SettingsController;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Controllers\Web\CollectionController;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Controllers\Web\CommandHistoryController;
 use Simtabi\Laranail\Ichava\IconBrowser\Http\Controllers\Web\InertiaBrowserController;
+use Simtabi\Laranail\Ichava\IconBrowser\Http\Controllers\Web\MovedBrowserRedirectController;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,14 +34,32 @@ use Simtabi\Laranail\Ichava\IconBrowser\Http\Controllers\Web\InertiaBrowserContr
 |
 */
 
-Route::group(Helpers::routeGroup(Helpers::routePrefix(), ['ichava-icon-browser.inertia'], 'ichava.inertia.'), function () {
-
-    // Browser: filtered icon listing + detail + stats dashboard.
-    Route::get('/icons', [InertiaBrowserController::class, 'index'])
+// Browser: the filtered icon listing and its icon pages, at `browser.path`
+// (ICHAVA_BROWSER_PATH), which is `{prefix}/icons` unless the host moved it.
+// Same names and middleware either way.
+Route::group(Helpers::routeGroup(Helpers::browserPath(), ['ichava-icon-browser.inertia'], 'ichava.inertia.'), function () {
+    Route::get('/', [InertiaBrowserController::class, 'index'])
         ->name('browser');
-    Route::get('/icons/{id}', [InertiaBrowserController::class, 'show'])
+    Route::get('/{id}', [InertiaBrowserController::class, 'show'])
         ->name('icons.show')
         ->where('id', '[0-9]+');
+});
+
+// A moved browser keeps its old URLs: `{prefix}/icons` and `{prefix}/icons/{id}`
+// answer 301 with the query kept (`?icon=` deep links live in it).
+if (Helpers::browserMoved()) {
+    Route::group(Helpers::routeGroup(Helpers::routePrefix(), ['ichava-icon-browser.web'], 'ichava.inertia.moved.'), function () {
+        Route::get('/icons', MovedBrowserRedirectController::class)
+            ->name('browser');
+        Route::get('/icons/{id}', MovedBrowserRedirectController::class)
+            ->name('icons.show')
+            ->where('id', '[0-9]+');
+    });
+}
+
+Route::group(Helpers::routeGroup(Helpers::routePrefix(), ['ichava-icon-browser.inertia'], 'ichava.inertia.'), function () {
+
+    // Stats dashboard.
     Route::get('/stats', [InertiaBrowserController::class, 'stats'])
         ->name('stats');
 

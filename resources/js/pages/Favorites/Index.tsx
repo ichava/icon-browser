@@ -5,6 +5,7 @@ import { FlashBanner } from '@/components/FlashBanner';
 import { normalizeRawIcon } from '@/core/propsToCatalog';
 import { toIcon, type RawIcon } from '@/lib/browser';
 import type { SharedProps } from '@/types';
+import { iconPageBase } from '@/core/browserPath';
 
 interface FavoritesIndexProps extends SharedProps {
   ids: number[];
@@ -16,7 +17,7 @@ export default function FavoritesIndex() {
   const { props } = usePage<FavoritesIndexProps>();
 
   const icons = useMemo(() => props.icons.map((r) => toIcon(normalizeRawIcon(r))), [props.icons]);
-  const showBase = `/${props.ichava.prefix}/icons`;
+  const showBase = iconPageBase(props.ichava);
 
   return (
     <div className="theme-bg-page theme-text-primary min-h-screen p-8">

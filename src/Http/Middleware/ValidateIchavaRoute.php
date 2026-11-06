@@ -26,10 +26,12 @@ final class ValidateIchavaRoute
     public function handle(Request $request, Closure $next): Response
     {
         $prefix = Helpers::routePrefix();
+        $browser = Helpers::browserPath();
         $path = $request->path();
 
-        // Ensure request is for an Ichava route
-        if (! Str::startsWith($path, $prefix)) {
+        // Ensure request is for an Ichava route: under the prefix, or the browser page
+        // and its icon pages wherever the host moved them (`browser.path`).
+        if (! Str::startsWith($path, $prefix) && $path !== $browser && ! Str::startsWith($path, $browser . '/')) {
             abort(404, 'Not an Ichava route');
         }
 

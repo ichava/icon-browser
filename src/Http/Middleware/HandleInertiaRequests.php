@@ -45,7 +45,10 @@ final class HandleInertiaRequests extends Middleware
 
             'ichava' => fn () => [
                 ...$this->hostFields(),
+                // `browserPath`: where the browser page and its icon pages live
+                // (`browser.path`), root-relative: `/{prefix}/icons` unless moved.
                 'prefix'       => Helpers::routePrefix(),
+                'browserPath'  => '/' . Helpers::browserPath(),
                 'perPage'      => Helpers::configInt('ichava.icon-browser.browser.per_page', 24),
                 'defaultTheme' => config('ichava.icon-browser.browser.default_theme', 'light'),
                 'ui'           => $this->ui(),

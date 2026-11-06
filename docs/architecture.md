@@ -81,6 +81,8 @@ The third case is the one worth stating plainly: in a stateless host the API is 
 
 The `/{prefix}/icons` path comes from `ICHAVA_BROWSER_PREFIX` in **core's** configuration, and it is shared between core's API and the browser pages. Changing it in one place moves both, which is why it lives upstream of the package that serves the routes.
 
+The browser page alone can move off the prefix with this package's `browser.path` (`ICHAVA_BROWSER_PATH`), for a host that wants it at a short URL such as `/app`. It is this package's setting, not core's, because only the page moves: the API stays at `/{prefix}/api/v1/...`, and the old page URLs redirect permanently to the new ones, so links already shared keep working.
+
 ## See also
 
 - [Installation](installation.md)
