@@ -6,6 +6,7 @@ import { FlashBanner } from '@/components/FlashBanner';
 import { normalizeRawIcon } from '@/core/propsToCatalog';
 import { snippets, SNIPPET_TABS, toIcon, type RawIcon, type SnippetFormat } from '@/lib/browser';
 import type { SharedProps } from '@/types';
+import { iconPageBase } from '@/core/browserPath';
 
 interface BrowserShowProps extends SharedProps {
   icon: RawIcon | null;
@@ -36,7 +37,7 @@ export default function BrowserShow() {
     );
   }
 
-  const showBase = `/${props.ichava.prefix}/icons`;
+  const showBase = iconPageBase(props.ichava);
 
   // The forked UI's `useCopy` also raised a toast through the browser store. This page mounts
   // no browser, and the button's own "Copied!" state was always the feedback here.

@@ -19,6 +19,7 @@ Copy what you need from [`.env.example`](https://github.com/ichava/icon-browser/
 | Key | Default | Effect | Config |
 |---|---|---|---|
 | `ICHAVA_BROWSER_PREFIX` | `ichava` | URL prefix segment. Browser mounts at `/{prefix}/icons` and core's API at `/{prefix}/api/v1/...`. Lives in core's config (`ichava.prefix`); listed here because env-var ownership is conventional | `ichava.prefix` *(in core)* |
+| `ICHAVA_BROWSER_PATH` | *(none)* | Serve the browser page somewhere else, e.g. `app` for `/app`, with its icon pages at `/{path}/{id}`. The REST API and the other pages stay under the prefix, and `/{prefix}/icons` and `/{prefix}/icons/{id}` answer 301 to the new URLs with their query kept. Unset, empty, not a plain path, the bare prefix or under `{prefix}/api`: `/{prefix}/icons` | `ichava.icon-browser.browser.path` |
 | `ICHAVA_BROWSER_PER_PAGE` | `60` | Default page size in the icon-browser grid | `ichava.icon-browser.browser.per_page` |
 | `ICHAVA_BROWSER_CACHE` | `3600` | Discovery cache TTL (seconds) | `ichava.icon-browser.browser.cache_duration` |
 | `ICHAVA_BROWSER_THEME_TOGGLE` | `true` | Show the theme control (`ui.themeToggle`, `features.themeToggle`) | `ichava.icon-browser.browser.theme_toggle` |

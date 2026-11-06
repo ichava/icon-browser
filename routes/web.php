@@ -25,8 +25,9 @@ use Simtabi\Laranail\Ichava\IconBrowser\Support\Helpers;
 // pages do: with ICHAVA_INERTIA_ENABLED=false, /{prefix} redirected to a 404.
 if (filter_var(config('ichava.icon-browser.inertia.enabled', true), FILTER_VALIDATE_BOOL)) {
     Route::group(Helpers::routeGroup(Helpers::routePrefix(), ['ichava-icon-browser.web'], 'ichava.'), function () {
-        // Redirect bare /{prefix} to the canonical (Inertia) browser URL.
-        Route::redirect('/', '/' . Helpers::routePrefix() . '/icons')
+        // Redirect bare /{prefix} to the canonical (Inertia) browser URL, wherever
+        // `browser.path` put it.
+        Route::redirect('/', '/' . Helpers::browserPath())
             ->name('home');
     });
 }

@@ -38,7 +38,7 @@ php artisan ichava::ichava-core.database seed --package=ichava/icon-sets-tabler
 
 ### Usage
 
-Open the browser at `/{prefix}/icons` (`/ichava/icons` by default). To expose the JSON API as well, turn it on:
+Open the browser at `/{prefix}/icons` (`/ichava/icons` by default, or wherever `ICHAVA_BROWSER_PATH` puts it). To expose the JSON API as well, turn it on:
 
 ```dotenv
 ICHAVA_API_ENABLED=true

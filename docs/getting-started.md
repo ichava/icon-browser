@@ -12,7 +12,7 @@ With the config and assets published, the SPA is at:
 http://example.com/ichava/icons
 ```
 
-The `ichava` segment is the **prefix**, and it comes from `ICHAVA_BROWSER_PREFIX` in core's configuration rather than this package's — it is shared between core's API and this SPA, so changing it moves both. See [Configuration](configuration.md).
+The `ichava` segment is the **prefix**, and it comes from `ICHAVA_BROWSER_PREFIX` in core's configuration rather than this package's — it is shared between core's API and this SPA, so changing it moves both. To serve the page somewhere else, such as `/app`, set `ICHAVA_BROWSER_PATH=app`; the old URL then redirects there. See [Configuration](configuration.md).
 
 ## Nothing appears until a pack is seeded
 

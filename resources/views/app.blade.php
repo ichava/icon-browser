@@ -14,6 +14,12 @@
 
     <title inertia>{{ config('app.name', 'Ichava') }}</title>
 
+    @if(request()->routeIs('ichava.inertia.browser', 'ichava.inertia.icons.show'))
+        {{-- The browser and its icon pages at the configured path (`browser.path`), without the
+             filter query, so a moved browser's old URLs and every filtered view name one page. --}}
+        <link rel="canonical" href="{{ url()->current() }}">
+    @endif
+
     @php
         use Simtabi\Laranail\Ichava\Support\Helpers;
         $viteHost = config('ichava.icon-browser.vite.host', 'localhost');

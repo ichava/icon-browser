@@ -26,6 +26,11 @@ final class Helpers
     public const string ROUTE_PREFIX_KEY = 'ichava.ichava-core.prefix';
 
     /**
+     * The config key for the browser page's own path (`ICHAVA_BROWSER_PATH`).
+     */
+    public const string BROWSER_PATH_KEY = 'ichava.icon-browser.browser.path';
+
+    /**
      * The URL prefix every browser route mounts under (`/{prefix}/icons`,
      * `/{prefix}/api/v1/...`). One reader, so routes, shared props and
      * `ValidateIchavaRoute` cannot disagree.
@@ -35,6 +40,47 @@ final class Helpers
         $prefix = config(self::ROUTE_PREFIX_KEY, 'ichava');
 
         return is_string($prefix) && $prefix !== '' ? $prefix : 'ichava';
+    }
+
+    /**
+     * Where the browser page is served, without slashes: `{prefix}/icons` unless the
+     * host moved it with `ichava.icon-browser.browser.path` (e.g. `app`). Icon pages
+     * follow it (`{path}/{id}`); everything else, the REST API included, stays under
+     * the prefix.
+     *
+     * A value that is empty, not a plain path (letters, digits, `-`, `_`, `.`, and `/`
+     * between segments), the bare prefix or under `{prefix}/api` is ignored, so a typo
+     * cannot mount the browser somewhere unexpected or over another route.
+     */
+    public static function browserPath(): string
+    {
+        $default = self::routePrefix() . '/icons';
+        $path = config(self::BROWSER_PATH_KEY);
+
+        if (! is_string($path)) {
+            return $default;
+        }
+
+        $path = trim($path, " \t\n\r\0\x0B/");
+        $prefix = self::routePrefix();
+
+        // The bare prefix is the home redirect's own URL, and `{prefix}/api` is the REST
+        // API's: mounting the page on either would loop or shadow.
+        $reserved = $path === $prefix || $path === $prefix . '/api' || str_starts_with($path, $prefix . '/api/');
+
+        $plain = preg_match('#^[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$#', $path) === 1
+            && array_intersect(explode('/', $path), ['.', '..']) === [];
+
+        return $path !== '' && ! $reserved && $plain ? $path : $default;
+    }
+
+    /**
+     * Whether the host moved the browser page off `{prefix}/icons`. When it did, the
+     * old URLs answer with a permanent redirect to the new ones.
+     */
+    public static function browserMoved(): bool
+    {
+        return self::browserPath() !== self::routePrefix() . '/icons';
     }
 
     /**

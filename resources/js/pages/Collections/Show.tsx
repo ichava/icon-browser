@@ -5,6 +5,7 @@ import { FlashBanner } from '@/components/FlashBanner';
 import { normalizeRawIcon } from '@/core/propsToCatalog';
 import { toIcon, type RawIcon } from '@/lib/browser';
 import type { SharedProps } from '@/types';
+import { iconPageBase } from '@/core/browserPath';
 
 interface CollectionDetail {
   id: string;
@@ -24,7 +25,7 @@ export default function CollectionsShow() {
     () => (collection?.icons ?? []).map((r) => toIcon(normalizeRawIcon(r))),
     [collection],
   );
-  const showBase = `/${props.ichava.prefix}/icons`;
+  const showBase = iconPageBase(props.ichava);
 
   if (!collection) {
     return (
