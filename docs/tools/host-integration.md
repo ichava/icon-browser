@@ -86,6 +86,18 @@ The browser page reads both props: `browserConfig` (`resources/js/core/appConfig
 
 `routes.middleware` is appended to every browser route group and `routes.domain` mounts the browser on one domain. The `/{prefix}` redirect exists only while the Inertia pages are on.
 
+## Content Security Policy
+
+The browser page writes a few inline blocks: the loader's `<style>` and `<script>`, a frame `<style>`, and, in dev mode, the Vite client scripts. A host whose policy allows inline blocks only by nonce hands its per-request nonce to Vite, as Laravel does for its own tags:
+
+```php
+// in the host's CSP middleware, before the response renders
+$nonce = app(\Illuminate\Foundation\Vite::class)->useCspNonce();
+// ... then send script-src 'self' 'nonce-{$nonce}' and style-src 'self' 'nonce-{$nonce}'
+```
+
+The page then puts that nonce on every inline block, the stylesheet and the module scripts, and writes `<meta name="csp-nonce">` for the styles React Aria injects at runtime. A host with no nonce of its own can use the package's `nonce` CSP mode (`ICHAVA_CSP_MODE=nonce`), and the page uses core's nonce instead. The bundle loads nothing from another origin, draws icons from this host's API and `data:` URIs, so `'self'` plus the nonce and `img-src 'self' data:` cover it.
+
 ## Installing
 
 ```bash

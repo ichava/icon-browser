@@ -34,3 +34,21 @@ it('is the first thing in the layout body', function (): void {
 
     $this->assertStringStartsWith('<x-ichava-icon-browser::prepaint />', ltrim((string) $firstTag), 'the loader is the first child of <body>');
 });
+
+it('takes the host nonce, the one Vite carries, over the package mode', function (): void {
+    config(['ichava.icon-browser.security.csp.mode' => 'strict']);
+    app(Illuminate\Foundation\Vite::class)->useCspNonce('host-nonce-1234567890');
+
+    $html = Blade::render('<x-ichava-icon-browser::prepaint />');
+
+    $this->assertStringContainsString('<style nonce="host-nonce-1234567890">', $html);
+    $this->assertStringContainsString('<script nonce="host-nonce-1234567890">', $html);
+});
+
+it('writes no nonce when neither the host nor the package mode supplies one', function (): void {
+    config(['ichava.icon-browser.security.csp.mode' => 'strict']);
+
+    $html = Blade::render('<x-ichava-icon-browser::prepaint />');
+
+    $this->assertStringNotContainsString('nonce=', $html);
+});

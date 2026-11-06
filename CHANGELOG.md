@@ -4,6 +4,10 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
 
 ## [Unreleased]
 
+### Fixed
+
+- **The browser page works under a host's nonce-based CSP.** A host that sends its own policy with a per-request nonce (`script-src 'self' 'nonce-…'`, as ichava.com does) hands that nonce to Vite; the page now puts it on the loader's `<style>` and `<script>`, the frame `<style>`, the stylesheet, the module scripts and the dev-server scripts, and writes it to a `csp-nonce` meta tag for the styles React Aria injects at runtime. Before, those blocks carried no nonce and the policy blocked them. Without a host nonce, the package's `nonce` CSP mode supplies core's, as before. `Support\PageNonce` resolves which; `HostCspNonceTest` and `PrepaintTest` guard it.
+
 ### Removed
 
 - `CreateCollection::rules()`: its two callers now use `StoreCollectionRequest`, which owns the rules (forward only).

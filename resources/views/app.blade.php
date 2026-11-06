@@ -4,6 +4,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    @php
+        $pageNonce = app(\Simtabi\Laranail\Ichava\IconBrowser\Support\PageNonce::class)->value();
+    @endphp
+    @if($pageNonce !== null)
+        {{-- The host's or the package's CSP nonce: React Aria reads it here for the styles it injects. --}}
+        <meta name="csp-nonce" content="{{ $pageNonce }}">
+    @endif
 
     <title inertia>{{ config('app.name', 'Ichava') }}</title>
 
@@ -29,22 +36,22 @@
     @endphp
 
     @if($viteDev)
-        <script type="module">
+        <script type="module" @if($pageNonce !== null) nonce="{{ $pageNonce }}" @endif>
             import RefreshRuntime from '{{ $viteBase }}/@react-refresh';
             RefreshRuntime.injectIntoGlobalHook(window);
             window.$RefreshReg$ = () => {};
             window.$RefreshSig$ = () => (type) => type;
             window.__vite_plugin_react_preamble_installed__ = true;
         </script>
-        <script type="module" src="{{ $viteClient }}"></script>
-        <script type="module" src="{{ $viteBase }}/resources/js/app.tsx"></script>
+        <script type="module" src="{{ $viteClient }}" @if($pageNonce !== null) nonce="{{ $pageNonce }}" @endif></script>
+        <script type="module" src="{{ $viteBase }}/resources/js/app.tsx" @if($pageNonce !== null) nonce="{{ $pageNonce }}" @endif></script>
     @else
-        <link rel="stylesheet" href="{{ asset('vendor/ichava/assets/css/inertia-app.css') }}?v={{ Helpers::assetVersion('vendor/ichava/assets/css/inertia-app.css') }}">
+        <link rel="stylesheet" href="{{ asset('vendor/ichava/assets/css/inertia-app.css') }}?v={{ Helpers::assetVersion('vendor/ichava/assets/css/inertia-app.css') }}" @if($pageNonce !== null) nonce="{{ $pageNonce }}" @endif>
     @endif
 
     @inertiaHead
 
-    <style>
+    <style @if($pageNonce !== null) nonce="{{ $pageNonce }}" @endif>
         #app { display: flex; flex-direction: column; flex: 1 0 auto; min-height: 100dvh; }
     </style>
 </head>
@@ -58,7 +65,7 @@
     </div>
 
     @if(! $viteDev)
-        <script src="{{ asset('vendor/ichava/assets/js/inertia-app.js') }}?v={{ Helpers::assetVersion('vendor/ichava/assets/js/inertia-app.js') }}" type="module"></script>
+        <script src="{{ asset('vendor/ichava/assets/js/inertia-app.js') }}?v={{ Helpers::assetVersion('vendor/ichava/assets/js/inertia-app.js') }}" type="module" @if($pageNonce !== null) nonce="{{ $pageNonce }}" @endif></script>
     @endif
 </body>
 </html>
