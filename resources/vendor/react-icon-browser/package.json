@@ -26,6 +26,6 @@
     "react-aria": "^3.53.1",
     "react-aria-components": "^1.22.1",
     "react-dom": "^19.3.1",
-    "zustand": "^5.0.15"
+    "zustand": ">=5.0.15 <5.1.0"
   }
 }
