@@ -206,6 +206,8 @@ export declare const EN: {
     'consent.body': string;
     'consent.essentialOnly': string;
     'consent.acceptAll': string;
+    'consent.move': string;
+    'consent.moveHint': string;
     'about.browser': string;
     'about.craftedBy': string;
     'about.statIcons': string;
