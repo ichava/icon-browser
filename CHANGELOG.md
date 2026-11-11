@@ -1,0 +1,861 @@
+# Changelog
+
+All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and [Semantic Versioning](https://semver.org/).
+
+## [Unreleased]
+
+### Fixed
+
+- **Re-vendored `ichava/react-icon-browser` at `41b0a4b`** (react-icon-browser#214): one caret for every dropdown and popover, drawn in the panel's own colours over its edge and centred on the trigger (the header menus drew none), and the "Cookies & storage" notice moves by its grip or the arrow keys, inside the window, for the session. `inertia-app.*` rebuilt with `npm run build:prod` after a fresh `npm install --no-package-lock`, as `committed-build.yml` does. `zustand` is held at `>=5.0.15 <5.1.0`, the vendored library's own range: 5.1.0 (2026-11-06) changes the type react-icon-browser publishes for `useStore`, and a fresh build that took it would no longer match the committed bundle.
+
+- **The browser page works under a host's nonce-based CSP.** A host that sends its own policy with a per-request nonce (`script-src 'self' 'nonce-…'`, as ichava.com does) hands that nonce to Vite; the page now puts it on the loader's `<style>` and `<script>`, the frame `<style>`, the stylesheet, the module scripts and the dev-server scripts, and writes it to a `csp-nonce` meta tag for the styles React Aria injects at runtime. Before, those blocks carried no nonce and the policy blocked them. Without a host nonce, the package's `nonce` CSP mode supplies core's, as before. `Support\PageNonce` resolves which; `HostCspNonceTest` and `PrepaintTest` guard it.
+
+### Removed
+
+- `CreateCollection::rules()`: its two callers now use `StoreCollectionRequest`, which owns the rules (forward only).
+- **The vendored-library test reads only `vendored.json`.** The fallback to the old `VENDORED.json` name is removed (forward only, owner 2026-11-05); every consumer writes the lowercase name since #124.
+- **Payload schema 1.8.0: the `android-vd` (Android VectorDrawable XML) asset export is dropped**, by owner rule (Sim, 2026-11-04): the ichava icon ecosystem is strictly `*.svg`. `$defs/format` and `x-ichava-formats` lose `android-vd` (25 formats), `PayloadSchema::VERSION` is `1.8.0`, and `FormatRegistryTest` now fails if the id returns or if any asset export other than the SVG-carrying `css-mask`, `data-uri`, `flutter` and `swiftui` appears. 1.7.0 was never released, so no published payload named it.
+- **Payload schema 1.7.0: the `png-zip` asset export is dropped**, by owner decision (Sim, 2026-11-04). `$defs/format` and `x-ichava-formats` lose `png-zip` (26 formats), `PayloadSchema::VERSION` is `1.7.0`, and `FormatRegistryTest` now fails if the id comes back. 1.6.0 was never released, so no published payload named it.
+
+### Added
+
+- **The browser page can live at a path of the host's choosing**: `browser.path` (`ICHAVA_BROWSER_PATH`, e.g. `app` for `/app`), read through `Helpers::browserPath()`. The page and its icon pages (`/{path}/{id}`) move under the same route names; the REST API and the other pages stay under `/{prefix}`. When it moves, `/{prefix}/icons` and `/{prefix}/icons/{id}` answer **301** to the new URLs with the query kept (`MovedBrowserRedirectController`; `Route::redirect()` would drop `?icon=` deep links), and `/{prefix}` redirects to the new path. `ValidateIchavaRoute` accepts the moved path. The pages share it as `ichava.browserPath`, and the Inertia pages build icon links from it (`iconPageBase`), with a guard that fails any page building them from the prefix. The browser and its icon pages carry `<link rel="canonical">` to their URL without the filter query. Unset, empty, not a plain path, the bare prefix or under `{prefix}/api`: `/{prefix}/icons`, unchanged. Tests: `tests/Feature/BrowserPathTest.php`, the `MovedBrowser` suite.
+
+- **Re-vendored `ichava/react-icon-browser` at `648f92a`** (react-icon-browser#212), built from a fresh clone. The Twemoji pack is `ichava/icon-sets-twemoji`, renamed from the emoji pack forward only (ichava/icon-sets-twemoji#103): the demo fixture names it so, and the copy snippets import its components from `@ichava/js-icon-components/<flavour>/twemoji` (ichava/js-icon-components#15). `vendored.json` and the bundle (`npm run build:prod`) follow.
+- **Re-vendored `ichava/react-icon-browser` at `c970756`** (react-icon-browser#209). Its demo fixture names OpenMoji icons by `ichava/icon-sets-openmoji`, now that `icon-sets-emoji` is Twemoji only, and `defaults.packages` selects that pack. `vendored.json` names the commit, and the committed bundle under `public/assets` is rebuilt from it.
+- **Re-vendored `ichava/react-icon-browser` at `a02bcd3`** (react-icon-browser#208). It brings the About credits to 38 rows from the public packs' recipe credits with no private pack named, the Qwik, Ember and Elm snippets as js-icon-components documents them, zero lint warnings, and the removal of its appearance-default migration and localStorage preference fallback. `vendored.json` names the commit, and the committed bundle under `public/assets` is rebuilt from it.
+- **Payload schema 1.6.0 (kinds-and-flavours V-B14).** `x-ichava-formats` and `$defs/format` gain nine formats after `astro` (27 in all). `qwik`, `ember` and `elm` are generated flavours (`copy: true`). `css-mask`, `data-uri` and `png-zip` are asset exports (`delivery: "asset"`, group `export`). `flutter`, `swiftui` and `android-vd` are native asset exports (`native: true`). Additive: a 1.5.0 payload still validates. `PayloadSchema::VERSION` is `1.6.0`; `FormatRegistryTest` and `PayloadSchemaTest` carry the new ids and the `asset` delivery.
+- **Re-vendored `ichava/react-icon-browser` at `21a8406`** (react-icon-browser#206). The browser follows payload schema 1.8.0 and the SVG-only rule (owner, 2026-11-04): no "Download for Android" native entry, and the detail panel's single-icon PNG download is gone (`core/raster.ts` removed). The rebuilt `public/assets/js/inertia-app.js` contains no `svgToPng`, `image/png`, `android-vd` or `VectorDrawable`, all of which the previous bundle did. `vendored.json` names the commit, and the committed bundle under `public/assets` is rebuilt from it.
+- **Re-vendored `ichava/react-icon-browser` at `b197589`** (react-icon-browser#203, #204 and #205). It brings the browser to payload schema 1.7.0: the Qwik, Ember and Elm tabs and the asset and native exports, with no `png-zip` export (#205), and motion previews that pause without restarting and tear js-motion down on unmount (#204). The single-icon PNG download in the detail panel stays. `vendored.json` names the commit, and the committed bundle under `public/assets` is rebuilt from it.
+- **Re-vendored `ichava/react-icon-browser` at `962c396`** (react-icon-browser#202, SVG policy parity). `vendored.json` names the commit, and the committed bundle under `public/assets` is rebuilt from it.
+- **Re-vendored `ichava/react-icon-browser` at `ff10f5e`** (react-icon-browser#201), which adds the Tier 2 code tabs for payload schema 1.5.0 (`reactNative`, `angular`, `solid`, `preact`, `astro`). `vendored.json` names the commit, and the committed bundle under `public/assets` is rebuilt from it.
+- **Tier 2 formats, payload schema 1.5.0.** `reactNative`, `angular`, `solid`, `preact` and `astro` join `$defs/format` and `x-ichava-formats` (18 formats; `delivery: "generated"`, group `js`, icon and illustration, none a default copy), after `webcomponent`. They are the flavours `ichava/js-icon-components` generates. Additive: `snippets.tabs` accepts the new ids, and a 1.4.0 payload still validates. `PayloadSchema::VERSION` is `1.5.0`.
+- **Kinds in API v1, payload schema 1.4.0** (kinds-and-flavours Phase 1; every new schema property is optional, so a 1.3.0 payload still validates).
+  - `?kind=` is repeatable: `kind[]=icon&kind[]=illustration` ORs, ANDs with every other filter, and `?kind=icon` still works. An element that is not a kind is a 422. The Inertia page's `appliedFilters.kind` keeps its meaning (the single kind, else null) and gains `kinds`, the full list.
+  - Per-kind counts: `kinds.counts` in the bootstrap and the `ichava` prop, `by_package_kind` on `/icons/statistics`, and `by_kind` on each pack facet (K4).
+  - `kind_source` on every icon names the row that decided its kind. `kind_rule` is not served.
+  - `theme_variants` on every icon, with `GET /icons/{id}/svg?theme=<theme>` serving a twin through the same sanitiser and size budget, under its own cache version. An unknown theme is a 404.
+  - `kinds` (`default`, `available`, `counts`), `limits` and `crossLinks` on the bootstrap and the `ichava` prop. `kinds.default` now reads core's `kinds.default` (K2/D3, closes the knob nothing read). `limits.svgMaxNodes` and `svgMaxChars` are core's `svg.max_elements` and `svg.max_bytes`, so a host can override the browser's SVG ceilings (Q11). `crossLinks.landing` comes from the new `links.landing` config (`ICHAVA_BROWSER_LANDING_URL`, default none) and passes only an `http(s)` URL or a local path (W4, browser to landing).
+  - The format registry: `$defs/format` and the root `x-ichava-formats` in the schema (13 formats, tab order), read in PHP by `Support\FormatRegistry`. `snippets.tabs` ids that are neither a format nor a template are dropped and logged. The PHP half of the two-way guard is `FormatRegistryTest`.
+  - Tests: `KindsApiTest`, `BrowserKindsBootstrapTest`, `FormatRegistryTest`, `PayloadSchemaTest` (schema 1.4.0), and `FeaturesManifestRoutesTest` (W2: every route name the manifest can advertise, 58 of them, is mounted; floor 40).
+
+### Fixed
+
+- The terms hierarchy endpoint counted icons under a hard-coded morph alias `icon`, so every count read 0 once core moved the alias to `ichava-icon`; it reads `Icon::getMorphClass()`.
+- **The icon SVG rules in `ichava.scss` are valid CSS.** 26 selectors were written with `:deep(...)`, Vue single-file-component syntax a browser does not know, so it dropped every one of those rules from the compiled stylesheet. They are now the plain descendant selectors they meant (`.icon-svg svg`, `.icon-svg.icon-colored svg path`, ...), and `public/assets/css/inertia-app.css` is rebuilt. No element in the React browser or the Blade views carries `.icon-svg`, `.icon-svg-modal` or `.icon-colored` (0 matches in `resources/js`, `resources/views`, `src` and the vendored bundle), so nothing renders differently yet. `noDeepSelectors.test.ts` fails on any `:deep(` in a stylesheet outside a `.vue` file; it failed on both files before the fix.
+- **Re-vendored `ichava/react-icon-browser` at `e60b526`** (react-icon-browser#207): the US and UM flags keep their stars. Their fifty stars are one `<marker>` repeated by `marker-mid`, and the vendored SVG policy stripped `<marker>`, so the browser drew an empty canton. The policy (sha256 `49ee43ce`, ichava/core#166) now allows `<marker>` with `refX`, `refY`, `markerWidth`, `markerHeight`, `orient` and `markerUnits`; scripts, handlers and external references stay stripped. `vendored.json` names the commit, and the committed bundle under `public/assets` is rebuilt from it.
+- **Per-route rate limits now apply (S3).** `getRateLimit()` read `rate_limiting.<bucket>`, which the shipped config always sets, so the limit each route declared (10, 30, 60, 120, 300) was never used, and Laravel's string `throttle:` shares one counter per caller across routes. The new `ichava.throttle` middleware takes the route's declared limit, lets `rate_limiting.<bucket>` only lower it, reads that per request, and counts per route. Turning `rate_limiting.enabled` on also crashed route loading (a nested array in the `cache` group's middleware, "Array to string conversion"); fixed. Behaviour change for hosts that enable the switch: `icons/filters`, `tree` and `statistics` now answer 429 after 60 requests a minute, not 300.
+- **CORS with several origins works (S4).** `Access-Control-Allow-Origin` was the comma-joined list, which a browser rejects. A single origin is sent as before; several are matched against the request's `Origin` and echoed when listed, the response varies on `Origin`, and an unlisted origin gets no header. `ICHAVA_API_CORS_ORIGINS` strings are split on commas. The docs said the default was `*`; it is `APP_URL`.
+- **`GET /icons/{id}/svg` holds an illustration to the illustration size budget.** The route selected a handful of columns without `kind`, so every file was checked against the icon budget.
+
+### Security
+
+- **No workflow grants write access at its top level.** `release.yml` declared `contents: write` for the whole workflow; it is now `contents: read` there and `contents: write` on its one job. `WorkflowPermissionsTest` fails on a top-level write grant, proved red against the old file. The seven open CodeQL `actions/missing-workflow-permissions` alerts point at `tests.yml` and `code-quality.yml` as they were on 2026-10-23; both have carried a top-level `contents: read` since 0d5aa13.
+- **`minimatch` resolves to `^11.0.1`** through an npm `overrides` entry, past GHSA-g3hv-75wg-m249 (ESLint 10 pulls 10.2.x). Development only; `npm audit` on a fresh install: 10 moderate before, 0 after. `composer audit` on a fresh resolve reports nothing.
+- **Re-vendored react-icon-browser `2db1e60` (ichava/react-icon-browser#197).** The vendored SVG sanitizer now guards CSS `url()` references, and the browser caps the size of an SVG it will process: `limits.svgMaxNodes` 30000 and `limits.svgMaxChars` 4500000 in the app's `AppConfig.limits`. `inertia-app.js` and `inertia-app.css` are rebuilt. The PHP side now passes core's `svg.max_elements` and `svg.max_bytes` as `limits`, so a host can override them (see Added); the vendored browser reads them once it is re-vendored.
+- **Every workflow declares a top-level `permissions: contents: read`** (S9), so its token no longer depends on the organisation's default. None of these jobs writes. `tests/Feature/WorkflowPermissionsTest.php` fails if a workflow loses the block.
+
+### Changed
+
+- **The version is back at 0.1.0 for the re-squash, and the vendored react-icon-browser names its v0.1.0 root.** release-please cut `v0.1.1` on 2026-11-02; the re-squash folds it in, so `.release-please-manifest.json` and `package.json` read `0.1.0` and the `[0.1.1]` section moved into `[0.1.0]`. `vendored.json` `commit` is react-icon-browser's root `054c2b3`, the tree of `1ea1d44`: re-synced from `1ea1d44`, all 249 files are byte-identical to the copy vendored at `648f92a`.
+- **The Inertia listing props are checked, not cast** (re-audit F-15): `snapshotFromProps` checks `icons`, `pagination`, `packages` and `appliedFilters` for the shapes the browser reads; a malformed prop rejects the visit.
+- **react-icon-browser vendored at `6217b2b`**: the six non-default locale catalogs load on demand (F-12), the library rows are react-aria GridLists (F-20), the window globals are declared. Page first load: 1,411,528 B (408,868 gzip) before, 1,289,667 B (380,135 gzip) after.
+- **Blade components carry this package's prefix** (forward only): `<x-ichava-icon-browser::prepaint />`, `::sri-asset`, `::ui-icons` and `::test-icons` replace the `ichava::` aliases, so a host that turns core's short prefix off (`ichava.ichava-core.components.short_prefix` null) still renders them. Docblocks show `<x-ichava-core::icon>`, core's canonical tag. `tests/ShortPrefixOff` boots a host with the short prefix off.
+- **The demo test-icons component follows core's `components.test_icons`**; `ichava.icon-browser.test_component_enabled` is gone (forward only). Core's default is on in `local` only (it was on everywhere here); `ICHAVA_TEST_COMPONENT_ENABLED` still sets it.
+- **Core's contracts, not its classes**: `UpdateStatusApiController` and `InertiaBrowserController` type-hint `Contracts\ChecksPackUpdates` and `Contracts\DatabaseOperations` (core#172); `UpdateStatusApiTest` binds the contract.
+- **Run `php artisan migrate` after updating** (`docs/installation.md`): core's `2026_11_05_000001_namespace_icon_morph_alias` moves the icon morph alias to `ichava-icon`.
+- **Middleware aliases and groups carry the package name** (re-audit F-11, forward only): `ichava-icon-browser.session`, `.security`, `.json`, `.log`, `.validate`, `.guard`, `.cache-admin`, `.admin`, `.throttle`, `.handle-inertia`, and the groups `ichava-icon-browser.api`, `.web` and `.inertia`. The bare `ichava.*` names are gone, with no forwarding alias. A host route guarded with `->middleware('ichava.admin')` changes to `ichava-icon-browser.admin`. The `ichava.admin` *ability* (a Gate) keeps its name. `HttpLayerConventionsTest` reads the router's live map.
+- **One query service for package detail** (F-08): `Support\PackageDetails` returns a `Data\PackageDetailsData` that the API's `package()` and the Inertia `PackageController::show()` both render; neither controller queries. Table names come from `Support\IconTables` (`ICONS` is core's `Icon::TABLE`; the term table and pivot are held to `IconTerm` by a test).
+- **FormRequests with `toData()` at the edge** (F-09): `RecordCommandRequest`, `RecordHistoryRequest`, `StoreCollectionRequest` and `UpdateCollectionRequest` replace the six inline rule sets, each with a `final readonly` DTO in `src/Data/`. `IchavaFormRequest` keeps the API's validation body (`success: false`, `error`, `errors`) for JSON callers and Laravel's redirect for pages.
+- **Collaborators are injected, not reached for** (F-10): `IchavaApiSecurity` takes core's `SecurityNonce` and `AuditLogger`; `CacheAdminGate` is an injectable service taking `HostUser` (its static `refusal()`/`allows()` are instance methods now); `IconResource`/`IconCollection` take `IconSnippets` through `withSnippets()`; `BrowserBootstrap` reads the locale from the `Translator`.
+- **The browser opens on every pack the host has installed** (Q42): the Inertia page's `packages` (what core registered) becomes the library's `defaults.packages`, and the re-vendored react-icon-browser names no pack.
+- **Each Inertia page is its own chunk** (F-12): `import.meta.glob` is no longer eager; chunks are content-addressed (`inertia-app-[name]-[hash].js`) since only the entry carries `?v=`, and `npm run clean` removes them.
+- **The payload schema's `$id` resolves to the file**: `https://raw.githubusercontent.com/ichava/icon-browser/main/resources/schema/icon-browser.schema.json` (it named a github.com path that answers 404). No field changes, so the version stays 1.8.0. `docs/tools/payload-schema.md` says how react-icon-browser and js-icon-components pin their copies.
+- **The vendored manifest is `resources/vendor/react-icon-browser/vendored.json`, no longer `VENDORED.json`** (owner rule: file names are lower-case slugs). `.dev/tools/sync-vendored-library.mjs` writes only the new name, and `vendoredLibrary.test.ts` reads it first, falls back to the old one until after v0.1.0, and fails if the old name returns. Re-synced from react-icon-browser `7188f57`, the commit already vendored: the manifest's bytes and every bundle file are unchanged, and `npm run build:prod` leaves `public/assets` as committed.
+- **Documentation links point at each repository's own `docs/`** (Sim, 2026-11-03: "all ichava repos have docs in their respective repos. thats by design"). Links to `opensource.simtabi.com/documentation/ichava/...` and the `opensource.simtabi.com/products/ichava/...` homepage, which answer 404 for every ichava page, now go to the matching `docs/*.md` on GitHub, or to the repository itself. Each target was checked to exist on that repository's `main`. The manifest's `homepage` and `support.docs` follow.
+- **The stylesheet is minified with Lightning CSS at Vite 8's default targets** (Chrome/Edge 111, Firefox 114, Safari 16.4, no lower than Tailwind v4's own floor), replacing the esbuild minifier and Vite 7's targets kept since the Vite 8 upgrade. `inertia-app.css` is 26.4 KB gzipped instead of 27.8 KB: duplicate Tailwind layers merge and 21 obsolete `-moz-` prefixes go. Normalized with Lightning CSS, the old and new stylesheets match rule for rule. The only differences are `calc()` expressions that esbuild folded and Lightning CSS keeps inside custom properties, which resolve to the same values. The 26 leftover `:deep()` selectors are untouched. The JavaScript bundle is unchanged.
+- **The author and contact address is `ichava@simtabi.com`** (W-11, Sim 2026-11-03), replacing the community address `opensource@simtabi.com` wherever this repository named it. Vulnerability reports still go to `security@simtabi.com`. The test that guards the address expects `ichava@` now.
+
+## [0.1.0] - TBD
+
+First release of `ichava/icon-browser`. The repository is published as a single commit; the 0.1.x tags cut between 2026-10-23 and 2026-11-02 (v0.1.0 to v0.1.1, including the release-please v0.1.1 of 2026-11-02) are folded into this release, and their notes are kept below under *Archived history*.
+
+### Added
+
+- **The Inertia browser lists the packs, opens on the default one and describes each variant.** `InertiaCatalog` gains `getCatalogMeta`, reading the page's `packages` (with `default`) and `filterOptions.variants_by_package`, and `getTreeFor`, which answers from the `tree` prop while only the categories, page or sort differ and otherwise shares the grid's listing visit. The tree prop is counted over the selection less its categories (`IconFilterRequest::treeFilters()`), as the REST tree is asked, and reloads with every listing visit. Payload schema **1.3.0** types `variants_by_package` (`variantMeta`). `InertiaCatalog.test.ts`, `InertiaCatalogMetaTest`, `PayloadSchemaTest`.
+- **A collection starts with the icons it was made from.** `POST {prefix}/collections` and `POST {prefix}/api/v1/collections` take `icon_ids` (up to 500; unknown ids are skipped) through the shared `CreateCollection` action, and the browser sends the icon or selection a collection was created from with the create, instead of creating it empty. A browser create on a partial reload stays on the browser instead of opening the collection's page. `CollectionControllerTest`, `LibraryApiTest`, `useLibrarySync.test.ts`.
+- **The shipped browser code must be fully minified.** `minifiedBundle.test.ts` fails when the vendored react-icon-browser bundle or the built page bundle names a source map, keeps a readable layout or comments other than licences and pure annotations, or leaves its names unmangled. The vendored bundle (react-icon-browser's minified build) goes from 754,215 bytes on 22,039 lines to 617,621 bytes on 25, re-vendored from react-icon-browser `0f1636f` (#188). It also fails on any `.map` file, or any file naming `sourcesContent` or `sourceMappingURL`, under the vendored library or `public/`.
+- **The browser takes the host's user and features manifest.** `browserConfig` (in `resources/js/core/appConfig.ts`) merges react-icon-browser's `hostConfigFromProps({ auth, ichava })` over this package's own config, so the browser signs in as the `auth` user, sends sign-in and sign-out to the host's routes, shows only the modules the `ichava.features` manifest offers, and takes the host's theme, page size and locale. `appConfig.test.ts`.
+- **Command-palette recents and "Delete my library" reach the server.** The library sync now uses react-icon-browser's exported `diffLibrary` (`core/libraryDiff.ts` re-exports it), and replays `command.log` and `command.clear` to the command-history route and `library.delete` to the library feature's `destroy` route as one request. `useLibrarySync.test.ts`, `libraryDiff.test.ts`.
+
+- **A REST map in `/bootstrap`.** `GET {prefix}/api/v1/bootstrap` carries `api`: `version` (`v1`), `base`, and `endpoints`, one key per REST endpoint (42: session, bootstrap, status, icons, packages, terms, library show/destroy, favourites, collections including show/rename/delete/addIcon/removeIcon with `{collectionId}`/`{iconId}` templates, history, command history, preferences, cache), every URL under `/api/v1`. It is separate from each feature's `endpoints`, which prefer the Inertia route, and drops the keys of a feature that is off or gated. The payload schema adds `apiManifest` (closed: an unknown key fails) and moves to **1.2.0**. `FeaturesManifestTest`, `PayloadSchemaTest`.
+
+- **`sub` on every icon.** `IconResource` (REST) and the Inertia icon rows carry `sub`, the slug of the nested category the icon sits in below its top-level `category`, or null; it comes from core's `Icon::$primary_subcategory`. The payload schema adds it to `icon` and moves to **1.1.0**, which `/session`, `/bootstrap` and the `ichava` prop report as `schemaVersion`. `PayloadSchemaTest` validates the REST and Inertia responses against it.
+
+- **The host's user, one shape everywhere** (plug-and-play; wire-in rows `IchavaStatefulGuard::isAuthenticated`/`getUserId`/`getUser`). The Inertia `auth` prop is core's presented `UserData` (`id`, `name`, `avatarUrl`, `abilities`), read through core's `HostUser`, so it honours `ichava.ichava-core.auth.guard` and `Ichava::resolveUserUsing()`. `GET {prefix}/api/session` carries the same user for REST hosts, with the storage tier, the schema version and links to the host's `login`/`logout` routes (`auth.login_route`, `auth.logout_route`). `IchavaStatefulGuard`'s user helpers and the cache-admin gate read the same user. `tests/Feature/HostUserTest.php`.
+- **A signed-in user's library is kept by owner.** A new `ichava_owner_preferences` table (migration loads with the package) backs core's `OwnerPreferenceStore`, so favourites, collections, history and preferences follow the user across devices; guests stay on the session. Until the table is migrated, signed-in users fall back to the session. `library.store` (`ICHAVA_LIBRARY_STORE`, `database` or `session`). `tests/Feature/OwnerPreferenceStoreTest.php`, including the guest-to-user merge on sign-in.
+- **Shared actions for every library write.** The Inertia routes and their REST twins call the same `Actions\Library\*` classes, core's `Actions\UpdatePreferences`, and `Actions\Preferences\ResetPreferences`. The REST library controllers resolve icons through `findIconOrFail()` and answer misses through `handleNotFoundException()`, which now carries the missed id, so the 404 bodies are unchanged (wire-in rows `BaseApiController::*`, `routes/api.php` preferences, favourites, collections and command history).
+- **`GET {prefix}/api/library` and "Delete my library"** (gap review decision 6). The first returns the owner's whole library; `DELETE {prefix}/api/library` and `DELETE {prefix}/library` remove every favourite and collection kept on the server, one at a time, so `FavoriteToggled` and `CollectionChanged` fire for each. History and preferences are kept. `tests/Feature/Api/LibraryApiTest.php`.
+- **`kind`, `subs[]`, `tags[]`, `keywords[]` and `language` filters** (gap review #2–#4; wire-in rows `IconFilterRequest::hasSearch`/`hasFilters`). Validated by `IconFilterRequest` and passed through one `filters()` builder to core's filter path for `/icons`, `/icons/filters`, `/icons/tree` and the Inertia browser, so facet and tree counts agree with the grid. `IconResource` carries `kind` and `themes`; the listing `meta` carries `has_search`, `has_filters` and `empty_reason`; the Inertia props echo every filter. `tests/Feature/Api/IconFilterWiringTest.php`.
+- **A features manifest** (plug-and-play). `GET {prefix}/api/bootstrap` and the `ichava.features` Inertia prop say, per feature, whether it is on, why not (`config`, `gate`, `driver`, `empty`) and its URLs. Config `features.*`. Library features turned off are not mounted; the demo-only presence, invites, sharing, notifications and workspaces are off. The `ichava` prop gains `schemaVersion`, `locale`, `modes`, `account` and `storage`, and `ui.themeToggle` (`browser.theme_toggle`, wire-in row `theme_toggle`). `tests/Feature/FeaturesManifestTest.php`.
+- **`GET {prefix}/api/status`**, core's `StatusData`, behind a new `ichava.admin` middleware (default deny through core's `ichava.admin` Gate). The Stats page gets the same `status` prop for administrators, and its per-pack counts come from core's `getPackageStatistics()`.
+- **`routes.middleware` and `routes.domain`** (`ICHAVA_ROUTE_MIDDLEWARE`, `|`-separated; `ICHAVA_ROUTE_DOMAIN`), appended to every browser route group. `tests/Configured/`.
+- **`php artisan ichava::icon-browser.install`**: publishes the config and assets, creates the library table, checks the host user and the Gates, and lists the mounted routes. Idempotent. `tests/Feature/InstallCommandTest.php`.
+- **A JSON Schema for every payload**, `resources/schema/icon-browser.schema.json`, versioned by `PayloadSchema::VERSION` (decision 12). The suite validates real responses and page props against it (`opis/json-schema` in `require-dev`). `tests/Feature/PayloadSchemaTest.php`.
+- Docs: `docs/tools/host-integration.md`, `docs/tools/payload-schema.md`, five recipes under `docs/recipes/`, and the new keys in `configuration.md`, `environment.md` and `api-endpoints.md`.
+
+- **PHPStan runs at `level: max` with Larastan**, up from level 0, with no baseline and no ignored errors. `larastan/larastan` (`^3.0`) joins `require-dev` so Eloquent, facades and the container are typed. The fixes are types only: docblocks for array shapes the validation rules already guarantee, typed `$next` closures in the middleware, and `Helpers::configInt()`, `configString()`, `intOf()` and `stringOf()`, which cast config and request values exactly as the bare `(int)` and `(string)` casts did. `StaticAnalysisLevelTest` fails if the level drops, a baseline appears or errors are ignored.
+- **A `Committed build` workflow fails a pull request whose committed bundle is stale** (I-F3, XR-7). It runs `npm install --no-package-lock` and `npm run build:prod`, then fails on any difference or untracked file under `public/assets`, with a message saying to rebuild and commit. It has no path filter, so it can be a required check, and it also runs weekly on `main`. A fresh build of `main` matches the committed bundle today.
+- **A weekly `Rebuild committed bundle` workflow keeps `public/assets` current.** No lock file is committed, so a fresh install can resolve newer dependencies than the bundle was built with. Each Monday it rebuilds `main` the way `Committed build` does and, when the output differs, opens or updates one pull request from `chore/rebuild-bundle` with a Refresh Bot token, so the change runs CI like any other. `Committed build` is unchanged.
+
+### Removed
+
+- **The Inertia `settings.search` and `settings.filters` routes** (`POST {prefix}/settings/search`, `/settings/filters`) and `SettingsController::updateSearch()`/`updateFilters()`. The browser syncs search and filters through the URL; the REST `preferences.search`/`filters` routes stay.
+- **`ApiResponseTrait::unauthorizedResponse()`, `forbiddenResponse()`, `paginatedResponse()`, `noContentResponse()`** and **`IconBrowserApiController::emptyIconResponse()`**, protected helpers with no caller (wire-in plan remove rows). A host class extending `BaseApiController` that called one would now fail.
+- **The deprecated `ichava-assets` publish tag.** Publish the built assets with `--tag=ichava::icon-browser-assets` (`IconBrowserServiceProvider::ASSETS_TAG`), which has published the same paths since 0.1.1. `IconBrowserServiceProvider::DEPRECATED_ASSETS_TAG` is gone with it.
+- **The `ichava.api.security` middleware alias.** Use `ichava.security`, which names the same `IchavaApiSecurity` middleware.
+
+### Changed
+
+- **`@untitledui/icons` is no longer a dependency.** Its only use was the heart on the icon page's favourite toggle, now an inline `HeartIcon` component. The browser itself comes from the vendored react-icon-browser library, which carries its own icons. `inertia-app.js` and `inertia-app.css` are rebuilt.
+- Re-vendored `@ichava/react-icon-browser` at `a9c247d`: its SVG policy copy now says the raster-wrapping brand logos are parked rather than shipped blank (a comment-only change; the policy is identical).
+- **Re-vendored react-icon-browser `7889fac` (#194).** The DevTools toggle moves from Mod+D, the browser's bookmark key, to Shift+Mod+D. `X-Browser-Id` becomes a stable per-install id (a random UUID kept in localStorage under `ichava.browser-id`) instead of a fingerprint that changed every day, so the session-backed library keyed on it no longer resets at midnight UTC. `IchavaStatefulGuard` and core's `IchavaSessionManager::getBrowserId()` read the header as an opaque string, so no PHP change was needed; existing visitors get a new id once, on first load after upgrading.
+- **The browser takes the 0.1.0 restyle** (react-icon-browser#189, re-vendored at `25de927`): warm greys, the teal `#0e7c66` default accent with violet still selectable, a 6px radius, Tabler chrome icons, square tags, segmented controls and tabs, flat buttons, no backdrop blur, and no weight above 600. A returning user still on the old violet or 8px default moves to the new one; any other stored choice is kept. The loading screen follows the accent, and the Inertia shell's `<body>` takes the browser's warm frame and ink in place of white and `#0a0d1a`. `public/assets` is rebuilt.
+
+- **Re-vendored `@ichava/react-icon-browser` at `6255af5`** (react-icon-browser#186 and #187; was `5528cd5`), with `public/assets` rebuilt. The vendored build is the one that talks to `/api/v1`: the old one defaulted its REST client to `/ichava/api`, which answers 404 since the API moved. It reads every REST URL from the bootstrap REST map, takes the host's user and features, lists a REST host's packs and opens on its default, shows variant descriptions, counts the REST tree over the selection, and shows an icon's `sub`. The vendored LICENSE keeps this repository's wording (the library's own says its repository must stay private, which is not true here).
+- **The REST API moved to `/{prefix}/api/v1`** (plug-and-play plan item 4). Every route in `routes/api.php` is now under `/ichava/api/v1/...` and named `ichava.api.v1.*` (for example `ichava.api.v1.icons.index`); the unversioned `/ichava/api/...` paths and `ichava.api.*` names are gone, with no aliases, since nothing has been published. The features manifest's endpoint URLs, `IconResource::svg_url`, the favourites and collections payloads, the install command's route check and the docs follow. `schemaVersion` in `/session` and `/bootstrap` is the payload contract's version; the path carries the API's. A REST client must point its base URL at `/ichava/api/v1`.
+
+- **`ichava/core` is required as `^0.1`, and CI tests against core's `main`.** Every ichava package releases from one tag, v0.1.0, so a floor such as `^0.1.4` names a release that does not exist. The committed constraint admits 0.1.0; each CI job that installs PHP dependencies (the PHP matrix, the database lanes, Pint, PHPStan and the audit) first runs `composer require "ichava/core:dev-main as 0.1.99" --no-update`; the test and PHPStan jobs then print the core commit they resolved and restore `composer.json` before running, so the suite runs against core `main` while the guard reads the committed constraint. `tests/Feature/SiblingConstraintsTest.php` fails if any `ichava/*` constraint in `require` or `require-dev` excludes 0.1.0 (it fails on `^0.1.4`); `composer/semver` is a dev dependency for it.
+- **The `auth` prop no longer sends `email`**, and its `id` is a string. A front end reading `auth.email` gets nothing; list the attribute in `ichava.ichava-core.auth.expose` to send it.
+- **Resetting preferences keeps the library.** `DELETE {prefix}/settings` and `DELETE {prefix}/api/preferences` used to reset favourites and collections with everything else; deleting them is now the explicit "Delete my library".
+- **The `/{prefix}` redirect is mounted only with the Inertia pages.** With `ICHAVA_INERTIA_ENABLED=false` it redirected to a 404.
+- **`test_component_enabled` is honoured.** Nothing read it, so the demo `<x-ichava::ichava-test-icons>` was registered everywhere; the default stays on.
+- **`IchavaStatefulGuard::getUserId()` returns `int|string|null`**, so UUID and ULID users are no longer read as null.
+- **`POST {prefix}/api/preferences` and `PUT {prefix}/settings` write through core's `UpdatePreferences`**, which sets the known sections (`packages`, `categories`, `search`, `sorting`, `preferences`, `tree`) and ignores the rest. A body that used to overwrite `favorites` or `collections` through this route no longer does.
+- **`release.yml` publishes from the public repository.** The step that refused to publish unless the repository was private is removed, so a `vX.Y.Z` tag on the public repository releases normally. The tag-only trigger, the refusal of any other ref and the fail-closed changelog extraction are unchanged. `ProprietaryPackageTest` now asserts the workflow does not gate on repository visibility and still carries those safeguards, and `docs/release.md` says releases publish.
+- **Every workflow runs on every pull request.** The `paths-ignore: '**.md'` and `paths:` filters are removed from the `pull_request` triggers, so every check reports on every pull request and can be a required status check on `main`. A path-filtered required check never reports on the pull requests it skips, and blocks them for good.
+- **`SECURITY.md` names GitHub private vulnerability reporting first, with `security@simtabi.com` as the fallback** (I-F4). The repository is public and reporting is enabled, but the policy still said it was private with email as the only channel. The issue chooser links the advisory form too. The README, installation and release docs no longer call the repository private; the package stays proprietary, and installing it no longer needs a token to read the repository. `ProprietaryPackageTest` asserts both channels, their order, and that no reader-facing page says the repository is private.
+- **The vendored browser UI is react-icon-browser's `main` at `5528cd5`**, re-vendored under the consumer rule after react-icon-browser#185. The bundle no longer names a person as author; the About dialog and config default credit Simtabi LLC. The distribution LICENSE is kept as before.
+- **`composer.json` names Simtabi LLC (`ichava@simtabi.com`) as the author** instead of a person (W-20). A test scans the manifest, README, LICENSE, SECURITY, CONTRIBUTING, `docs/`, `src/` and `resources/js/` and fails on a personal name or address; the vendored react-icon-browser build is fixed upstream and re-vendored separately.
+- **The vendored browser UI is react-icon-browser's `main` at `cdd5892`**, re-vendored under the consumer rule after react-icon-browser#184. It brings the role contact address in the boot splash (`ichava@simtabi.com`), the reworded motion snippet (`@ichava/js-motion`) and the documented `legacyStorage()` migration. The vendored LICENSE keeps the distribution wording from #93; the sync script still copies the repository LICENSE, so it was restored by hand and its hash updated in `VENDORED.json`. `public/assets/js/inertia-app.js` was rebuilt; a second build is byte-identical.
+- The changelog states the MIT-to-proprietary change as breaking under 0.1.1, and labels the archived pre-reset history as the record of the MIT, public releases.
+- The vendored react-icon-browser `LICENSE` no longer says the repository it ships in must remain private, since this repository is public. It still states the build is proprietary, that it contains Untitled UI React PRO components used under the Untitled UI licence, and that it may not be redistributed outside Ichava products. A test fails if a re-sync brings the old clause back.
+- `public/assets/js/inertia-app.js` is rebuilt so it matches a fresh `npm run build:prod` (three minifier-only differences); a second clean build is byte-identical.
+
+### Fixed
+
+- **A guest's session preferences merge into the user's on sign-in.** Core's `IchavaSessionManager::all()` and `clear()` looked for flat `ichava.*` session keys while `put()` nests them, so the merge read an empty guest store; core `main` reads the nested entry now. The case `OwnerPreferenceStoreTest` skipped for it runs and passes.
+
+- **Cache statistics need the cache-admin ability and name no server paths.** `GET {prefix}/api/cache/stats` had a rate limit and no authorization, and its payload listed every watched icon directory as an absolute server path; the Inertia stats page passed the same payload to every visitor as `cacheStats`. The API route now sits behind `ichava.cache-admin`, the same fail-closed check as the cache write routes (ability `security.cache_admin.ability`, default `ichava.manage-cache`), and the stats page fills `cacheStats` only for a request that passes it, leaving it empty otherwise; the page and its health flag stay public. Both name directories relative to the application root and drop any outside it. The decision moved verbatim from `AuthorizeCacheAdmin` into an internal `Support\CacheAdminGate`, which the middleware calls. **Breaking for callers of the stats endpoint without the ability**, which now get 403. `tests/Feature/CacheStatsExposureTest.php` covers both routes.
+- **Inputs that used to throw a `TypeError` now take their documented default**, found while typing the code for PHPStan. A null `packages`, `categories`, `variants`, `sort_by` or `sort_direction` (all `nullable` in `IconFilterRequest`) reached a typed return and failed with a 500; they now read as empty or as the default sort. A numeric-string `icon_id` posted to the history endpoints reached `iconExists(int)` and failed the same way; it is now cast. `ichava::icon-browser.inject-scripts` reports a `package.json` whose root or `scripts` is not a JSON object as unparseable instead of throwing. Every valid input behaves as before.
+- **`ICHAVA_BROWSER_PREFIX` moves the routes again** (I-F1). The web, API and Inertia route files and the shared Inertia `prefix` prop read `ichava.core.prefix`, a key core no longer sets (its config merges at `ichava.ichava-core.*`), so they stayed on `/ichava` while `ValidateIchavaRoute` followed the new prefix and refused them. All six reads now go through `Helpers::routePrefix()`, which reads `ichava.ichava-core.prefix` (`Helpers::ROUTE_PREFIX_KEY`). A test boots with a custom prefix and asserts the routes and the shared prop follow it, and a scan fails on any remaining `ichava.core.` read.
+- Vendored `@ichava/react-icon-browser` 0.1.3 (`85d9dbd`): the browser renders in Geist again (since 0.1.1 it fell back to the system font), tooltips show their shortcut on one line with no leftover bubble, a tile's copy action reads "Copy Raw SVG" and its permalink keeps the host URL, related icons are ranked by shared words and pack, selects align to their trigger, and Arabic layout reaches selects, menus and sliders.
+- Vendored `@ichava/react-icon-browser` 0.1.2 (`733f5ba`): selected collection chips, the favourite button and active icon buttons now draw their label in a colour that meets WCAG AA contrast on the accent tint. It measured 2.78:1 in dark mode before.
+
+## [Archived history]
+
+> The first two sections below are the 0.1.x releases cut from 2026-10-23 to 2026-10-28 and folded into
+> 0.1.0; their tags and GitHub releases are removed when the repository is published as one commit. After
+> them come the pre-reset releases: versioning was re-based to 0.1.0 on 2026-10-23, and those tags and
+> releases were removed then. All sections are reproduced verbatim, one heading level down.
+>
+> Every pre-reset release was MIT-licensed. From 0.1.1 the package is proprietary (the repository itself
+> is public), so the "open-source", MIT and public-install wording in the pre-reset sections describes
+> those releases only.
+
+### [0.1.1] - 2026-10-28
+
+#### Added
+
+- **Browser UI on the released react-icon-browser v0.1.1** (773accf), the same code as the 29480da build already vendored, now taken from its release tag.
+
+- **Manual CI, ESLint and accessibility checks** (I4). `npm run ci:manual` runs every gate (pint, phpstan, pest, eslint, typecheck, vitest, build:prod and a committed-bundle check) and prints a table to paste into the pull request, while private-repo Actions are off. ESLint lints `resources/js` against the shared `eslint.base.js` (byte-identical to js-ui-kernel's). `pages.a11y.test.tsx` runs axe over all ten non-browser pages, empty and with data, and `e2e/a11y.spec.ts` runs axe and a browser smoke test against a seeded host when `ICHAVA_E2E_URL` is set. See [Release](docs/release.md#manual-ci).
+
+- **Browser UI updated to react-icon-browser 29480da** (react-icon-browser#173). The library's preflight and its focus, hover and scrollbar rules are scoped to the browser's root, so they no longer restyle elements outside it. This package's own pages keep their resets from its own Tailwind build (`inertia-app.css` carries an unscoped preflight of its own).
+
+- **Browser UI updated to react-icon-browser fde799b** (react-icon-browser#172): links and link-style buttons change colour on hover instead of underlining. This package's own back links (Browser, Collections, Packages, Settings pages) do the same through a `theme-link` class, in place of `hover:underline`.
+
+- **Browser UI updated to react-icon-browser e8b5215** (react-icon-browser#171): controls sink and darken while pressed, every state change eases, tiles lift on hover and press in on click, and the list's Copy button confirms in place.
+
+- **Browser UI updated to react-icon-browser 833fdb9** (react-icon-browser#170): every control reacts to hover, icon-only controls have design-system tooltips, dropdown menus no longer lock the page's scroll, and the icon dialog grows downwards.
+
+- **The icon dialog's snippet tabs are configured from Laravel.** A `snippets` block in `config/icon-browser.php` sets which tabs show and in what order, their labels, templates that replace a tab or add one, the class every Laravel snippet uses (`ICHAVA_SNIPPET_CLASS`), and the API tab's origin. It reaches the page as the browser's `snippets` config. A `resolver` naming a `Contracts\SnippetResolver` adds snippets only the server can write, sent per icon as `snippets`. `Support\IconSnippets` builds every icon's snippet strings for the API and for every Inertia page, so both send the same ones. See [Configuration](docs/configuration.md#snippet-tabs).
+- **Browser UI updated to react-icon-browser ca767fd.** The icon grid shows loading skeletons while a page of icons loads (react-icon-browser#169), and every snippet tab now writes code that runs: the real icon path, the pack's own Blade tag, and Vue, React, Svelte and Web Component snippets that inline the icon instead of importing packages that were never published.
+
+- **A loader for slow page visits, and one loader style everywhere.** Inertia's progress bar is off (`progress: false`): the official splash covers the first load, and `NavigationLoader` shows react-icon-browser's `TaskLoaderView` for any visit still running after two seconds. Quick visits show nothing. `resources/js/components/NavigationLoader.test.tsx`.
+- **The vendored browser is react-icon-browser `ee715a4`**, which brings the instant official splash (react-icon-browser#166), the DevTools drawer's resize and docking (#165), the task loader for work over two seconds (#167), the deprecation and dead-code cleanup with the bootsplash's measured figures (#162), the near-black emoji fix for dark mode, and the RTL and overlap fixes (#158, #159).
+- **A loader that paints before the bundle runs.** `<x-ichava::prepaint />` inlines react-icon-browser's static `prepaint.html` as the first child of `<body>` in `app.blade.php`, so the page shows a loader on the first HTML parse instead of a blank screen while `inertia-app.js` downloads. Under the `nonce` CSP mode its `<style>` and `<script>` carry the request nonce. The app removes it after its first render on every Inertia page, not only the Browser page, which is the only one the library hands over from. `PrepaintTest` pins the markup, the nonce and its place in the layout.
+
+- **`ichava.ui` in the shared Inertia props**, from the new `ichava.icon-browser.ui` config block: this package's version, licence (`Proprietary`), Docs link (equal to `composer.json` `support.docs`, pinned by `UiConfigTest`) and About links. The browser shows these instead of the library's defaults, which describe react-icon-browser (A6 N5: the settings footer read "MIT").
+
+- **`npm run sync:react-icon-browser`** (`.dev/tools/sync-react-icon-browser.mjs`) vendors a new build of the library from a react-icon-browser checkout; it refuses uncommitted source or a stale `dist/lib`, and leaves out the source map, whose sources are the readable library source. `docs/release.md` documents the update.
+
+- **`SECURITY.md`**, email only (`security@simtabi.com`): private vulnerability reporting does not exist on a private repository. The issue chooser points there too.
+
+- **Guards:** `vendoredLibrary.test.ts` (the vendored files match their manifest), `ProprietaryPackageTest` (no MIT claim, proprietary manifests, email-only disclosure, the release refusal), `AssetPublishTagTest`, `UiConfigTest`, and adapter tests for `InertiaCatalog`, `libraryDiff`, `useLibrarySync` and the mount, which renders `IchavaBrowser` from `Browser/Index` props with no visit.
+
+- **Releases are prepared by release-please.** A *Release Please* workflow reads the Conventional Commit log, keeps one release pull request open that bumps `.release-please-manifest.json` and `package.json`, and tags the release when that pull request merges; the tag starts `release.yml` as before. On 0.x a breaking change bumps the minor and everything else bumps the patch. The minor moves in lockstep with the other coupled ichava packages: a breaking change anywhere in the family reaches every coupled repository as a `Release-As: 0.N.0` footer, so `^0.N` means the same line everywhere. Release notes stay hand-written: release-please is set to `skip-changelog`, and the workflow closes this `[Unreleased]` section under the new version on the release branch, failing if it is empty. It runs on `workflow_dispatch`, a weekly schedule, and the merge of a release pull request, so the only `push` trigger is still the tag. The pull request and the tag are made with a per-run Refresh Bot token, because ones made with `GITHUB_TOKEN` start no workflows. `release.yml` gains a `workflow_dispatch` recovery path for a tag push that started nothing; its first step refuses any ref that is not a `vX.Y.Z` tag.
+
+#### Changed
+
+- **The vendored browser is react-icon-browser `7188f57`** (was `2db1e60`). It brings schema 1.4.0 (react-icon-browser#198): the format registry, cross-links, host SVG limits, theme twins and the initial kind read from `kinds`. The bootstrap and the Inertia shared props already carry `kinds`, `limits` and `crossLinks`, so no PHP changed. `inertia-app.js` is rebuilt with `npm run build:prod`.
+- **The vendored browser is react-icon-browser `c720991`** (was `0bf95dd`). It brings the overlap fixes (react-icon-browser#158: tile actions, header search and the phone header no longer overlap), code kept left-to-right in Arabic and a motion picker that stays on screen (#159), and the colour and reset buttons grouped in the toolbar. `inertia-app.css` grows by 434 bytes, matching the vendored stylesheet, and `inertia-app.js` is rebuilt.
+- **The vendored browser is react-icon-browser `0bf95dd`** (was `a19ba13`), which ships the static loader as `prepaint.html` (react-icon-browser#157). `inertia-app.js` is rebuilt.
+- **The vendored browser is react-icon-browser `a19ba13`** (was `0298c50`). It brings the browser UI pass (react-icon-browser#156): tile copy, favourite and a new add-to-collection action that work from the tile, dropdowns that no longer crop their text, a non-overlapping tooltip, a roomier sidebar filter, a searchable motion picker, and utilities scoped under `@scope ([data-ichava-theme])` so a host stylesheet loaded after ours cannot override them. `inertia-app.css` grows by 953 bytes for that scoping and `inertia-app.js` is rebuilt with `npm run build:prod`.
+- **The vendored browser is react-icon-browser `0298c50`** (was `c37ae66`), so the manifest names a merged commit on its `main`. It brings the boot-splash fix (react-icon-browser#154: a second `finish()` no longer leaves the splash stuck at 100%), the dev fixture without blocked sets (#152), IchavaBrowser's side effects moved into `src/app` (#147), and the SVG policy's generic comments (react-icon-browser#153), the site-wide consent answer from `@ichava/js-ui-kernel` `v0.1.3` (the vendored `package.json` moves its kernel dependency from `v0.1.2`), and `Proprietary` as the default `meta.license`. `inertia-app.js` is rebuilt from it with `npm run build:prod`.
+- **The vendoring logic is a shared, host-agnostic script**, `.dev/tools/sync-vendored-library.mjs`, so ichava.com can vendor `@ichava/react-landingpage` with the same refusals and manifest (ichava-com.md C1). It takes the package, source, target and type-only dependencies as options and derives the vendored `package.json` exports from the library's own `dist/lib` exports. Keep it byte-identical with ichava.com's copy and check with `cmp`. `sync-react-icon-browser.mjs` (and `npm run sync:react-icon-browser`) keeps its name, arguments and output, and now passes this package's defaults to it: run against the same checkout, the old and new scripts wrote byte-identical trees. `syncVendoredLibrary.test.ts` pins the derived manifest and the refused arguments (it failed on a broken export filter first).
+- **Vite is raised from `^7.2.4` to `^8.3.5`, with `@vitejs/plugin-react` from `^5.2.0` to `^6.1.2`**, which supports Vite 8 only. Vite 8 bundles with Rolldown and minifies with Oxc, so the committed `inertia-app.js` is rebuilt. Mounted in jsdom with the `Browser/Index` props, it renders the same DOM as the Vite 7 build. It is 19.9 KB larger, because Rolldown keeps object properties that Rollup tree-shook, among them the `_*_addendum` notes in the vendored library's SVG policy. `inertia-app.css` keeps its rules byte for byte. `vite.inertia.config.ts` holds esbuild's CSS minifier and Vite 7's default CSS targets, so `esbuild` becomes a dev dependency. Vite 8's default, Lightning CSS, moves rules between the stylesheet's duplicate layers and drops the `-moz-` prefixes, and that output has not been checked in a browser. The only CSS change is the `/*$vite$:1*/` marker Vite 8 appends. `build.rollupOptions` is renamed `build.rolldownOptions`.
+
+- **The browser UI is `@ichava/react-icon-browser`, ported in whole.** `resources/js` held a fork of it (copied 2026-09-23; 44 of its files had since diverged from the library and 15 lagged behind it, `.claude/design/react-ui/audits/fork-diff.md`). The 143 forked files are removed and the library's built output is vendored under `resources/vendor/react-icon-browser`, from react-icon-browser `c37ae66` (0.1.0, `main`), with a `VENDORED.json` naming that commit and hashing every file. `resources/js` is now the Inertia adapter, 24 files kept and 13 added: `pages/Browser/Index.tsx` builds the browser with the library's `browser()` builder, `InertiaCatalog` implements the library's `IconCatalog` port over Inertia (the first page from the props, every other page a partial reload of the same route, so the JSON API can stay off), and `useLibrarySync` sends the browser's favourite, history and collection changes to the Inertia routes. The look and behaviour are react-icon-browser's as verified in its A6 audit, which differ from the fork's in places; the committed bundle is rebuilt and changes throughout.
+
+- **Breaking: the licence changed from MIT to proprietary, and the version stays 0.1.1.** On 0.x a breaking change would normally take 0.2.0; it was kept at 0.1.1 by decision (Sim, 2026-10-28), because nothing ever installed this package from a registry.
+- **This package is proprietary, and its repository private.** It ships the library's build, which contains Untitled UI PRO components, and that licence forbids exposing them publicly. `LICENSE` is now proprietary (© Simtabi LLC, with the Untitled UI PRO terms), `composer.json` declares `"license": "proprietary"`, `package.json` `"UNLICENSED"`, and the README carries no MIT badge or claim. **Installing it now needs a licence and a GitHub token with read access to the repository** (`docs/installation.md` gives the `repositories` entry and the `COMPOSER_AUTH` form). `ichava/core` and the icon packs stay open source and work headless without it.
+
+- **Library writes change the browser first, then the server.** The forked UI sent every favourite, history and collection write to the server and waited for its reload. The library changes its store at once; `useLibrarySync` replays the change against the same Inertia routes, and the reload's props replace the store's, so a write the server refuses is undone. Library visits are `async`, so a quick second write no longer cancels the first, and creating a collection no longer remounts the page (it was `preserveState: false`).
+
+- **Stored history verbs are read back as the browser's.** The server records `view`/`copy`/`download` and the browser `viewed`/`copied`/`downloaded`; hydrated entries are mapped back, so an icon viewed again replaces its entry instead of adding a second.
+
+- **`per_page` is clamped to at least 10**, `IconFilterRequest`'s minimum, as it already was to at most 120. Below it a page change bounced a validation error.
+
+- **The asset publish tag is `ichava::icon-browser-assets`.** See *Deprecated*.
+
+- **Vitest is raised from `^4.1.12` to `^5.0.5`, with `@vitest/coverage-v8` alongside.** The config needed no change. Vitest 5 takes Vite as a peer (`^6.4 || ^7 || ^8`), which the dev dependency already satisfies. It needs Node 22.12 or later, and CI runs 24. Its new `clearMocks: true` default affects nothing, because every mock here is created inside its own test. Coverage reports the same 434 statements across the same files, so the root-relative `include` patterns still match.
+
+- **CI follows the private-repository policy.** Draft pull requests run nothing (mark one ready to run the checks), every job keeps its timeout and superseded runs are cancelled, `tests.yml` gains one weekly run on `main` as the post-merge check and a bundle build in the frontend job, and Dependabot groups GitHub Actions and npm updates as it already did Composer's. `release.yml` refuses to publish from a public repository.
+
+- **`@types/node` is raised from `^24.10.1` to `^26.6.5`.** Type definitions only: `tsconfig.inertia.json` loads them, and nothing from them reaches the bundle, which builds byte for byte as before. CI still runs Node 24, so the types now describe some Node 26 APIs the runner lacks; the only Node code here is the Vite and Vitest configs, which use `node:url` alone.
+
+#### Deprecated
+
+- **The `ichava-assets` publish tag.** Use `ichava::icon-browser-assets`; the old tag publishes the same paths (`IconBrowserServiceProvider::DEPRECATED_ASSETS_TAG`) and may be removed in 0.2.0 (plan I3).
+
+#### Removed
+
+- **The forked browser UI in `resources/js`** (143 files: components, engines, hooks, store, styles and their tests), replaced by the vendored library above. Its tests live on in react-icon-browser, which carries every fix the fork had (A0, `fork-diff.md`). Dependencies only the fork imported are dropped from `package.json`: `@ichava/js-motion`, `@tanstack/react-virtual`, `clsx`, `dompurify`, `fflate`, `tailwind-merge`, `tailwindcss-react-aria-components`, `@types/dompurify`; the library bundles its own. React, `react-aria`, `react-aria-components` and `zustand` move to the library's peer floors.
+
+#### Fixed
+
+- **The library-sync hook no longer writes a ref during render.** `useLibrarySync` set `latest.current` while rendering, which is unsafe under concurrent rendering (ESLint `react-hooks/refs`, found by the new lint). It now updates in a layout effect.
+- **History's icon links have a name.** Each row's link held only the icon image, so a screen reader announced an unnamed link (axe `link-name`, found by the new page check). It is labelled with the icon's name.
+
+- **The API's Blade and helper snippets render.** `IconResource` wrote `blade_clean` as `<x-ichava::ichava-icon-sets-tabler ...>`, a tag no pack registers, and `helper` as `ichava('…', ['class' => …])`, whose class core's helper dropped. Both now come from core's `IconBrowserService` through `IconSnippets`, and `tests/Feature/SnippetsConfigTest.php` renders them through Blade. The resource's unused `generateBladeClean()`, `generateBladeGeneric()` and `generateHelper()` were removed rather than deprecated.
+- **`ichava/core` floor raised to `^0.1.3`**, for icon paths that resolve and server snippets that render.
+
+- **The shared vendoring script strips every vendored script's source-map comment.** `.dev/tools/sync-vendored-library.mjs` dropped the `sourceMappingURL` comment from `index.js` only; a library built from more than one entry (ichava.com's landing ships `server.js` and a shared chunk) kept comments naming maps that never ship. It now strips the comment from every vendored JS file. This package's single-file bundle is unaffected. The script stays byte-identical with ichava.com's copy, and `syncVendoredLibrary.test.ts` syncs a three-file library and checks every comment is gone and no map is copied (it failed against the previous script).
+
+- **The committed `inertia-app.css` holds only the rules this package uses.** `.claude/` was ignored only by a global git excludes file, which Tailwind's source scan does not read, so a local `npm run build:prod` also scanned every agent worktree under `.claude/worktrees/` and added about 108 rules that no current source uses (228,376 bytes against 162,316). The re-vendor above shipped that larger file. `.gitignore` now lists `/.claude/`, the rebuilt CSS is byte-identical to the file before the re-vendor, and `tailwindSourceScope.test.ts` fails if the line is removed.
+- **The release pull request is found in the same run that opens it.** The step that hands the release branch to the changelog close asked `gh pr list --label 'autorelease: pending'`, which goes through GitHub's search index; on the first live run (js-motion#30) the index had not caught up with the pull request opened seconds earlier, so the close was skipped and a second dispatch was needed. It now takes the branch from release-please's own `pr` output, and only when the action reports nothing (the pull request was already current) falls back to the open pull requests, matched by the `release-please--branches--main` prefix rather than the label.
+
+#### Security
+
+- **The vendoring script refuses private icon content.** `.dev/tools/sync-vendored-library.mjs` now fails, before it clears the target, when the library's `dist/lib` holds any `baseline/` path or any SVG whose path names `icon-sets-metronic`, `icon-sets-bundled` or Metronic, and lists what it refused. react-icon-browser's `public/baseline/` holds Metronic and bundled SVGs for its rendering tests; both packs are private to Simtabi LLC (2026-10-26), so that sample may stay there but is never copied into a host. It also re-checks the written target. `privateContent()` is exported, and `syncVendoredLibrary.test.ts` plants each case in a synthetic library and asserts the refusal and an untouched target; with the refusal disabled, all three fail. The shared copy in ichava/ichava.com must take the same change (`cmp`).
+
+- **Vitest is raised from `^2.1.5` to `^4.1.12`**, with `@vitest/coverage-v8` alongside, which clears two Dependabot alerts: GHSA-5xrq-8626-4rwp (critical, fixed in 3.2.6: arbitrary file read and execution while the Vitest UI server listens) and GHSA-82fw-gwwq-j7x9 (moderate, fixed in 4.1.11: path traversal through `@vitest/mocker` redirect mocks). A dev dependency only; nothing it touches ships in the bundle. 4.1 keeps Vite 7 and Node 24 supported.
+
+### [0.1.0] - 2026-10-23
+
+Versioning re-based to 0.1.0. This release contains everything previously tagged v0.1.0 through v0.4.1 (2026-08-31 to 2026-09-26) plus the changes below, and requires `ichava/core` `^0.1`, the re-based core. Those tags and their GitHub releases were removed; every commit they pointed at is on `main`, and their sections are kept under *Archived pre-reset history*.
+
+#### Changed
+
+- **The motion engine is `@ichava/js-motion` at `v0.1.0`.** `package.json` depended on `@ichava/motion` at js-motion's pre-reset `#v0.1.1`, a tag the re-base removes. It now names the package by its new name at the re-based `#v0.1.0`, and the three source files that import or mention it follow. js-motion's `src/` is identical between the two tags and its `dist/` differs only in comment lines, so the checked-in `inertia-app.js` is unaffected and is not rebuilt here.
+- **References follow the repository renames.** `ichava/maintainer-toolkit` is now `ichava/icon-sets-sync`, `ichava/motion` is `ichava/js-motion` and `ichava/react-browser` is `ichava/react-icon-browser`. GitHub redirects the old names, but redirects are not permanent.
+
+#### Added
+
+- **Inertia.js frontend serving the React 19 UI, beside the untouched JSON API.**
+  `GET /{prefix}/icons` renders `Browser/Index` with the filtered listing from core's
+  `IconBrowserService`; shared props (`auth`, `flash`, `preferences`, `ichava`) flow
+  from the `HandleInertiaRequests` middleware through the `ichava.inertia` middleware
+  group. Requires `inertiajs/inertia-laravel: ^3.3` and `@inertiajs/react: ^3.0`. Routes
+  load only when `ichava.icon-browser.inertia.enabled` is truthy (on by default,
+  `ICHAVA_INERTIA_ENABLED`).
+- **Page controllers, one per resource, mirroring the JSON API.** Browser
+  listing/detail/stats plus package, favorite, collection, history,
+  command-history, settings and cache pages; mutations redirect back with flash
+  data. Destructive cache routes keep the fail-closed `ichava.cache-admin` gate.
+- **Canonical URLs serve Inertia pages.** The legacy Vue mount points could not stay
+  mounted beside their replacements, so `routes/web.php` keeps only the `/`
+  redirect; the Vue surface remains on disk, unreachable, until it is removed.
+- **React component library lives under `resources/js/`.** Engine, components, hooks,
+  store and tests moved in from `@ichava/react-browser` (imports via `@js`), with the
+  REST transport deleted in favor of Inertia props. Requires `zustand`,
+  `@tanstack/react-virtual`, `react-aria`, `@ichava/motion` and the Untitled UI packages.
+- **Two-way filter sync and server mutations.** Listing state syncs with the server
+  query string; all library writes (favorites, collections, history, settings,
+  cache) go through the server with flash and validation feedback, and settings is
+  a real form.
+- **Test coverage.** `assertInertia` tests per controller; the moved JS tests run in
+  this package's vitest with the `@testing-library` stack; the harness uses file
+  sessions so session-backed flows persist across requests in a test.
+- **Vue SPA and parallel-run React removed.** The Vue single-page app, the
+  standalone React entry with its `?ui=react` flag, the legacy Blade views and
+  controllers, and the checked-in Vue bundles are gone; the JSON API is untouched.
+  The npm tree drops the Vue ecosystem and resolves a single `@` alias to
+  `resources/js/`.
+- **REST API off by default, still shipped.** The JSON routes mount only when
+  `ichava.icon-browser.api.enabled` is truthy (`ICHAVA_API_ENABLED`); hosts with
+  programmatic consumers opt in, everyone else serves Inertia pages alone.
+- **Docs describe the React browser.** README and guides no longer reference Vue
+  or the shadcn installer.
+
+#### Changed
+
+- **`inject-scripts` speaks through translations and the shared status vocabulary.** Its four
+  messages resolve from `resources/lang/en/commands.php` under `ichava/icon-browser::commands.*`,
+  and render through laranail/console's `StatusLine`, so the glyphs and colours match every other
+  ichava command. Injected script names are escaped before they are printed.
+- `InjectNpmScriptsCommandTest` covers injecting, the already-present re-run and the missing-file
+  failure. It also guards against English literals in the command and checks that every key it
+  references resolves.
+- **`composer.json` lists `laranail/db-tools` as a VCS repository.** `ichava/core` is about to
+  require it, and Composer reads `repositories` from the root package only, so a
+  consumer that does not declare it cannot resolve core at all. The entry is harmless
+  until then. Nothing here is on Packagist.
+
+#### Fixed
+
+- **The Docs link pointed at the pre-rename path.** The Inertia port brought react-browser's
+  `/documentation/ichava/browser/` into `core/config.ts` and the `HelpMenu` fallback, and the
+  checked-in `inertia-app.js` carried both. They now read `/documentation/ichava/icon-browser/`,
+  and `docsUrl.test.ts` derives the expected URL from `composer.json`'s `name`, so a rename
+  cannot leave it behind again.
+- **CI never ran the frontend tests.** The Inertia UI arrived with 22 vitest files and a
+  `typecheck:inertia` script, and no workflow ran npm. `tests.yml` gains a `Frontend` job
+  that installs, typechecks and runs vitest on every pull request.
+- **The Geist fonts 404'd on every host.** `theme.css` asked for `/fonts/Geist-Variable.woff2`
+  and `/fonts/GeistMono-Variable.woff2`, a directory no host has, and the package shipped no
+  fonts, so the UI always rendered in a fallback face. Both variable `woff2` files (Geist 1.7.2,
+  SIL Open Font License 1.1, licence text alongside) now ship in `public/assets/fonts/` and
+  publish with `--tag=ichava-assets`; the `@font-face` URLs are relative to the built
+  stylesheet, so they resolve under any publish prefix. `FontAssetsTest` resolves every font
+  URL in the committed CSS against the files on disk and checks the source agrees.
+- **The welcome tour blocked the cookie-consent buttons.** Both opened on first run and the
+  tour's modal overlay took the clicks meant for the banner. `OnboardingLayer` now shows the
+  consent banner first and the tour only after a choice is recorded.
+  > The committed `inertia-app.js` still carries the old behaviour: a production build of
+  > unchanged `main` no longer reproduces it (dependency drift), so it was not rebuilt here.
+  > The next routine `npm run build:prod` picks the fix up. The font URLs were patched in the
+  > committed `inertia-app.css` directly.
+
+#### Removed
+
+- **shadcn remnants removed.** shadcn was dropped for Untitled UI. What was left of it:
+  - a CSS block styling Radix and cmdk elements (`data-slot`, `cmdk-item`) that no component
+    renders any more; its own comment had marked it for deletion;
+  - comments describing current code as shadcn.
+  The CSS block is gone and the comments are reworded. `noShadcn.test.ts` fails if shadcn,
+  Radix, cmdk or `class-variance-authority` reappear in the sources or `package.json`.
+- `ichava.scss` no longer labels its base tokens "shadcn-vue". The token blocks stay, because
+  the `.theme-*` helpers still read them. The `.gitignore` comment naming the removed
+  shadcn-vue installer is updated. The compiled `inertia-app.css` still carries the dead
+  rules, which are harmless, until the next routine rebuild.
+
+### [0.4.1] - 2026-09-26
+
+#### Changed
+
+- **`SECURITY.md` removed; the organization policy serves this repository now.**
+  The file was byte-identical across six ichava repositories and held nothing
+  specific to any of them. It was promoted into `ichava/.github` first, so the
+  policy improved before any copy was removed rather than after, and GitHub
+  serves that default on `/security/policy` for every repository without its
+  own. The two channels and the 48-hour acknowledgement are unchanged.
+
+- **The README's security link moved with it.** A relative
+  `[SECURITY.md](SECURITY.md)` is a path into this repository's file tree, and
+  the cascade does not put a file there -- it answers the policy page and
+  nothing else. Left alone the link would have become a 404 the moment the file
+  went, so it now points at `/security/policy` directly. `composer.json` and the
+  issue-template link already did.
+
+#### Fixed
+
+- **The category tree no longer blanks `/ichava/icons`.** The Inertia `tree` prop
+  is `{id, title, icon_count, children}` from core's `buildIconTree()`, but the
+  client tree is `{pack, label, count, cats}` and `CategoryTree` read
+  `g.cats.filter` off the raw prop -- `undefined.filter`, and the page threw.
+  `toCategoryGroups()` now normalises either shape (and garbage, to `[]`, so
+  future backend drift cannot blank the page again) before it reaches the store.
+
+- **Icons render again with the REST API off.** The API is now opt-in, so
+  `svg_url` is null and `SvgFidelity` fell back to `assetUrl('')`, which is
+  `/` -- the mask fetched the page itself and tiles came out blank. It paints
+  from a data URI built out of the `svg_content` the Inertia props already
+  carry, and returns `''` rather than `/` when there is neither, so an icon
+  missing both assets renders nothing instead of recursing. `assetUrl()` also
+  no longer prefixes an empty string with the base path.
+
+- **A fresh install with `APP_DEBUG=true` no longer renders a blank page.**
+  `vite_dev_mode` defaulted to true, and the root template loaded the Inertia
+  entry from `localhost:5174` whether or not a dev server was listening --
+  point the browser at a port that answers nothing. The flag is now off by
+  default (`ICHAVA_VITE_DEV=true` opts in), and the template additionally probes
+  the host and port for 200ms before committing to the dev server, falling back
+  to the published bundle otherwise. The port is cast to `int`, so a string env
+  value no longer produces `localhost:5174` with a trailing notice.
+
+- **`HandleInertiaRequests` honours a configured root view.** It hardcoded the
+  parent `rootView`, ignoring `ichava.icon-browser.inertia.root_view`, so a host
+  that set the key got their template silently ignored. It now returns the
+  configured view when set and falls back to the parent's otherwise.
+
+### [0.4.0] - 2026-09-22
+
+#### Added
+
+- **`ConfigKeyResolutionTest` asserts the shipped config actually merges at
+  `ichava.icon-browser`**, and that the doubled key V39 produces does not exist. Nothing
+  asserted this before, which is why V39 shipped: a test calling `config()->set()` writes the
+  key it then reads, so only the shipped *file* resolving proves the merge.
+
+#### Changed
+
+- **Renamed: `ichava/browser` is now `ichava/icon-browser`.** The repository, the composer
+  package, the npm package and the PHP namespace all move together, so `local dir = GitHub
+  repo = composer name` continues to hold. **This is a breaking change and no version number
+  expresses it** -- a consumer has to change the name it requires.
+
+  | Surface | Before | After |
+  |---|---|---|
+  | composer / GitHub | `ichava/browser` | `ichava/icon-browser` |
+  | npm | `@ichava/browser` | `@ichava/icon-browser` |
+  | PSR-4 root | `Simtabi\Laranail\Ichava\Browser\` | `…\Ichava\IconBrowser\` |
+  | provider | `IchavaBrowserServiceProvider` | `IconBrowserServiceProvider` |
+  | config file | `config/browser.php` | `config/icon-browser.php` |
+  | config key | `ichava.browser.*` | `ichava.icon-browser.*` |
+  | view namespace | `ichava/browser` | `ichava/icon-browser` |
+  | Blade alias | `ichava-browser` | `ichava-icon-browser` |
+  | Artisan | `ichava::browser.inject-scripts` | `ichava::icon-browser.inject-scripts` |
+  | publish tags | `--tag=ichava::browser-*` | `--tag=ichava::icon-browser-*` |
+
+  **If you published this package's views**, the override directory moves from
+  `resources/views/vendor/ichava/browser/` to `resources/views/vendor/ichava/icon-browser/`.
+
+  **Four surfaces deliberately did not move**, because each names something other than the
+  package and each fails silently if renamed:
+
+  - **Route names.** `route('ichava.browser')` and its 13 call sites stay, along with the
+    `ichava.api.*` family. These are an `ichava.*` namespace naming *features*, not the
+    package; renaming one of them and not the others would be inconsistent as well as
+    breaking. Same reasoning that defers `<x-ichava::icon>` to 1.0.
+  - **The `ichava.browser()` JavaScript API**, 18 call sites, which is this package's public
+    JS surface.
+  - **`ICHAVA_BROWSER_PREFIX`, `_RATE_LIMIT`, `_PER_PAGE`, `_CACHE`.** A renamed environment
+    variable reads as unset and the default applies with nothing reported -- the quietest
+    failure available -- and renaming buys nothing.
+  - **Historical CHANGELOG entries.** Past entries describe what shipped at the time; only
+    the repository URLs were updated. Rewriting them would make this file lie about its own
+    history.
+
+- **The markdown path filter now matches markdown at any depth.**
+  `code-quality.yml` and `tests.yml` carried `paths-ignore: '*.md'`. In GitHub's
+  filter syntax a single `*` does not cross a `/`, so that pattern matched a
+  root-level `README.md` and nothing else -- every edit under `docs/` ran the
+  full PHP suite and the static-analysis job, which is precisely what the filter
+  existed to skip. `'**.md'` matches at any depth.
+
+  Worth stating which direction this failed in, because it decides how urgent it
+  was: a broken `paths-ignore` runs **more** than it should, never less. The cost
+  was CI minutes on a free-plan allowance, not a gate that stopped firing.
+
+- **Dead links to the deleted `ichava/documentation` repository removed.** That repository no
+  longer exists, so every cross-reference to it resolved to a 404. The reporting channels in
+  `SECURITY.md` were already stated inline and are unchanged; the Code of Conduct now cites the
+  Contributor Covenant directly. Historical mentions in this changelog are left as written.
+
+#### Fixed
+
+- **Per-route rate limits were silently ignored.** `Helpers::getRateLimit()` read its master
+  switch from the correct key but the actual limit from `config("ichava-browser.rate_limiting.
+  {$type}")` -- the pre-V39 key form, which has never resolved -- so every call fell through to
+  the hardcoded `$default` and the configured `rate_limiting` block did nothing. Found by the
+  rename sweep rather than by a test, because the fallback made the wrong value look right.
+
+### [0.3.0] - 2026-09-21
+
+#### Changed
+
+- **`ichava/core` `^0.4` is accepted.** The constraint read
+  `^0.2.8 || ^0.3.1`, and a caret on a `0.x` version pins the *minor*, so
+  `0.4.0` did not satisfy it at all. An application that wanted core `0.4`
+  could not install this package beside it, and Composer reported that as a
+  conflict on `ichava/core` rather than on the package holding it back.
+
+  The branch is **added, not substituted**. `^0.2.8` and `^0.3.1` keep
+  resolving, because nothing here calls an API that `0.4` introduced -- the
+  suite is green on both `v0.3.1` and `v0.4.0` -- so widening is the whole
+  change and raising the floor would strand consumers for no gain.
+
+- **The view namespace is now `ichava/browser`, not the bare `ichava`.**
+  `hasViews()` was being passed an explicit `'ichava'`, overriding the
+  vendor-scoped default that `hasTranslations()` in the same provider already
+  took. Laravel keeps view namespaces in a flat hint map, so a bare generic slug
+  is a key any sibling package, third-party package or the consuming application
+  could also claim -- and the second claimant replaces the first with **no
+  error**, surfacing much later as a missing view.
+
+  Seven internal `view('ichava::...')` call sites moved with it. None was
+  documented as public API.
+
+  Registering the vendor-scoped name also makes package-tools add the tag-safe
+  alias `ichava-browser` over the same paths, because Blade's component-tag
+  pattern admits no forward slash. Both spellings resolve the same files.
+
+  **If you published this package's views, your overrides will stop being
+  found.** The directory moves from `resources/views/vendor/ichava/` to
+  `resources/views/vendor/ichava/browser/`. Move it, or re-publish with
+  `php artisan vendor:publish --tag=ichava::browser-views`. Nothing errors if
+  you do neither -- the package's own templates simply render instead of yours.
+  The publish tag is derived from the package name and is unchanged.
+
+  `<x-ichava::icon>` and every other `<x-ichava::...>` tag are **unaffected**.
+  Those are Blade component registries, not the view-hint map; renaming them is
+  a separate, deferred decision recorded in the provider alongside the
+  registration.
+
+- **`branch-alias` moves to `0.3.x-dev`, because `0.3.0` starts a series.** It
+  read `0.2.x-dev` while this release opens the 0.3 line, and a path or VCS
+  consumer tracking `dev-main` takes that alias as the version -- so a `^0.3`
+  constraint would not have matched the branch it points at. Tagged installs
+  were never affected, which is why nothing surfaced it.
+
+### [0.2.8] - 2026-09-21
+
+#### Fixed
+
+- **Package titles and descriptions were read under a key nothing ever wrote.**
+  Seven call sites read `$packageData['browser_metadata'][...]`. `IconRegistry`
+  has never written that key -- 16 reads across `ichava/core` and this package,
+  **zero writes** -- so every one fell through its `??` default. The SPA showed
+  the package slug where a title belonged and an empty string where a
+  description belonged.
+
+  Nothing failed, because each fallback looked plausible. A fallback is only a
+  safety net if something notices you are standing in it. The values were there
+  the whole time, one level up.
+
+- **A missing shared Vite generator now says so.** `vite.config.js` imports
+  `ViteConfigGenerator` from `<workspace>/.scripts/vite/vite-configurator.js`,
+  which lives outside every repository by design. A bare `import` of a path that
+  is not there fails with `ERR_MODULE_NOT_FOUND` naming a resolved absolute
+  path, which reads like a broken install rather than a workspace this package
+  was never checked out into.
+
+  Since the file is outside every repo, its absence is the *normal* case for
+  anyone who cloned this package on its own -- a contributor, CI, a consumer
+  rebuilding assets. The config now checks for it first and explains what is
+  missing, where it was expected, and that prebuilt assets are committed under
+  `public/assets` so no build is needed to use the package.
+
+  **Deliberately not falling back to a locally-reconstructed config.** The
+  generator owns asset naming and the CSS-only-entry stub; a fallback producing
+  subtly different output than the committed assets would be worse than one that
+  refuses, because the build would succeed and ship the wrong files.
+
+  > The import depth itself was corrected separately in #22 -- four levels up
+  > from `packages/browser` reaches the workspace root, three did before the
+  > restructure. That fix is right; this is about what happens when the file at
+  > that path does not exist.
+
+- **`public/assets/js/ichava-react.js` was 18 days stale and shipped five package names that no
+  longer exist.** It is build output, checked in, last built 2026-09-03 — before the react
+  sources moved to the `icon-sets-` names on 2026-09-21. Rebuilt rather than edited; the
+  `ichava-react.css` beside it was stale for the same reason and moved with it.
+
+#### Security
+
+- **The package endpoint no longer risks publishing filesystem paths.** One of
+  those reads passed the whole array through as
+  `'metadata' => $packageData['browser_metadata'] ?? []`, which returned an
+  empty array for its entire life. Repointing it at the real metadata without
+  filtering would have started serving `base_path` and `provider_class` --
+  absolute paths and internal class names -- from an endpoint anyone who can
+  reach the browser can call.
+
+  It now goes through an **allow-list**, not a blocklist, so a key the registry
+  grows later is withheld until someone chooses to publish it. A test adds an
+  unknown key and asserts it does not escape.
+
+  > Not an exploitable regression in any released version: the key never
+  > existed, so the response was always empty. It would have become one in this
+  > change.
+
+### [0.2.7] - 2026-09-21
+
+#### Changed
+
+- **`ichava/core` floor raised to `^0.2.8 || ^0.3.1`.** The `labels` payload
+  below arrives from core and was written to degrade to an absent key, so this
+  is not a correctness fix -- it is the difference between localised taxonomy
+  labels being guaranteed and being best-effort. `0.3.1` is the first core
+  release that carries them.
+
+  The `^0.2.8` arm is kept deliberately. Dropping it to require `^0.3.1` alone
+  would cut off the 0.2 line for no benefit; raising the floor of the 0.3 arm
+  excludes the releases without `labels` and nothing else.
+
+#### Added
+
+- **Localised taxonomy labels in the package payloads.** `labels` carries a
+  pack's `variants` / `categories` / `sets` display names, which `config.json`
+  has no equivalent for, and follows the application locale because
+  `ichava/core` applies its translation overlay on read.
+
+  Degrades cleanly: against a core that does not supply `labels`, the key is
+  simply absent. The composer floor is unchanged for that reason -- it moves
+  when core next tags a release carrying the overlay.
+
+### [0.2.6] - 2026-09-21
+
+#### Added
+
+- **`actionlint` runs on every pull request.** Nothing validated the workflow files at all:
+  `release.yml` triggers only on `push: tags`, so a broken workflow was first observed as a
+  release that refused to start — after the decision to release had been made.
+
+  A YAML parse is not a substitute, and that is the sharp part. `yaml.safe_load` accepts a
+  duplicate key and silently keeps the last one, so a double-applied patch that left
+  `continue-on-error:` twice on a single step validated clean and would have failed only at tag
+  time. `actionlint` rejects what Actions rejects.
+
+  Checked against the defect rather than assumed: injecting that duplicate key, a typo'd step
+  key, and an `if:` referencing a property that does not exist are all caught, while
+  `yaml.safe_load` still parses the first of them without complaint.
+
+#### Fixed
+
+- **A failed SBOM download no longer takes the whole release down.** `release.yml` generates the
+  SBOM before it publishes, and the Syft installer fetches its checksums from GitHub's
+  release-asset CDN. On 2026-09-21 that answered `504` for about twenty minutes, failing the job
+  four times *before* the publish step — so the tag existed with no release behind it, which is
+  the drift the release table exists to catch, produced by the release machinery itself.
+
+  Two changes. The step now retries once after 45 seconds, which covers a single transient `504`
+  — the common case. And a second failure no longer fails the job: the release publishes without
+  the asset and emits a `::warning::` naming the re-run.
+
+  **The two failure states are not equally bad, and that asymmetry is the whole design.** A
+  release missing an attachment is repaired by re-running this workflow, which re-attaches it. A
+  tag with no release persists silently until a person notices. Preferring the recoverable one
+  is worth the loss of "every release always carries an SBOM" as an absolute.
+
+  `fail_on_unmatched_files: false` is now stated on the publish step. It is already the action's
+  default, but the point of this change is that a missing SBOM must not fail the publish, so it
+  should not rest on a default a future reader has to know.
+
+#### Security
+
+- **Floor raised to `ichava/core: ^0.2.8`.** Core `0.2.8` fixes two issues a pack inherits
+  through the engine: `%` and `_` in a search query acted as `LIKE` wildcards, widening results
+  and forcing full-table scans; and the icon watcher followed symlinks and read files of
+  unbounded size, so a link inside a watched directory pointed the reader anywhere on disk.
+
+  `^0.2.5` still permitted resolving to `0.2.5`, `0.2.6` or `0.2.7`, all of which carry both.
+  The `|| ^0.3` arm is unchanged — core `0.3.0` moved the scaffolder out but left the engine,
+  registry, seeder and SVG pipeline untouched, so an installed pack is unaffected by it.
+
+### [0.2.5] - 2026-09-21
+
+#### Changed
+
+- **`ichava/core` widened to `^0.2.5 || ^0.3`.** Core `0.3.0` removes the icon-package
+  scaffolder and its stub tree, which moved to `ichava/icon-package-scaffolder`. This package
+  never used either, so it works unchanged on both series.
+
+  Widened rather than raised on purpose. A caret on a `0.x` version pins the minor, so plain
+  `^0.2.5` cannot resolve `0.3.0` and this package would have held every consumer back on the
+  0.2 series for a removal that does not affect it. Raising it to `^0.3` instead would have
+  forced a core upgrade on anyone deliberately staying on 0.2.x, for the same non-reason.
+  Both series genuinely work, so the constraint says so.
+
+### [0.2.4] - 2026-09-21
+
+#### Security
+
+- **Floor raised to `ichava/core: ^0.2.5`.** Core `0.2.5` closes an address-notation gap in the
+  pack update-check guard: `isPublicIp()` judged addresses by how they were written, so
+  `::7f00:1` and `::a9fe:a9fe` — IPv4-compatible IPv6 spellings of `127.0.0.1` and of the
+  `169.254.169.254` cloud-metadata address — were accepted while the same addresses in dotted
+  form were refused. `^0.2.4` still permitted resolving to `0.2.4`, which has it.
+
+  Weaker than the containment fixes in `0.2.4`: the notation was deprecated in 2006 and most
+  stacks will not route it. The floor moves anyway, because a constraint that can resolve to a
+  release with a known gap is the thing this rule exists to prevent.
+
+### [0.2.3] - 2026-09-21
+
+#### Security
+
+- **Floor raised to `ichava/core: ^0.2.4`.** Core `0.2.4` carries seven security fixes — post-
+  sanitizer attribute gating, icon-path containment, off-document paint URLs, sanitizer policy
+  flag enforcement, SVG driver containment, debug path leakage and pack update-check URL
+  restriction. `^0.2.3` still permitted resolving to `0.2.3`, which has all seven. Raising a
+  floor to exclude a known-broken release is not a pin; the constraint stays a range.
+
+### [0.2.2] - 2026-09-16
+
+#### Changed
+
+- **Requires `ichava/core: ^0.2.3`.** `0.2.2` decided readiness against columns the schema has
+  never had, so `ichava::ichava-core.info status` reported `UNINITIALIZED` on a fully seeded
+  database and both auto-seed listeners, which gate on the same check, never fired. The floor is
+  raised rather than the range widened; it still tracks every `0.2.x` from `0.2.3` on.
+
+### [0.2.1] - 2026-09-16
+
+#### Changed
+
+- **Requires `ichava/core: ^0.2.2`.** The floor is raised rather than the range widened: `0.2.0`
+  invoked six of its own Artisan commands by names it had just retired, and `0.2.1` still passed
+  `migrate` a `--path` that resolved nowhere, so `database migrate` reported success and created
+  no tables. `^0.2` admitted both. Raising a floor to exclude a known-broken release is not a
+  pin — the range still tracks every `0.2.x` from `0.2.2` on.
+
+### [0.2.0] - 2026-09-16
+
+
+#### Breaking
+
+- **Requires `ichava/core: ^0.2`.** Core `0.2.0` moved its config key to `ichava.ichava-core.*`
+  and renamed every Artisan command with no bare aliases, so a host application upgrading this
+  package has to upgrade core with it.
+- **`ichava:inject-scripts` is now `ichava::browser.inject-scripts`, and the bare name is gone.**
+  Artisan's command table is a flat map keyed by name, so a bare slug is a key any sibling
+  package could also claim, and the second claimant replaces the first silently. It is not
+  retained as an alias: an alias that reintroduces the bare name hands back the same collision.
+
+
+#### Fixed
+
+- Four `config('ichava.core.*')` reads left orphaned by core's config rename — CORS, request
+  logging, auth debug and the route prefix were silently returning defaults.
+- Icon components called non-existent `::getName()`; now use `::getPackageName()`.
+- Facade imports (`DB`) made explicit in both controllers.
+
+#### Changed
+
+- Third-party GitHub Actions pinned to the commit SHA of their latest release; `actions/*` keep
+  floating on a major tag. A tag is mutable, so `@v4` is a promise the action's owner can
+  rewrite; pinning GitHub's own actions inside GitHub's own runner buys nothing.
+- The test harness reads `DB_CONNECTION`, so the suite targets SQLite, PostgreSQL, MySQL or
+  MariaDB. SQLite runs enable `foreign_key_constraints`, which Laravel applies only when the key
+  is present.
+- Hardened CI workflows: concurrency groups, job timeouts, problem matchers, docs-only skip paths, test coverage, and tidy composer scripts.
+- Aligned Pest to `^4.6 || ^5.0` and CI branch triggers on `main` only.
+
+#### Added
+
+- `release.yml` — a `v*.*.*` tag now publishes a release whose body is that version's CHANGELOG
+  section, and fails closed when the tagged version has no section.
+- The database matrix: CI runs the suite against PostgreSQL 17, MySQL 8.4 and MariaDB 11.4 as
+  service containers alongside the SQLite lane. These API tests refresh real tables and query
+  through core's models, so SQLite alone proved nothing about the other three.
+
+### [0.1.1] - 2026-09-02
+
+#### Fixed
+
+- **`IchavaApiSecurity` no longer overwrites headers a route set deliberately.** It ran after
+  the controller and unconditionally `set()` every header, so the SVG endpoint's `immutable`
+  cache header and its tight `sandbox` CSP never reached a client and every icon was served
+  `no-store`. Routes now declare ownership through `IchavaApiSecurity::claimHeaders()`, limited
+  to an `OVERRIDABLE_HEADERS` allow-list -- a route cannot opt out of `nosniff`,
+  `X-Frame-Options`, CORS or HSTS. A plain `has()` check could not implement this: Symfony
+  synthesises `Cache-Control: no-cache, private` on every response, so a `has()`-gated
+  middleware would have silently stopped sending `no-store` on the JSON API.
+- **The frontend test environment no longer hides sanitiser failures.** Under happy-dom
+  (tested at 15 and 20) DOMPurify strips every element -- `sanitize('<b>hi</b>')` returns
+  `hi` -- so the sanitiser suite passed by returning nothing and every "strips X" assertion
+  was true for the wrong reason. Switched to jsdom, and added an assertion that checks
+  removal and survival of the same input, which fails both for an empty return and for a
+  passthrough.
+- **The client SVG sanitiser fails closed.** It returned its raw input when DOMPurify was
+  unavailable, emitting unsanitised markup exactly when it could not sanitise. It now returns
+  an empty string.
+
+#### Changed
+
+- **Client SVG sanitisation derives from the shared policy.** The allow-lists were literals
+  in `sanitizeSvg.ts`, which is how this runtime and the server drifted apart: `W1-6` widened
+  the server and nothing widened the client, and a census then measured 3,507 icons rendering
+  correctly on the Blade path and wrong in the SPA -- metronic worst at 266 of 501. Both now
+  read `security/svg-policy.json`.
+- **`SanitizeOptions.allowStyle` removed.** It had no callers and had stopped doing anything:
+  the policy lists the `style` element in `forbiddenTags`, and DOMPurify's `FORBID_TAGS` wins
+  over `ALLOWED_TAGS`, so it could only ever have appeared to work. The style *attribute* is
+  separate and is allowed.
+- **The SVG URL is content-addressed.** `IconResource::svg_url` publishes
+  `?v=<render_version>`, and the endpoint serves `public, max-age=31536000, immutable` only
+  when the request carries the current token; anything else gets
+  `public, max-age=300, must-revalidate` with the same ETag. Callers on the bare id URL keep
+  working and receive current bytes -- they simply do not get a year of immutability on a URL
+  that cannot express which year. Requires `ichava/core` 0.1.1 for `Icon::render_version`.
+
+### [0.1.0] - 2026-08-31
+
+First open-source release. The entire HTTP layer of the Ichava icon ecosystem: REST API, web
+routes, middleware, Blade views and the Vue + Vite browser SPA. `ichava/core` ships no HTTP
+surface, so this package is what turns the headless engine into a browsable icon library.
+
+Earlier `v1.0.0` and `v2.0.0` tags existed on GitHub and were never published to Packagist. They
+are withdrawn: the ecosystem restarts from a single `0.1.0` across every package.
+
+#### Added
+
+- REST API over the icon catalogue: listing, filtering, search, per-package detail, stats, raw SVG
+  delivery, and `GET /api/icons/update-status`, which surfaces core's `IconPackUpdateChecker` for
+  dashboards. Response shape mirrors `ichava:check-icon-updates --format=json`.
+- Vue 3 + Vite single-page browser with Blade views and layout components.
+- `HostCapabilities`, which adapts the middleware stack to whatever the host app provides, 
+  Sanctum plus sessions, sessions only, or a stateless host: rather than assuming one shape.
+- `SriAsset` Blade component resolving subresource-integrity hashes from a Vite manifest or from
+  disk.
+- A configurable security layer: CSP with `strict`/`nonce`/`hash` modes, HSTS, frame, referrer and
+  permissions policies, CORS, and per-route rate limits.
+
+#### Security
+
+- **Destructive cache endpoints require authorization and fail closed.** `POST
+  ichava/api/cache/clear`, `POST ichava/api/cache/rebuild` and their web equivalents shipped with
+  a rate limit and no authorization, so any caller who could reach the API could flush the icon
+  cache. `rebuildCache()` also calls `PreferenceService::clear()`, so one unauthenticated request
+  wiped every stored preference. Grant access with:
+
+  ```php
+  Gate::define('ichava.manage-cache', fn ($user) => $user->isAdmin());
+  ```
+
+  The ability is configurable at `ichava.browser.security.cache_admin.ability`. A trusted internal
+  deployment can set `…cache_admin.allow_without_gate` to `true`; it is off by default.
+- CORS defaults to `APP_URL` rather than `*`. Set `ICHAVA_API_CORS_ORIGINS=*` explicitly if you
+  need the wildcard.
+- `svg()` sanitises the icon name before emitting it in `Content-Disposition`; a name carrying a
+  quote, newline or semicolon could previously break out of the header value.
+- Request PII (IP, user agent) demoted from `info` to `debug`, and removed entirely from
+  cache-mutation logs. The audit channel is the right home for it.
+- Exception detail no longer reaches the rendered view. The full exception with trace still goes
+  to the log.
+
+#### Fixed
+
+- **The package config now loads at the key the source reads.** The file was
+  `config/ichava-browser.php` while the package short name is `browser`, so it merged at
+  `ichava.browser.ichava-browser.*` while all 27 read sites used `config('ichava-browser.*')`.
+  Every one returned `null`, which left the CSP, HSTS, frame and referrer policies, the rate
+  limits, `max_request_size` and the CORS origins inert, the CORS default above included. The
+  file is now `config/browser.php` and the key is `ichava.browser`.
+- `stats()` no longer fires three queries per registered package. Two batched `GROUP BY` queries
+  fetch all icon and term counts, reassembled in PHP.
+- The stats view no longer crashes on a missing count key or on a cache statistic that comes back
+  as a nested array.
+- The npm package is `@ichava/browser`. It was `@tusente/ichava`, a scope belonging to an
+  unrelated product, while the sibling React package is `@ichava/react-browser`.
+- `dompurify` floor raised to `^3.4.14`; everything at or below `3.4.12` carries an XSS advisory
+  where removing an `IN_PLACE` hook leaves a detached subtree executable.
+
+#### Requirements
+
+- PHP `^8.4.1 || ^8.5`, `illuminate/support` `^13.0`, `ichava/core` `^0.1`.
+- Neither `ichava/*` nor `laranail/*` is published on Packagist, so the package declares VCS
+  repository entries for core and the three laranail dependencies.
