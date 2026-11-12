@@ -33,6 +33,10 @@
 /* Likewise `zoom-in` and `zoom-out`: MotionEngine.ts spelled them as family ids, and
    tailwindcss-animate turned them into utilities. The ids come from @ichava/js-motion now. */
 @source inline("zoom-in zoom-out");
+/* The Untitled UI components the browser shares with ichava.com come from
+   @ichava/js-ui-kernel/react (react consolidation 3d), outside the source the build scans, so
+   Tailwind is pointed at them too. */
+@source '../../../node_modules/@ichava/js-ui-kernel/dist/react';
 
 @plugin 'tailwindcss-animate';
 @plugin 'tailwindcss-react-aria-components';

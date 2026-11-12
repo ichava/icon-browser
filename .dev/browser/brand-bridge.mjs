@@ -105,9 +105,11 @@ export function currentBlock(themeCss) {
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-  const themePath = join(root, 'src/styles/theme.css');
-  const uui = readFileSync(join(root, 'src/styles/uui-theme.css'), 'utf8');
+  const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
+  const themePath = join(root, 'resources/js/styles/theme.css');
+  // Untitled UI's theme is @ichava/js-ui-kernel/react's since react consolidation 3d (2026-11-12);
+  // resources/js/styles/uui-theme.css only imports it.
+  const uui = readFileSync(join(root, 'node_modules/@ichava/js-ui-kernel/dist/react/styles/uui-theme.css'), 'utf8');
   const themeCss = readFileSync(themePath, 'utf8');
   const entries = brandDependents(rootDeclarations(uui, themeCss));
   if (entries.length < 50) {
