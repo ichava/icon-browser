@@ -19,16 +19,31 @@ Relocated from the README, which is now a slim pointer.
 | Asset publish | `vendor:publish --tag=ichava::icon-browser-assets` copies the pre-built bundle into `public/vendor/ichava/`. |
 | `inject-npm-scripts` | Adds the `ichava:dev`, `ichava:build` and watch scripts to the host application's `package.json`. |
 
-## The browser UI is react-icon-browser, vendored
+## The browser UI
 
-The interface is not written here. It is `@ichava/react-icon-browser`, the single source of the
-browser UI, consumed as its built library (`npm run build:lib` there, `dist/lib`) and vendored
-under `resources/vendor/react-icon-browser`, with a `vendored.json` naming the commit it was built
-from and a hash of every file. `resources/js` is only the Inertia adapter around it:
+The browser's source lives in `resources/js`, beside the Inertia adapter that renders it. It came
+from `ichava/react-icon-browser` on 2026-11-12, as a snapshot of its `main` at `3cdbd1b` with no
+history (react consolidation 3d); that repository keeps the history. Until then the browser was
+that repository's built library, vendored under `resources/vendor/react-icon-browser`.
+
+- `resources/js/index.ts` is the browser's public surface. `IchavaBrowser.tsx`, `app/`, `boot/`,
+  `components/` (all but the six files at its top), `core/`, `hooks/`, `lib/utils/`, `modules/`,
+  `state/` and `styles/` are the browser.
+- The Untitled UI pieces it shares with ichava.com's landing (`cx`, the avatar base components,
+  radio buttons, toggle, featured icon and `uui-theme.css`) come from
+  `@ichava/js-ui-kernel/react`, pinned to `bc5120c`. Their old paths are deprecated re-exports.
+  The tabs and the dropdown stay local.
+- The standalone demo (`main.tsx`, `StandaloneApp.tsx`, `embedded.tsx`, `components/boot/`) came
+  with the snapshot and is not built here.
+- `.dev/browser/` holds the browser's build plugins, generators and the fixture catalogue its tests
+  read. `.dev/imported/react-icon-browser/` holds the rest of that repository's root files
+  (configs, docs, e2e, the standalone pages). Both are left out of the Composer archive.
+
+`resources/js` is also the Inertia adapter around the browser:
 
 | File | Role |
 |---|---|
-| `lib/browser.ts` | The one import point for the library, plus the type names the adapter derives from it |
+| `lib/browser.ts` | The adapter's one import point for the browser (`@/index`), plus the type names it derives from it |
 | `pages/Browser/Index.tsx` | Builds one browser per page with `browser().rest(...).config(...).persist(...)` and renders `IchavaBrowser` |
 | `core/InertiaCatalog.ts` | The library's `IconCatalog` port over Inertia: the first page is answered from the props, every other page is a partial reload of the same route |
 | `core/appConfig.ts` | The browser config: this package's version, licence, links and snippets (`appConfig`), merged with the host's user and features manifest through the library's `hostConfigFromProps` (`browserConfig`) |
@@ -37,11 +52,42 @@ from and a hash of every file. `resources/js` is only the Inertia adapter around
 | `hooks/useInertiaCatalog.ts`, `hooks/useFilterSync.ts` | Fold each later visit's props back into the catalog, the store's library and its filters |
 | `pages/*` (the rest) | The simple library pages (favourites, collections, history, packages, settings, stats), which render icons with the library's `SvgFidelity` |
 
-Why vendored rather than installed: the library's repository is private, so an npm git dependency
-would need a GitHub token in every CI run and in every host that rebuilds the bundle, and it would
-install `src/` without the `dist/lib` build. Vendoring the build keeps installs token-free and the
-bundle reproducible from a named commit. The cost is a manual step per library release; see
-[Release](release.md#updating-the-browser-ui).
+`npm run build:prod` builds both into the committed bundle. `vite.inertia.config.ts` compiles the
+browser's stylesheet, `styles/theme.css`, with Tailwind and scopes it to the browser's root
+(`[data-ichava-theme]`) the way the library build did, so it sets nothing on a host page;
+`ichava.scss` does not scan the browser's source. The Geist fonts are emitted from
+`resources/assets/fonts`. A UI change is now a change in this repository, tested and rebuilt here;
+see [Release](release.md#updating-the-browser-ui).
+
+### Untitled UI PRO components
+
+The browser includes individual components from Untitled UI React PRO, used under the Untitled UI
+licence as part of this product, restyled and adapted for it. They are not shipped as a UI kit or
+library. Only the components the browser uses came across: all 12 PRO files in
+react-icon-browser are reachable from `resources/js/index.ts`. They sit in five folders, which
+[LICENSE](../LICENSE) lists:
+
+| Folder | Components | Used by |
+|---|---|---|
+| `components/application/command-menus` | `command-menu.tsx` and six base components (input, footer, header, item, navigation icon, shortcut) | The command palette (`components/command/CommandPalette.tsx`) |
+| `components/application/modal-layouts` | `modal-layouts.tsx` | The browser's modals: settings, sign-in and profile, the tour, confirmations, and the team dialogs |
+| `components/application/notifications` | `notification-card.tsx` | The toaster and the notifications popover |
+| `components/application/tree-view` | `tree-view.tsx` and its `tree-view-utils.ts` | The category tree in the sidebar (`components/layout/CategoryTree.tsx`) |
+| `components/shared-assets` | `banners/notice-banner.tsx` | The cookie-consent banner (`components/consent/ConsentBanner.tsx`) |
+
+Each file opens with `// Untitled UI React PRO, used under licence; see LICENSE`.
+`resources/js/core/proLicence.test.ts` fails on a PRO file outside the listed folders, or a listed
+folder whose files lack that line. Taking these components out of this product, or into another,
+needs your own Untitled UI licence. The 20 Metronic paths in react-icon-browser (its visual
+baselines of the private Metronic pack) were not imported.
+
+### The vendored build is deprecated
+
+`resources/vendor/react-icon-browser` stays, unbuilt, with a `DEPRECATED.md`. Nothing imports it.
+One file in it is still read at run time: the `<x-ichava-icon-browser::prepaint />` component
+inlines its `prepaint.html`. `npm run build:prepaint` writes that file from
+`resources/js/boot/prepaint.html`, and a Vitest test fails while the two differ. `build:lib`,
+`sync:react-icon-browser` and `check:consumers` print where the work moved and exit 0.
 
 The look comes with the library: since the 0.1.0 restyle the browser draws Ichava's warm greys,
 the teal `#0e7c66` default accent, a 6px radius, Tabler chrome icons, square tags and tabs, flat

@@ -6,7 +6,7 @@
 
 Three badges, not four: the package is proprietary, not MIT.
 
-> The HTTP layer for the Ichava Laravel icon ecosystem: the icon browser (Inertia pages around `@ichava/react-icon-browser`), the REST API and the middleware, installed on top of `ichava/core`.
+> The HTTP layer for the Ichava Laravel icon ecosystem: the icon browser (React and Inertia pages, built from `resources/js`), the REST API and the middleware, installed on top of `ichava/core`.
 
 A licensed, proprietary package: the repository is public, the code is not open source. Targets PHP `^8.4.1 || ^8.5` on Laravel `^13`, against `ichava/core` `^0.1`. Core and the icon packs stay open source and work headless without it.
 
@@ -60,7 +60,7 @@ The docs live in this repository, under [`docs/`](docs/).
 - [Getting started](docs/getting-started.md) — the browser and your first REST call
 - [Configuration](docs/configuration.md) — every config key and what it changes
 - [Environment variables](docs/environment.md) — the `ICHAVA_BROWSER_*` surface
-- [Architecture](docs/architecture.md) — what the package ships, the vendored browser UI, the middleware stack, hybrid auth
+- [Architecture](docs/architecture.md) — what the package ships, the browser UI and its Untitled UI PRO components, the middleware stack, hybrid auth
 - [Release](docs/release.md) — how a version is cut, and how the browser UI is updated
 
 ### Reference

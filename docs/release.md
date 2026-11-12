@@ -55,24 +55,22 @@ An empty result means no consumed code moved and the constraint stays where it i
 
 The browser is published as a pre-built bundle through `vendor:publish --tag=ichava::icon-browser-assets`, so a consuming application needs no JS toolchain. That makes the build a **release-time** concern: the artifacts committed for a tag are what consumers receive.
 
-`npm run build:prod` rebuilds `public/assets/js/inertia-app.js` and `public/assets/css/inertia-app.css` from `resources/js` and the vendored library (`vite.inertia.config.ts`, self-contained). No lock file is committed, so a rebuild on another day can resolve different React or Inertia patch releases and rewrite most of the minified bundle; review the build as a whole, not as a diff.
+`npm run build:prod` rebuilds `public/assets/js/inertia-app.js` and `public/assets/css/inertia-app.css` from `resources/js`, the browser's source and its Inertia adapter (`vite.inertia.config.ts`, self-contained). No lock file is committed, so a rebuild on another day can resolve different React or Inertia patch releases and rewrite most of the minified bundle; review the build as a whole, not as a diff.
 
 ## Updating the browser UI
 
-The browser UI is `@ichava/react-icon-browser`, vendored as a build (see [Architecture](architecture.md#the-browser-ui-is-react-icon-browser-vendored)). To take a new version of it:
+The browser's source lives in `resources/js` since 2026-11-12 (see [Architecture](architecture.md#the-browser-ui)), so a UI change is made, tested and rebuilt here:
 
 ```bash
-# in react-icon-browser, on the commit to ship (main, or a tag)
-npm install && npm run build:lib
-
-# here
-npm run sync:react-icon-browser -- ../react-icon-browser
-npm install && npm run typecheck:inertia && npm run test:js && npm run build:prod
+npm install
+npm run typecheck:inertia && npm run lint && npm run test:js
+npm run build:prod          # then commit public/assets
+npm run build:prepaint      # only when resources/js/boot/prepaint.html changed
 ```
 
-The sync refuses a checkout with uncommitted source or a `dist/lib` older than its commit, and writes `resources/vendor/react-icon-browser/vendored.json`. `vendoredLibrary.test.ts` fails on any file that does not match it, so never edit the vendored files by hand. Name the library commit in the changelog entry.
+`npm run sync:react-icon-browser` and `npm run build:lib` are deprecated: they print this and exit 0. The vendored directory, `resources/vendor/react-icon-browser`, is no longer rebuilt.
 
-The vendored build and the committed bundle both contain compiled Untitled UI PRO components, used under the Untitled UI licence ([LICENSE](../LICENSE)). The repository is public (decided 2026-10-30) and the package stays proprietary. A release tag on the public repository publishes normally: `release.yml` does not gate on repository visibility. Its other safeguards stand, namely the tag-only trigger, the refusal of any ref that is not a `vX.Y.Z` tag, and the changelog section it extracts and fails closed without.
+The source and the committed bundle contain Untitled UI PRO components, used under the Untitled UI licence as part of this product ([LICENSE](../LICENSE), [Architecture](architecture.md#untitled-ui-pro-components)). The repository is public (decided 2026-10-30) and the package stays proprietary. A release tag on the public repository publishes normally: `release.yml` does not gate on repository visibility. Its other safeguards stand, namely the tag-only trigger, the refusal of any ref that is not a `vX.Y.Z` tag, and the changelog section it extracts and fails closed without.
 
 There is no `version` field in `composer.json` — the version comes from the git tag. No lock file is committed.
 

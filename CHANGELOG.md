@@ -4,6 +4,16 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
 
 ## [Unreleased]
 
+### Changed
+
+- **The browser UI's source lives in this repository** (react consolidation 3d). `ichava/react-icon-browser`'s `main` at `3cdbd1b` is imported as a snapshot with no history: its `src/` into `resources/js/`, its tooling and fixture catalogue into `.dev/browser/`, its fonts into `resources/assets/fonts/`, and its other root files into `.dev/imported/react-icon-browser/`; the 20 Metronic baseline paths are not imported. `npm run build:prod` builds the committed bundle from that source: `theme.css` is compiled with Tailwind and scoped to `[data-ichava-theme]` as the library build did, and `ichava.scss` no longer scans the browser's files. The browser's 875 Vitest tests (and 3 skipped) run here, 994 passing in all. TypeScript 6 and Tailwind ^4.3 match the source, and `typecheck:inertia` uses its stricter `tsconfig.base.json`.
+- **The shared Untitled UI pieces come from `@ichava/js-ui-kernel/react`**, pinned to `bc5120c` as in ichava.com: `cx`, `is-react-component`, the avatar base components, radio buttons, toggle, featured icon and `uui-theme.css`. Tabs and dropdown stay local.
+- **The Untitled UI PRO components are included as part of the product** (owner, 2026-11-12): the 12 the browser uses, in five folders [LICENSE](LICENSE) lists, each keeping its PRO header. See [Architecture](docs/architecture.md#untitled-ui-pro-components).
+
+### Deprecated
+
+- **`npm run build:lib`, `npm run sync:react-icon-browser`, `npm run check:consumers` and `resources/vendor/react-icon-browser`.** The scripts print where the work moved and exit 0; the directory is no longer rebuilt, and its `prepaint.html`, which the prepaint component still inlines, is written by `npm run build:prepaint`. The ten files whose code moved to the kernel are deprecated re-exports. Removing any of them needs the owner's yes.
+
 ### Fixed
 
 - **Re-vendored `ichava/react-icon-browser` at `41b0a4b`** (react-icon-browser#214): one caret for every dropdown and popover, drawn in the panel's own colours over its edge and centred on the trigger (the header menus drew none), and the "Cookies & storage" notice moves by its grip or the arrow keys, inside the window, for the session. `inertia-app.*` rebuilt with `npm run build:prod` after a fresh `npm install --no-package-lock`, as `committed-build.yml` does. `zustand` is held at `>=5.0.15 <5.1.0`, the vendored library's own range: 5.1.0 (2026-11-06) changes the type react-icon-browser publishes for `useStore`, and a fresh build that took it would no longer match the committed bundle.
