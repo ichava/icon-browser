@@ -25,3 +25,11 @@
 /.dev                   export-ignore
 /phpstan.neon.dist      export-ignore
 
+
+# The browser's source lives in resources/js since react consolidation 3d (2026-11-12). Its
+# tests and test fixtures are development-only, so the archive carries the source a host
+# rebuilds from and nothing else. Its tooling and imported root files are under /.dev above.
+/resources/js/**/*.test.ts      export-ignore
+/resources/js/**/*.test.tsx     export-ignore
+/resources/js/test              export-ignore
+/resources/vendor/react-icon-browser/DEPRECATED.md export-ignore

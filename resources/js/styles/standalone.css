@@ -1,0 +1,23 @@
+/*
+ * Standalone document only: imported by `main.tsx`, never by the library.
+ *
+ * The standalone app IS the page, so it locks the document to the viewport and lets the
+ * component root scroll its own regions. A host embedding the browser owns its
+ * document, which is why none of this is in `theme.css` (FINDINGS B1).
+ */
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: var(--bg);
+  color: var(--fg);
+}

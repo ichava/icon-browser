@@ -7,22 +7,22 @@ This package is the HTTP layer of the Ichava ecosystem: the Inertia browser page
 ## Package-specific notes
 
 - PHP tests run with `vendor/bin/pest`; style is `composer pint`, analysis `composer analyse`.
-- The browser UI is **not edited here.** It is `@ichava/react-icon-browser`, vendored as a build under `resources/vendor/react-icon-browser`. Fix the UI in that repository, then take the new build with `npm run sync:react-icon-browser` ([Release](docs/release.md#updating-the-browser-ui)). Never hand-edit the vendored files; `vendoredLibrary.test.ts` fails on any change its manifest does not record.
-- `resources/js` is the Inertia adapter around it ([Architecture](docs/architecture.md#the-browser-ui-is-react-icon-browser-vendored)). Frontend checks: `npm install`, `npm run typecheck:inertia`, `npm run test:js`.
+- The browser UI is **edited here.** Its source moved from `ichava/react-icon-browser` into `resources/js` on 2026-11-12, beside the Inertia adapter around it ([Architecture](docs/architecture.md#the-browser-ui)). Frontend checks: `npm install`, `npm run typecheck:inertia`, `npm run lint`, `npm run test:js`.
+- `resources/vendor/react-icon-browser` is the old vendored build, deprecated and no longer rebuilt. Never hand-edit it; `vendoredLibrary.test.ts` fails on any change its manifest does not record. Its `prepaint.html` is still inlined by the Blade component, and `npm run build:prepaint` writes it from the source.
 - Production build: `npm run build:prod`. Output goes to `public/assets/` (committed) and is published via `vendor:publish --tag=ichava::icon-browser-assets`.
-- The vendored build and the bundle contain compiled Untitled UI PRO components, used under the Untitled UI licence ([LICENSE](LICENSE)). Never commit react-icon-browser's source, a source map or `sourcesContent` here, and never copy the vendored build into another package.
+- The source and the bundle contain Untitled UI PRO components, used under the Untitled UI licence as part of this product, not as a kit ([LICENSE](LICENSE), [Architecture](docs/architecture.md#untitled-ui-pro-components)). Add a PRO component only when the browser uses it, keep its header line, and list a new PRO folder in LICENSE; `proLicence.test.ts` checks both. Never copy them into another package, and never commit a source map or `sourcesContent` under `public/`.
 - Class short names use the constant convention: `IconBrowserServiceProvider`, `IchavaTestIconComponent`, etc. Browser-only classes live under the `Simtabi\Laranail\Ichava\IconBrowser\` namespace.
 - Conventional Commits (`feat:`, `fix:`, `docs:`, `refactor:`, `perf:`, `test:`).
 
-## The browser UI moves with react-icon-browser
+## A browser UI change ships with its bundle
 
-A change to `@ichava/react-icon-browser` lands everywhere it is used in the same piece of work:
+A change to the browser in `resources/js` lands everywhere it is used in the same piece of work:
 
-- here, re-vendored with `npm run sync:react-icon-browser`, then `npm run build:prod`;
+- here, with `npm run build:prod` and the rebuilt `public/assets` committed (`committed-build.yml` fails otherwise);
 - in the local `demos/ichava-app`, with `composer update`;
 - in the docs that describe the change.
 
-react-icon-browser's `release-please.yml` enforces it. Its `npm run check:consumers` step reads `resources/vendor/react-icon-browser/vendored.json` from this repository's `main` and refuses to cut the next release while that copy is older than the newest tag.
+Until 2026-11-12 the UI came from `ichava/react-icon-browser`, whose `check:consumers` step held its release until this repository had re-vendored it. That check is deprecated here (it prints a pointer and exits 0).
 
 ## Releases and versioning
 

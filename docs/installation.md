@@ -93,9 +93,9 @@ php artisan ichava::icon-browser.inject-scripts
 Adds `ichava:build`, `ichava:build:prod`, and `ichava:watch` to your host app's `package.json`. Run `npm run ichava:watch` to rebuild on change, or `npm run ichava:build:prod` for a production bundle.
 
 You only need this if you rebuild the bundle. End users running pre-built assets do not. A rebuild
-needs no access beyond this package: the browser UI (`@ichava/react-icon-browser`) is vendored in
-`resources/vendor/react-icon-browser`, so `npm install` reaches only the public npm registry and
-GitHub's public `ichava/js-ui-kernel`.
+needs no access beyond this package: the browser UI's source is in `resources/js`, so `npm install`
+reaches only the public npm registry and GitHub's public `ichava/js-ui-kernel` and
+`ichava/js-motion`.
 
 ## What you get on top of core
 

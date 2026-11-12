@@ -55,9 +55,9 @@ describe('InertiaCatalog.listIcons', () => {
     const page = await catalog.listIcons({ ...defaults, page: 2, search: 'a' });
 
     expect(visit).toHaveBeenCalledTimes(1);
-    expect(visit.mock.calls[0][0]).toBe('/ichava/icons');
+    expect(visit.mock.calls[0]![0]).toBe('/ichava/icons');
     // A one-letter search is dropped, as IconFilterRequest (min:2) would reject it.
-    expect(visit.mock.calls[0][1]).toMatchObject({ page: 2, search: undefined, per_page: 60 });
+    expect(visit.mock.calls[0]![1]).toMatchObject({ page: 2, search: undefined, per_page: 60 });
     expect(page.items.map((i) => i.id)).toEqual([61]);
     expect(page.page).toBe(2);
 

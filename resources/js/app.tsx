@@ -4,10 +4,10 @@ import { useEffect, type ReactNode } from 'react';
 import { dismissPrepaint } from '@/core/prepaint';
 import { NavigationLoader } from '@/components/NavigationLoader';
 import '../assets/styles/ichava.scss';
-// The browser shell's stylesheet, prebuilt by @ichava/react-icon-browser (vendored under
-// resources/vendor/react-icon-browser). It sets nothing on html or body; its tokens are
-// scoped to the browser's root, and its fonts sit next to it.
-import '@ichava/react-icon-browser/styles.css';
+// The browser shell's stylesheet, built from its source here (vite.inertia.config.ts compiles it
+// with Tailwind and scopes it to the browser's root, as the library build did). It sets nothing
+// on html or body.
+import '@/styles/theme.css';
 import '@/styles/pages.css';
 
 // Removes the layout's static loader after the first commit, on every page.

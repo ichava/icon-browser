@@ -108,7 +108,7 @@ one keeps the browser's default. The page receives them as the browser's `snippe
 
 A template replaces a built-in tab or, when its id is in `tabs`, adds one. Tokens are bare words in
 double braces, such as `{{path}}`, `{{class}}`, `{{leaf}}`, `{{dir}}` and `{{svg}}` (the full list
-is in react-icon-browser's `docs/configuration.md`). Blade's own `{{ $var }}` passes through
+is in the browser's own configuration guide, kept with its imported root files at `.dev/imported/react-icon-browser/docs/configuration.md`). Blade's own `{{ $var }}` passes through
 untouched.
 
 `class_name` also sets the class in the `blade_clean`, `blade_generic` and `helper` strings that

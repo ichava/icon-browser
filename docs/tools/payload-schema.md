@@ -19,9 +19,9 @@
 | `format` and the root `x-ichava-formats` | The code-tab and copy-format registry |
 | `*Response` | The `{ success, data, message }` envelope around each REST document |
 
-Its `$id` is the file's published address, `https://raw.githubusercontent.com/ichava/icon-browser/main/resources/schema/icon-browser.schema.json`, which serves the schema itself. Two repositories keep a copy instead of reading a sibling checkout: react-icon-browser (`schema/icon-browser.schema.json`, with the commit and SHA-256 in `schema/source.json`) and js-icon-components (`vendor/icon-browser.schema.json`, pinned by digest in `tests/vendored.test.ts`). Each fails when its copy is edited, and fails when this repository is checked out beside it and the copy has drifted from this file.
+Its `$id` is the file's published address, `https://raw.githubusercontent.com/ichava/icon-browser/main/resources/schema/icon-browser.schema.json`, which serves the schema itself. js-icon-components keeps a copy instead of reading a sibling checkout (`vendor/icon-browser.schema.json`, pinned by digest in `tests/vendored.test.ts`); it fails when its copy is edited, and when this repository is checked out beside it and the copy has drifted from this file. react-icon-browser kept one too until its source moved here (2026-11-12); the browser now reads this file itself.
 
-react-icon-browser generates its TypeScript types from this file. `tests/Feature/PayloadSchemaTest.php` validates real responses and page props against it, so a renamed or dropped field fails the suite.
+The browser generates its TypeScript types from this file (`.dev/browser/schema-types.mjs` writes `resources/js/core/api/schema.gen.ts`; `schemaTypes.test.ts` fails when they differ). `tests/Feature/PayloadSchemaTest.php` validates real responses and page props against it, so a renamed or dropped field fails the suite.
 
 Bump the major version for a removed or retyped field and the minor for an added one, in `PayloadSchema::VERSION` and the file's `version` together.
 
@@ -41,7 +41,7 @@ Bump the major version for a removed or retyped field and the minor for an added
 
 `x-ichava-formats` is an ordered array of the 25 code-tab and copy-format ids, and its order is the tab order. Each entry is `{ id, label, group, delivery, kinds, copy, defaultCopy }`, plus `native: true` on the two native asset exports (`flutter` and `swiftui`, which ship the original `.svg` files). Every asset export carries the SVG itself: the ecosystem is SVG only. `delivery` says where the text comes from: `laravel` (a field this package serves, or a Laravel component), `client` (the browser's snippet factory), `generated` (a package built from the icon; the factory's snippet stands in until it ships) or `asset` (a file or archive the export writes, not text a tab copies). `defaultCopy` marks the six formats the toolbar copies by default (`svg`, `helper`, `blade`, `vue`, `react`, `name`).
 
-`$defs/format` is the same ids as an enum. `Support\FormatRegistry` reads the registry for PHP, and `snippets.tabs` is checked against it: an id that is neither a format nor one of the host's `snippets.templates` is dropped from what the browser is sent, and logged. `tests/Feature/FormatRegistryTest.php` fails if the enum and the registry disagree, or if a `laravel` format has no source field on an icon or an illustration. react-icon-browser vendors the schema and checks its tabs against the same list.
+`$defs/format` is the same ids as an enum. `Support\FormatRegistry` reads the registry for PHP, and `snippets.tabs` is checked against it: an id that is neither a format nor one of the host's `snippets.templates` is dropped from what the browser is sent, and logged. `tests/Feature/FormatRegistryTest.php` fails if the enum and the registry disagree, or if a `laravel` format has no source field on an icon or an illustration. The browser checks its tabs against the same list.
 
 ---
 

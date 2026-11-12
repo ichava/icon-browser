@@ -6,30 +6,43 @@ whole or in part, without the prior written permission of Simtabi LLC.
 
 Untitled UI PRO
 ---------------
-The browser interface this package ships is @ichava/react-icon-browser, which
-includes components from Untitled UI React PRO, used under the Untitled UI
-licence (https://www.untitledui.com/license). Those components are compiled
-into:
+The browser interface of this product includes individual components from
+Untitled UI React PRO, used under the Untitled UI licence
+(https://www.untitledui.com/license). They are part of this end product,
+restyled and adapted for it; they are not distributed as a UI kit or library,
+and only the components the browser uses are included (decided by Simtabi
+LLC, 2026-11-12). Their source lives under:
 
-- resources/vendor/react-icon-browser (the vendored library build)
-- public/assets/js/inertia-app.js and public/assets/css/inertia-app.css (the
-  committed browser bundle, published to host applications)
+- resources/js/components/application/command-menus
+- resources/js/components/application/modal-layouts
+- resources/js/components/application/notifications
+- resources/js/components/application/tree-view
+- resources/js/components/shared-assets
 
-That licence does not permit exposing their source code publicly or
-redistributing them as a UI kit or library. This repository must therefore
-remain private, and the package may be installed only by holders of a licence
-from Simtabi LLC.
+and each file opens with a comment saying so. They are also compiled into:
+
+- public/assets/js/inertia-app.js and the chunks beside it, and
+  public/assets/css/inertia-app.css (the committed browser bundle, published
+  to host applications)
+- resources/vendor/react-icon-browser (the earlier vendored library build,
+  deprecated and no longer built)
+
+The Untitled UI licence does not permit redistributing these components on
+their own, or as a kit or library. Taking them out of this product, or using
+them in another, needs your own Untitled UI licence.
 
 Third-party components
 ----------------------
 Third-party code in this repository stays under its own licence:
 
-- Untitled UI React (free components, compiled into the same build): MIT
-  License, Copyright (c) Untitled UI.
+- Untitled UI React (free components, under resources/js/components/base,
+  resources/js/components/foundations and resources/js/components/application
+  except the PRO folders listed above, and those taken from
+  @ichava/js-ui-kernel/react): MIT License, Copyright (c) Untitled UI.
   https://github.com/untitleduico/react/blob/main/LICENSE
-- Geist and Geist Mono fonts (public/assets/fonts and
+- Geist and Geist Mono fonts (resources/assets/fonts, public/assets/fonts and
   resources/vendor/react-icon-browser/fonts): SIL Open Font License 1.1,
-  Copyright (c) Vercel. See public/assets/fonts/LICENSE.txt.
+  Copyright (c) Vercel. See resources/assets/fonts/LICENSE.txt.
 - Icon assets under resources/assets/svg keep the licence of their upstream
   icon set.
 - Ichava's open-source packages this package depends on (ichava/core and the

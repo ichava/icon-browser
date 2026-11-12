@@ -18,6 +18,22 @@
    default theme, a second and different definition of each. */
 @source not "../../vendor/react-icon-browser";
 
+/* The browser's own source lives in resources/js beside this package's pages since react
+   consolidation 3d (2026-11-12). Its stylesheet (resources/js/styles/theme.css) generates its
+   classes against its own theme, scoped to its root, so this one must not scan it either: the
+   same class names would come out a second time, global and against this file's theme. What is
+   left is the package's own adapter: app.tsx, pages/, the six components at the top of
+   components/, and its own files in core/, hooks/ and lib/, which render no markup (measured
+   2026-11-12: leaving them out drops one class, `invert`, which only a test's text named). */
+@source not "../../js/*.{ts,tsx}";
+@source not "../../js/{app,boot,core,hooks,lib,modules,state,styles,test}";
+@source not "../../js/components/*/**";
+@source "../../js/app.tsx";
+/* The browser's imported tooling, fixtures and retired root files (.dev/browser,
+   .dev/imported), and the fonts' README, are not this package's markup. */
+@source not "../../../.dev";
+@source not "../fonts";
+
 @plugin "tailwindcss-animate";
 
 /* Custom Animations */
