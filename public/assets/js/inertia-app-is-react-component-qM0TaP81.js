@@ -1,0 +1,1 @@
+var e=e=>typeof e==`function`,t=e=>typeof e==`function`&&e.prototype&&(!!e.prototype.isReactComponent||!!e.prototype.render),n=e=>typeof e==`object`&&!!e&&e.$$typeof.toString()===`Symbol(react.forward_ref)`,r=r=>e(r)||n(r)||t(r);export{r as t};
