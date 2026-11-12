@@ -35,7 +35,8 @@ import { fileURLToPath } from 'node:url';
 import { blockedReason } from './blocked-icon-sets.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const APP = join(HERE, '..');
+// The repository root: this moved from react-icon-browser's scripts/ to .dev/browser/ (2026-11-12).
+const APP = join(HERE, '..', '..');
 
 const argv = process.argv.slice(2);
 const argOf = (name, fallback) => {
@@ -43,7 +44,7 @@ const argOf = (name, fallback) => {
   return i >= 0 && argv[i + 1] ? argv[i + 1] : fallback;
 };
 const WORKSPACE = argOf('workspace', join(APP, '..'));
-const PUBLIC = argOf('public', join(APP, 'public'));
+const PUBLIC = argOf('public', join(HERE, 'public'));
 const PER_PACK = Number(argOf('per-pack', '40'));
 const GENERATED = argOf('date', new Date().toISOString().slice(0, 10));
 

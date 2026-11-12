@@ -3,7 +3,7 @@ import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, 
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { BLOCKED_PACKAGES, blockedReason } from '../../scripts/blocked-icon-sets.mjs';
+import { BLOCKED_PACKAGES, blockedReason } from '../../../.dev/browser/blocked-icon-sets.mjs';
 
 /**
  * The fixture generator excludes a blocked pack whole (`scripts/blocked-icon-sets.mjs`):
@@ -17,7 +17,7 @@ import { BLOCKED_PACKAGES, blockedReason } from '../../scripts/blocked-icon-sets
  * when it was changed).
  */
 
-const GENERATOR = join(__dirname, '..', '..', 'scripts', 'generate-fixture.mjs');
+const GENERATOR = join(__dirname, '..', '..', '..', '.dev', 'browser', 'generate-fixture.mjs');
 const SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 0h24v24H0z"/></svg>';
 const METRONIC = 'ichava/icon-sets-metronic';
 const BUNDLED = 'ichava/icon-sets-bundled';

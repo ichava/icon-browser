@@ -8,10 +8,10 @@ import { IchavaBrowser } from '@/IchavaBrowser';
 import { resolveConfig } from '@/core/config';
 import { createBrowserStore } from '@/store';
 import { catalog } from '@/test/fixtures';
-import { insertAfterBody, prepaintFragment } from '../../scripts/prepaint.mjs';
+import { insertAfterBody, prepaintFragment } from '../../../.dev/browser/prepaint.mjs';
 import { dismissPrepaint, PREPAINT_ID } from './prepaint';
 import { Bootsplash } from '@/components/boot/Bootsplash';
-import { siblingPath } from '../../scripts/siblings.mjs';
+import { siblingPath } from '../../../.dev/browser/siblings.mjs';
 import { BOOT_DEFAULTS } from '@/components/boot/bootsplashConfig';
 
 /**
@@ -38,7 +38,7 @@ describe('prepaint fragment', () => {
   });
 
   it('is injected after the real <body>, not inside a comment that mentions one', () => {
-    const html = readFileSync(join(process.cwd(), 'index.html'), 'utf8');
+    const html = readFileSync(join(process.cwd(), '.dev/imported/react-icon-browser/index.html'), 'utf8');
     expect(html, 'the regression needs a comment naming <body> before the tag').toMatch(/<!--[\s\S]*<body>[\s\S]*-->[\s\S]*<body/);
     const out = insertAfterBody(html, '<i id="probe"></i>');
     const doc = new DOMParser().parseFromString(out, 'text/html');
@@ -122,7 +122,7 @@ describe('dismissPrepaint', () => {
 describe('prepaint.html and its landing-page twin', () => {
   const PREPAINT_BODY_SHA256 = 'a5c9d186b81a1a1e3020991bbdec8131e087592c01a8d62c6d9a86241e7b43a2';
   const body = (s: string) => s.replace(/^\s*<!--[\s\S]*?-->\s*/, '');
-  const own = body(readFileSync(join(process.cwd(), 'src/boot/prepaint.html'), 'utf8'));
+  const own = body(readFileSync(join(process.cwd(), 'resources/js/boot/prepaint.html'), 'utf8'));
   const twin = siblingPath('ichava/react-landingpage', 'src/boot/prepaint.html');
 
   it('has the body digest both twins pin', () => {

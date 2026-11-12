@@ -19,7 +19,7 @@ import { existsSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const root = join(dirname(fileURLToPath(import.meta.url)), '..');
+const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 
 /** The directory holding the ichava checkouts side by side. */
 export function packagesDir() {

@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
-import { siblingPath } from '../../../scripts/siblings.mjs';
+import { siblingPath } from '../../../../.dev/browser/siblings.mjs';
 
 import { FORMATS, type Format } from '@/core/api/schema.gen';
 import { CONFIG_DEFAULTS } from '@/core/config';

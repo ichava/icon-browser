@@ -18,9 +18,11 @@ import { describe, expect, it } from 'vitest';
  * inspecting nothing.
  */
 
-const ROOT = join(__dirname, '..');
-const DIRS = ['src'];
-const EXTRA = ['index.html', 'embedded.html'];
+// The repository root. The source is resources/js since react consolidation 3d (2026-11-12), and
+// the standalone app's two pages wait with the other imported root files.
+const ROOT = join(__dirname, '..', '..');
+const DIRS = ['resources/js'];
+const EXTRA = ['.dev/imported/react-icon-browser/index.html', '.dev/imported/react-icon-browser/embedded.html'];
 const EXT = /\.(tsx?|css|html)$/;
 const MIN_FILES = 150;
 const MAX_WEIGHT = 600;

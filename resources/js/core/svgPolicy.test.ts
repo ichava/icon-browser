@@ -22,7 +22,7 @@ describe('vendored SVG policy', () => {
   it('has not drifted from the digest it was synced at', () => {
     // Resolved from the package root (vitest's cwd) rather than import.meta.url,
     // which is not a file: URL under vitest and throws.
-    const bytes = readFileSync('src/core/svg-policy.json');
+    const bytes = readFileSync('resources/js/core/svg-policy.json');
 
     expect(createHash('sha256').update(bytes).digest('hex')).toBe(PINNED_SHA256);
   });

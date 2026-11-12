@@ -1,8 +1,8 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { basename, dirname } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { OUTPUT_PATH, SCHEMA_PATH, SOURCE_PATH, formatsBlock, generate, schemaDigest, toType } from '../../../scripts/schema-types.mjs';
-import { siblingPath } from '../../../scripts/siblings.mjs';
+import { OUTPUT_PATH, SCHEMA_PATH, SOURCE_PATH, formatsBlock, generate, schemaDigest, toType } from '../../../../.dev/browser/schema-types.mjs';
+import { siblingPath } from '../../../../.dev/browser/siblings.mjs';
 import { FORMATS, PAYLOAD_SCHEMA_VERSION } from './schema.gen';
 
 const schema = JSON.parse(readFileSync(SCHEMA_PATH, 'utf8')) as { version: string; $defs: Record<string, unknown> };

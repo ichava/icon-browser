@@ -7,8 +7,8 @@ import { describe, expect, it } from 'vitest';
  * nothing but rendering is meant to be, so this holds the line.
  */
 describe('IchavaBrowser keeps to rendering', () => {
-  const component = readFileSync('src/IchavaBrowser.tsx', 'utf8');
-  const effects = readFileSync('src/app/mountEffects.ts', 'utf8');
+  const component = readFileSync('resources/js/IchavaBrowser.tsx', 'utf8');
+  const effects = readFileSync('resources/js/app/mountEffects.ts', 'utf8');
 
   it('declares no effect of its own', () => {
     expect(component.length).toBeGreaterThan(1000);

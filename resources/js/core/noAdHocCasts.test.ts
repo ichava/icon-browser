@@ -10,7 +10,7 @@ import { describe, expect, it } from 'vitest';
 const root = join(__dirname, '..');
 const walk = (d: string): string[] =>
   readdirSync(d, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? walk(join(d, e.name)) : [join(d, e.name)]));
-const sources = walk(root).filter((f) => /\.tsx?$/.test(f) && !/\.test\.tsx?$/.test(f) && !f.includes(`${join('src', 'test')}`));
+const sources = walk(root).filter((f) => /\.tsx?$/.test(f) && !/\.test\.tsx?$/.test(f) && !f.includes(`${join('js', 'test')}`));
 
 describe('ad hoc casts', () => {
   it('reads the source tree', () => {

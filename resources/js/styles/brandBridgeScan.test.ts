@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 // @ts-expect-error -- a plain .mjs build script with no declaration file.
-import { declarations } from '../../scripts/brand-bridge.mjs';
+import { declarations } from '../../../.dev/browser/brand-bridge.mjs';
 
 /**
  * brand-bridge's declaration scan is one linear pass. It replaced

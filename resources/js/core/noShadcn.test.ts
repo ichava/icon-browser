@@ -7,7 +7,7 @@ import { join, resolve } from 'node:path';
  * corrected their defaults were removed; this keeps them from drifting back in through a
  * copied snippet or a `shadcn add`. CHANGELOG history is not scanned.
  */
-const ROOT = resolve(process.cwd(), 'src');
+const ROOT = resolve(process.cwd(), 'resources/js');
 const FORBIDDEN = /shadcn|\bcmdk\b|@radix-ui|class-variance-authority|data-slot=/i;
 
 function sources(dir: string): string[] {

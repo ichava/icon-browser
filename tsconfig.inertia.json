@@ -1,5 +1,6 @@
 {
-    "extends": "./tsconfig.json",
+    "//": "The browser's source came from react-icon-browser with its compiler settings (tsconfig.base.json, a copy of js-ui-kernel's config/tsconfig.base.json); since react consolidation 3d (2026-11-12) the whole of resources/js is checked under them, the adapter included.",
+    "extends": ["./tsconfig.base.json", "./tsconfig.json"],
     "compilerOptions": {
         "target": "ES2022",
         "module": "ESNext",

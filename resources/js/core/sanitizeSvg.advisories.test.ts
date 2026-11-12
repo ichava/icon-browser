@@ -27,7 +27,7 @@ function atLeast(v: string, floor: string): boolean {
 
 describe('DOMPurify advisories (<=3.4.16)', () => {
   it('resolves a DOMPurify outside the affected range', () => {
-    const installed = JSON.parse(readFileSync(join(__dirname, '..', '..', 'node_modules', 'dompurify', 'package.json'), 'utf8')).version as string;
+    const installed = JSON.parse(readFileSync(join(__dirname, '..', '..', '..', 'node_modules', 'dompurify', 'package.json'), 'utf8')).version as string;
     expect(atLeast(installed, '3.4.17'), `installed ${installed}`).toBe(true);
     // The instance the sanitiser actually builds reports the same version.
     expect(createDOMPurify(window).version).toBe(installed);

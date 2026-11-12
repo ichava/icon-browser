@@ -10,8 +10,8 @@ import { join } from 'node:path';
  * token fails here until the block is regenerated.
  */
 
-const root = join(__dirname, '..', '..');
-const themeCss = readFileSync(join(root, 'src/styles/theme.css'), 'utf8');
+const root = join(__dirname, '..', '..', '..');
+const themeCss = readFileSync(join(root, 'resources/js/styles/theme.css'), 'utf8');
 const block = themeCss.slice(themeCss.indexOf('/* brand-bridge:begin'), themeCss.indexOf('/* brand-bridge:end */'));
 
 describe('brand bridge', () => {
@@ -44,7 +44,7 @@ describe('brand bridge', () => {
 
   it('matches what the generator derives from uui-theme.css', () => {
     expect(() =>
-      execFileSync(process.execPath, [join(root, 'scripts/brand-bridge.mjs'), '--check'], { stdio: 'pipe' }),
+      execFileSync(process.execPath, [join(root, '.dev/browser/brand-bridge.mjs'), '--check'], { stdio: 'pipe' }),
     ).not.toThrow();
   });
 });

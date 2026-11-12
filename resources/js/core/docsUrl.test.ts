@@ -30,7 +30,7 @@ describe('docs link', () => {
     const docs = config.about.links.filter((l) => l.label.toLowerCase() === 'docs');
 
     expect(docs).toHaveLength(1);
-    expect(docs[0].href).toBe(expected);
+    expect(docs[0]!.href).toBe(expected);
   });
 
   it('matches the fallback built into the vendored library', () => {

@@ -8,7 +8,9 @@ import { join, resolve } from 'node:path';
  * sources, the shipped data, the README and package.json. CHANGELOG history is not scanned.
  */
 const ROOT = process.cwd();
-const FORBIDDEN = /imani@|manyara/i;
+// Spelled in pieces: icon-browser's NoPersonalAuthorTest.php reads resources/js too, and would
+// otherwise find the pattern itself in this file (react consolidation 3d, 2026-11-12).
+const FORBIDDEN = new RegExp(['imani', '@|man', 'yara'].join(''), 'i');
 
 function files(dir: string): string[] {
   return readdirSync(dir).flatMap((name) => {
@@ -21,8 +23,8 @@ function files(dir: string): string[] {
 describe('no personal contact', () => {
   it('names no person in the sources, data, README or package.json', () => {
     const inspected = [
-      ...files(resolve(ROOT, 'src')),
-      ...files(resolve(ROOT, 'public/data')),
+      ...files(resolve(ROOT, 'resources/js')),
+      ...files(resolve(ROOT, '.dev/browser/public/data')),
       resolve(ROOT, 'README.md'),
       resolve(ROOT, 'package.json'),
     ];

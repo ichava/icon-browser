@@ -9,8 +9,9 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
-const ROOT = join(__dirname, '..', '..');
-const SKIP = new Set(['node_modules', 'dist', '.git', 'coverage', 'playwright-report', 'test-results', 'public']);
+// The repository root (resources/js/test is three levels down since react consolidation 3d).
+const ROOT = join(__dirname, '..', '..', '..');
+const SKIP = new Set(['node_modules', 'dist', '.git', 'coverage', 'playwright-report', 'test-results', 'public', 'vendor']);
 const EXT = /\.(?:[cm]?[jt]sx?|css|html)$/;
 const SELF = relative(ROOT, __filename);
 const NAME = ['@untitledui', 'icons'].join('/');

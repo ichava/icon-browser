@@ -32,15 +32,18 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-export const SCHEMA_PATH = join(root, 'schema/icon-browser.schema.json');
-export const SOURCE_PATH = join(root, 'schema/source.json');
+// Moved from react-icon-browser's scripts/ (react consolidation 3d, 2026-11-12). The schema is
+// this repository's own now, resources/schema/; source.json, the record of the copy
+// react-icon-browser vendored, stays with the imported root files.
+const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
+export const SCHEMA_PATH = join(root, 'resources/schema/icon-browser.schema.json');
+export const SOURCE_PATH = join(root, '.dev/imported/react-icon-browser/schema/source.json');
 
 /** The SHA-256 of the vendored schema copy, as recorded in schema/source.json. */
 export function schemaDigest() {
   return createHash('sha256').update(readFileSync(SCHEMA_PATH)).digest('hex');
 }
-export const OUTPUT_PATH = join(root, 'src/core/api/schema.gen.ts');
+export const OUTPUT_PATH = join(root, 'resources/js/core/api/schema.gen.ts');
 
 /** Keywords that describe a value. Anything else in a schema node fails the run. */
 const KNOWN = new Set([

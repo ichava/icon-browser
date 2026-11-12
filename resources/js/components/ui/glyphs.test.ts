@@ -17,8 +17,8 @@ import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { GLYPH } from './glyphMap';
 
-const ROOT = join(__dirname, '..', '..', '..');
-const SRC = join(ROOT, 'src');
+const ROOT = join(__dirname, '..', '..', '..', '..');
+const SRC = join(ROOT, 'resources/js');
 
 function walk(dir: string): string[] {
   const out: string[] = [];

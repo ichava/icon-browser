@@ -41,7 +41,7 @@ const shape = (svg: string): string[] =>
         .join(' ')}]`,
   );
 
-const fixture = (name: string): string => readFileSync(`src/test/fixtures/svg/${name}`, 'utf8');
+const fixture = (name: string): string => readFileSync(`resources/js/test/fixtures/svg/${name}`, 'utf8');
 
 const escapeAttr = (v: string): string =>
   v.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');

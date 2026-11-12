@@ -14,8 +14,11 @@ import { describe, expect, it } from 'vitest';
  * without Docker.
  */
 const root = process.cwd();
-const script = resolve(root, 'scripts/visual-linux.sh');
-const pkg = JSON.parse(readFileSync(resolve(root, 'package.json'), 'utf8')) as { scripts: Record<string, string> };
+// The standalone app's Playwright tooling moved to .dev/browser/ with react consolidation 3d
+// (2026-11-12), and its npm scripts stay in the imported package.json until its e2e suite is
+// ported; this checks them where they are.
+const script = resolve(root, '.dev/browser/visual-linux.sh');
+const pkg = JSON.parse(readFileSync(resolve(root, '.dev/imported/react-icon-browser/package.json'), 'utf8')) as { scripts: Record<string, string> };
 
 function fakeCheckout(playwrightExit: number, args: string[] = []) {
   const base = mkdtempSync(join(tmpdir(), 'visual-linux-'));
@@ -83,7 +86,7 @@ describe('visual:linux', () => {
     expect(pkg.scripts['visual:linux']).toBe('sh scripts/linux.sh visual-update');
     expect(pkg.scripts['visual:linux:check']).toBe('sh scripts/linux.sh visual-check');
     expect(pkg.scripts['e2e:linux']).toBe('sh scripts/linux.sh e2e');
-    const wrapper = readFileSync(resolve(root, 'scripts/linux.sh'), 'utf8');
+    const wrapper = readFileSync(resolve(root, '.dev/browser/linux.sh'), 'utf8');
     expect(wrapper).toMatch(/-v "\$PWD":\/src /);
     expect(wrapper).toMatch(/sh \/src\/scripts\/visual-linux\.sh "\$mode" "\$@"/);
   });

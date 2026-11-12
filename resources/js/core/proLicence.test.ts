@@ -9,13 +9,14 @@ import { join } from 'node:path';
  * missing its header, fails here rather than being found later by a reader.
  */
 
-const root = join(__dirname, '..', '..');
+// The repository root. The source sits in resources/js since react consolidation 3d (2026-11-12).
+const root = join(__dirname, '..', '..', '..');
 const HEADER = '// Untitled UI React PRO, used under licence; see LICENSE';
 
 function proFolders(): string[] {
   const text = readFileSync(join(root, 'LICENSE'), 'utf8');
   const section = text.slice(text.indexOf('Untitled UI PRO'), text.indexOf('Third-party components'));
-  return [...section.matchAll(/^- (src\/\S+)$/gm)].map((m) => m[1]!);
+  return [...section.matchAll(/^- (resources\/js\/\S+)$/gm)].map((m) => m[1]!);
 }
 
 function files(dir: string): string[] {
@@ -39,7 +40,7 @@ describe('Untitled UI PRO licence notices', () => {
   });
 
   it('no file outside the listed folders carries the PRO header', () => {
-    const stray = files(join(root, 'src')).filter(
+    const stray = files(join(root, 'resources/js')).filter(
       (f) => readFileSync(f, 'utf8').startsWith(HEADER) && !folders.some((d) => f.startsWith(join(root, d))),
     );
     expect(stray).toEqual([]);

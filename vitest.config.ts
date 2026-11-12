@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs'
 import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 import { fileURLToPath, URL } from 'node:url'
@@ -16,7 +17,11 @@ import { fileURLToPath, URL } from 'node:url'
  * reason. `V50` in .claude/audits/AUDIT.md. If you change this line, run the
  * positive assertions in sanitizeSvg.test.ts and check they still pass.
  */
+/** package.json's version, for the browser's `config.meta.version`, as vite.inertia.config.ts does. */
+const VERSION = (JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8')) as { version: string }).version
+
 export default defineConfig({
+    define: { __ICHAVA_BROWSER_VERSION__: JSON.stringify(VERSION) },
     plugins: [react()],
     resolve: {
         alias: {

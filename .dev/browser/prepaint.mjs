@@ -13,9 +13,9 @@ import { fileURLToPath } from 'node:url';
 // the case under vitest's jsdom environment. Every script here runs from that root.
 function sourcePath() {
   try {
-    return fileURLToPath(new URL('../src/boot/prepaint.html', import.meta.url).href);
+    return fileURLToPath(new URL('../../resources/js/boot/prepaint.html', import.meta.url).href);
   } catch {
-    return join(process.cwd(), 'src/boot/prepaint.html');
+    return join(process.cwd(), 'resources/js/boot/prepaint.html');
   }
 }
 

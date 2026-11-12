@@ -9,7 +9,7 @@ import { MESSAGES, translate, type Locale } from './core/i18n';
 import { play, MOTION_PRESETS } from './core/MotionEngine';
 import { createBrowserStore } from './store';
 import { catalog } from './test/fixtures';
-import pkg from '../package.json';
+import pkg from '../../package.json';
 
 /**
  * The gaps found by the A6 follow-up review (ichava `.claude/design/react-ui/audits/a6/A6-gaps.md`), one
@@ -172,7 +172,7 @@ describe('G11: no English left in the other locales', () => {
     for (const loc of Object.keys(MESSAGES) as Locale[]) for (const k of wanted) expect(MESSAGES[loc]?.[k], `${loc} ${k}`).toBeTruthy();
   });
   it('no toast or confirm is written with an English literal', () => {
-    for (const f of ['src/hooks/useShortcuts.ts', 'src/hooks/useClipboard.ts']) {
+    for (const f of ['resources/js/hooks/useShortcuts.ts', 'resources/js/hooks/useClipboard.ts']) {
       const src = readFileSync(f, 'utf8');
       expect(src, f).not.toMatch(/showToast\(\s*'[A-Z]/);
       expect(src, f).not.toMatch(/(title|body|confirmLabel):\s*'[A-Z]/);
@@ -183,19 +183,19 @@ describe('G11: no English left in the other locales', () => {
 describe('G12/G13: no stale literals', () => {
   it('the version defaults to this package\'s version, and the licence is read from config', () => {
     expect(CONFIG_DEFAULTS.meta.version).toBe(pkg.version);
-    for (const f of ['src/components/settings/SettingsDialog.tsx', 'src/components/about/AboutDialog.tsx', 'src/core/boot.ts']) {
+    for (const f of ['resources/js/components/settings/SettingsDialog.tsx', 'resources/js/components/about/AboutDialog.tsx', 'resources/js/core/boot.ts']) {
       expect(readFileSync(f, 'utf8'), f).not.toMatch(/1\.4\.0|· MIT</);
     }
   });
   it('no icon count older than the catalog is written down', () => {
-    for (const f of ['index.html', 'public/data/app-config.json', 'src/core/config.ts', 'README.md']) {
+    for (const f of ['.dev/imported/react-icon-browser/index.html', '.dev/browser/public/data/app-config.json', 'resources/js/core/config.ts', 'README.md']) {
       expect(readFileSync(f, 'utf8'), f).not.toMatch(/127,000|128,000/);
     }
   });
   it('the bootsplash names no pack and prints no count it did not measure', () => {
     // It named five packs with fixed counts (two of them private) and printed a fixed
     // 127,262. The figures come from the loaded catalog now (boot/catalogFigures.ts).
-    const src = readFileSync('src/components/boot/bootsplashConfig.ts', 'utf8') + readFileSync('src/core/boot.ts', 'utf8');
+    const src = readFileSync('resources/js/components/boot/bootsplashConfig.ts', 'utf8') + readFileSync('resources/js/core/boot.ts', 'utf8');
     expect(src).not.toMatch(/icon-sets-|tabler-icons|metronic-icons|flag-icons/);
     expect(src).not.toMatch(/\b\d{1,3}(,\d{3})+\b|\b(?:127262|121314|10567|6238)\b/);
   });

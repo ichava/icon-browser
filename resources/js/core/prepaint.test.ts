@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { dismissPrepaint, PREPAINT_ID } from './prepaint';
+import { prepaintFragment } from '../../../.dev/browser/prepaint.mjs';
 
 afterEach(() => {
   vi.useRealTimers();
@@ -31,5 +32,12 @@ describe('dismissPrepaint', () => {
   it('uses the id the vendored prepaint.html renders', () => {
     const html = readFileSync(resolve(process.cwd(), 'resources/vendor/react-icon-browser/prepaint.html'), 'utf8');
     expect(html).toContain(`id="${PREPAINT_ID}"`);
+  });
+
+  // Prepaint.php still inlines the vendored file. Its source is resources/js/boot/prepaint.html
+  // since react consolidation 3d, so the two must agree: `npm run build:prepaint` rewrites it.
+  it('vendors exactly the prepaint the browser source renders', () => {
+    const html = readFileSync(resolve(process.cwd(), 'resources/vendor/react-icon-browser/prepaint.html'), 'utf8');
+    expect(html, 'stale: run npm run build:prepaint').toBe(`${prepaintFragment({ suffix: 'Browser' })}\n`);
   });
 });

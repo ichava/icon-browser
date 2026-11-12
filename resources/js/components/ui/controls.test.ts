@@ -22,20 +22,20 @@ describe('shared control styles', () => {
   });
 
   it('is backed by the theme rule that sets the hover properties', () => {
-    const css = readFileSync('src/styles/theme.css', 'utf8');
+    const css = readFileSync('resources/js/styles/theme.css', 'utf8');
     expect(css).toMatch(/:hover:not\([^)]*\)\s*\{\s*--ich-hover-bg:/);
     expect(css).toContain('background-image: linear-gradient(color-mix(in oklab, var(--fg) 7%');
   });
 
   it('gives a pressed control a response before its result arrives', () => {
-    const css = readFileSync('src/styles/theme.css', 'utf8');
+    const css = readFileSync('resources/js/styles/theme.css', 'utf8');
     expect(css).toMatch(/:not\([^)]*\[data-rac\]\):active \{\s*transform: scale\(0\.96\)/);
     expect(css).toContain('--ich-press: 0.97;');
     expect(iconBtn().transition).toContain('transform');
   });
 
   it('never underlines a link or link-style button on hover; the colour change is enough', () => {
-    const files = ['src/styles/theme.css', 'src/components/base/buttons/button.tsx', 'src/components/boot/bootsplash.css'];
+    const files = ['resources/js/styles/theme.css', 'resources/js/components/base/buttons/button.tsx', 'resources/js/components/boot/bootsplash.css'];
     for (const f of files) {
       const src = readFileSync(f, 'utf8');
       expect.soft(src, f).not.toMatch(/:hover\s*\{[^}]*text-decoration:\s*underline/);
@@ -63,7 +63,7 @@ describe('text on the accent tint', () => {
         else if (/\.tsx?$/.test(name) && !/\.test\.tsx?$/.test(name)) files.push(path);
       }
     };
-    walk('src');
+    walk('resources/js');
     expect(files.length).toBeGreaterThan(100);
 
     const offenders: string[] = [];
