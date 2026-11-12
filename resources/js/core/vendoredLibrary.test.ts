@@ -24,12 +24,19 @@ const manifest = JSON.parse(readFileSync(join(dir, MANIFEST), 'utf8')) as {
 const walk = (d: string): string[] =>
   readdirSync(d, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? walk(join(d, e.name)) : [join(d, e.name)]));
 
+// DEPRECATED.md says the directory is no longer rebuilt (react consolidation 3e, 2026-11-12);
+// it is not part of the vendored build, so the manifest does not list it.
+const NOTICE = 'DEPRECATED.md';
 const onDisk = walk(dir)
   .map((f) => relative(dir, f).split(sep).join('/'))
-  .filter((f) => f !== MANIFEST)
+  .filter((f) => f !== MANIFEST && f !== NOTICE)
   .sort();
 
 describe('vendored react-icon-browser', () => {
+  it('says it is deprecated', () => {
+    expect(readFileSync(join(dir, NOTICE), 'utf8')).toContain('Deprecated on 2026-11-12');
+  });
+
   it('keeps its manifest as vendored.json, the name the sync writes', () => {
     expect(readdirSync(dir)).toContain('vendored.json');
     expect(readdirSync(dir)).not.toContain('VENDORED.json');
