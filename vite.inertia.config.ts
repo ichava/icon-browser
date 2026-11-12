@@ -26,7 +26,9 @@ import { defineConfig, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import { scopeTokens } from '@ichava/js-ui-kernel/build';
-import { scopeSheet } from './.dev/browser/utility-scope.mjs';
+// react-icon-browser's scripts/utility-scope.mjs, moved beside this config because a host that
+// rebuilds from the Composer archive gets this file but not .dev/ (export-ignored).
+import { scopeSheet } from './vite.utility-scope.mjs';
 import { fileURLToPath, URL } from 'node:url';
 
 /** The browser's stylesheet: the one CSS module compiled and scoped as the browser's own. */

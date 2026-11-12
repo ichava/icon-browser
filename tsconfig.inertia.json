@@ -15,5 +15,5 @@
         "noEmit": true,
         "types": ["vite/client", "node"]
     },
-    "include": ["resources/js/**/*", "vite.inertia.config.ts"]
+    "include": ["resources/js/**/*", "vite.inertia.config.ts", "vite.utility-scope.d.mts"]
 }

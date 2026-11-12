@@ -25,7 +25,7 @@ import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { cssRules, stripCssComments } from '@ichava/js-ui-kernel/build';
 import { globalTokenRules } from '@ichava/js-ui-kernel/build';
-import { reachingRules, scopeSheet, scopeUtilities, UTILITY_SCOPE } from './utility-scope.mjs';
+import { reachingRules, scopeSheet, scopeUtilities, UTILITY_SCOPE } from '../../vite.utility-scope.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const lib = join(root, 'dist/lib');
