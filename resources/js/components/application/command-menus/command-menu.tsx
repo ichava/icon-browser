@@ -24,7 +24,7 @@ import {
     TextField as AriaTextField,
     useFilter,
 } from "react-aria-components";
-import { cx } from "@/lib/utils/cx";
+import { cx } from "@ichava/js-ui-kernel/react";
 import { CommandInput } from "./base-components/command-input";
 import { CommandMenuFooter } from "./base-components/command-menu-footer";
 import { CommandMenuHeader } from "./base-components/command-menu-header";

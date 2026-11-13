@@ -28,16 +28,16 @@ describe('dismissPrepaint', () => {
     expect(() => dismissPrepaint()).not.toThrow();
   });
 
-  // The id is the only link between this file, the vendored markup and the library.
-  it('uses the id the vendored prepaint.html renders', () => {
-    const html = readFileSync(resolve(process.cwd(), 'resources/vendor/react-icon-browser/prepaint.html'), 'utf8');
+  // The id is the only link between this file and the markup Prepaint.php inlines.
+  it('uses the id the prepaint.html fragment renders', () => {
+    const html = readFileSync(resolve(process.cwd(), 'resources/views/prepaint.html'), 'utf8');
     expect(html).toContain(`id="${PREPAINT_ID}"`);
   });
 
-  // Prepaint.php still inlines the vendored file. Its source is resources/js/boot/prepaint.html
-  // since react consolidation 3d, so the two must agree: `npm run build:prepaint` rewrites it.
-  it('vendors exactly the prepaint the browser source renders', () => {
-    const html = readFileSync(resolve(process.cwd(), 'resources/vendor/react-icon-browser/prepaint.html'), 'utf8');
+  // Prepaint.php inlines resources/views/prepaint.html, generated from resources/js/boot/prepaint.html,
+  // so the two must agree: `npm run build:prepaint` rewrites it.
+  it('ships exactly the prepaint the browser source renders', () => {
+    const html = readFileSync(resolve(process.cwd(), 'resources/views/prepaint.html'), 'utf8');
     expect(html, 'stale: run npm run build:prepaint').toBe(`${prepaintFragment({ suffix: 'Browser' })}\n`);
   });
 });

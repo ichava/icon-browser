@@ -13,11 +13,6 @@
 /* Tailwind CSS v4 - Import base styles */
 @use "tailwindcss";
 
-/* The vendored browser library ships its own prebuilt stylesheet, generated against its own
-   theme. Scanning its bundle here would regenerate its class names against this file's
-   default theme, a second and different definition of each. */
-@source not "../../vendor/react-icon-browser";
-
 /* The browser's own source lives in resources/js beside this package's pages since react
    consolidation 3d (2026-11-12). Its stylesheet (resources/js/styles/theme.css) generates its
    classes against its own theme, scoped to its root, so this one must not scan it either: the

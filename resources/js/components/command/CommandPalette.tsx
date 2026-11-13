@@ -7,7 +7,7 @@ import { Glyph } from '@/components/ui/Glyph';
 import { glyphIcon, type GlyphIconComponent } from '@/components/ui/glyphIcon';
 import { CommandMenu, type CommandMenuGroupType } from '@/components/application/command-menus/command-menu';
 import type { CommandDropdownMenuItemProps } from '@/components/application/command-menus/base-components/command-menu-item';
-import { cx } from '@/lib/utils/cx';
+import { cx } from '@ichava/js-ui-kernel/react';
 import { devtoolsKeyHint, modKey, resetKeyHint } from '@/core/format';
 import { useT } from '@/hooks/useT';
 import { CONFIG_DEFAULTS } from '@/core/config';

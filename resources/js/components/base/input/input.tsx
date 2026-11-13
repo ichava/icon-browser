@@ -5,7 +5,7 @@ import { Button as AriaButton, Group as AriaGroup, Input as AriaInput, TextField
 import { HintText } from "@/components/base/input/hint-text";
 import { Label } from "@/components/base/input/label";
 import { Tooltip, TooltipTrigger } from "@/components/base/tooltip/tooltip";
-import { cx, sortCx } from "@/lib/utils/cx";
+import { cx, sortCx } from "@ichava/js-ui-kernel/react";
 
 export interface InputBaseProps extends Omit<AriaInputProps, "size"> {
     /** Tooltip message on hover. */

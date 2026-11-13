@@ -22,7 +22,7 @@
  */
 
 @import 'tailwindcss';
-@import './uui-theme.css';
+@import '@ichava/js-ui-kernel/react/uui-theme.css';
 @import './ichava-theme.css';
 
 /* Tailwind generates a utility for every class-like word in the sources it scans, comments

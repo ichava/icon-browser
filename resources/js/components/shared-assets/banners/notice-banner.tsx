@@ -5,7 +5,7 @@
 // dismiss button; the app supplies translated copy and its own actions.
 import type { FC, HTMLAttributes, ReactNode, Ref } from "react";
 import { useId } from "react";
-import { cx } from "@/lib/utils/cx";
+import { cx } from "@ichava/js-ui-kernel/react";
 
 interface NoticeBannerProps extends Omit<HTMLAttributes<HTMLDivElement>, "title"> {
     icon?: FC<{ className?: string }>;

@@ -5,7 +5,7 @@ import { Pressable } from 'react-aria-components';
 import { Dropdown } from '@/components/base/dropdown/dropdown';
 import { CARET_CORNER_CLEARANCE, CARET_HEIGHT } from '@/components/ui/caretGeometry';
 import { PopoverCaret } from '@/components/ui/PopoverCaret';
-import { cx } from '@/lib/utils/cx';
+import { cx } from '@ichava/js-ui-kernel/react';
 
 /**
  * Menus on Untitled UI's `Dropdown` (free, `base/dropdown`), inventory #17, #23, #32, #39.

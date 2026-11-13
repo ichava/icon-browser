@@ -2,8 +2,8 @@ import type { FC, ReactElement, ReactNode } from "react";
 import { isValidElement } from "react";
 import type { ButtonProps as AriaButtonProps, LinkProps as AriaLinkProps } from "react-aria-components";
 import { Button as AriaButton, Link as AriaLink } from "react-aria-components";
-import { cx, sortCx } from "@/lib/utils/cx";
-import { isReactComponent } from "@/lib/utils/is-react-component";
+import { cx, sortCx } from "@ichava/js-ui-kernel/react";
+import { isReactComponent } from "@ichava/js-ui-kernel/react";
 
 export const styles = sortCx({
     common: {

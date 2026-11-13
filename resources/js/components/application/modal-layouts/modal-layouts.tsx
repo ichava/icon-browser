@@ -9,7 +9,7 @@
 // dialog's `slot="title"` heading, the stacked or right-aligned action row.
 import type { ReactNode } from "react";
 import { Heading as AriaHeading } from "react-aria-components";
-import { cx } from "@/lib/utils/cx";
+import { cx } from "@ichava/js-ui-kernel/react";
 
 interface ModalHeaderProps {
     /** A logo, avatar or featured icon above (centered) or beside the title. */

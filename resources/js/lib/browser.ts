@@ -2,8 +2,8 @@
 //
 // The UI is the browser library, whose source lives in this repository since react consolidation
 // 3d (2026-11-12): resources/js/index.ts is its public surface, imported from
-// ichava/react-icon-browser as a snapshot. It used to be a built library vendored under
-// resources/vendor/react-icon-browser. The adapter around it is the rest of this package's own
+// ichava/react-icon-browser as a snapshot. It used to be a built library vendored into this
+// package; that copy was removed on 2026-11-13. The adapter around it is the rest of this package's own
 // code: pages, the props-to-catalog bridge, the Inertia-backed IconCatalog, and the server
 // mutations for library state.
 //

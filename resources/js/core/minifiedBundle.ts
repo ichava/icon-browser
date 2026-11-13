@@ -5,7 +5,7 @@
  * repository is public. Untitled UI PRO's licence bars exposing its source, so the
  * vendored bundle and the page bundle built from it must carry no readable layout, no
  * comments but licences and pure annotations, no unmangled names and no source map.
- * react-icon-browser's `check-lib-build.mjs` applies the same rules to its build.
+ * react-icon-browser's library build applied the same rules; that build is retired.
  *
  * Template literals keep their own newlines and indentation, so the layout limits are
  * per byte rather than zero.

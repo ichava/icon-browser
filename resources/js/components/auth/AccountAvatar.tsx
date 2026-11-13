@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { cx } from '@/lib/utils/cx';
+import { cx } from '@ichava/js-ui-kernel/react';
 
 /**
  * The account's picture: the host's avatar when it gave one and it loads, otherwise the

@@ -4,10 +4,9 @@ import { join, resolve } from 'node:path';
 import { minificationProblems } from './minifiedBundle';
 
 /**
- * The browser code this public repository ships is fully minified: the vendored
- * react-icon-browser build and the page bundle built from it (see `minifiedBundle.ts`).
+ * The browser code this public repository ships is fully minified: the page bundle built from
+ * resources/js (see `minifiedBundle.ts`). The vendored react-icon-browser build was removed on 2026-11-13.
  */
-const vendored = resolve(process.cwd(), 'resources/vendor/react-icon-browser/index.js');
 const page = resolve(process.cwd(), 'public/assets/js/inertia-app.js');
 
 describe('minificationProblems', () => {
@@ -31,21 +30,16 @@ describe('minificationProblems', () => {
 const walk = (d: string): string[] =>
   readdirSync(d, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? walk(join(d, e.name)) : [join(d, e.name)]));
 
-/** Every file this repository ships browser code from: the vendored library and the built assets. */
-const shipped = ['resources/vendor/react-icon-browser', 'public'].flatMap((d) => walk(resolve(process.cwd(), d)));
+/** Every file this repository ships browser code from: the built assets under public/. */
+const shipped = walk(resolve(process.cwd(), 'public'));
 
 describe('shipped browser code', () => {
   it('holds no source map, nor any file carrying map sources', () => {
-    // Floor: the vendored library alone is 200 files; a walk that reads nothing must fail.
-    expect(shipped.length).toBeGreaterThan(200);
+    // Floor: public/ held 60 files on 2026-11-13; a walk that reads nothing must fail.
+    expect(shipped.length).toBeGreaterThan(40);
     expect(shipped.filter((f) => f.endsWith('.map'))).toEqual([]);
     const text = shipped.filter((f) => /\.(js|mjs|css|json|html)$/.test(f));
     expect(text.filter((f) => /sourcesContent|sourceMappingURL/.test(readFileSync(f, 'utf8')))).toEqual([]);
-  });
-
-  it('vendors react-icon-browser fully minified', () => {
-    expect(existsSync(vendored)).toBe(true);
-    expect(minificationProblems(readFileSync(vendored, 'utf8'))).toEqual([]);
   });
 
   it('builds the page bundle fully minified', () => {

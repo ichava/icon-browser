@@ -29,8 +29,8 @@ updates:
       prefix: 'chore(actions)'
       include: scope
 
-  # The adapter's npm dependencies. The browser UI itself is vendored
-  # (resources/vendor/react-icon-browser) and updated by its sync script, not here.
+  # The npm dependencies of the adapter and of the browser UI, whose source is
+  # resources/js (the vendored react-icon-browser build was removed on 2026-11-13).
   - package-ecosystem: npm
     directory: /
     schedule:

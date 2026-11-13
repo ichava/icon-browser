@@ -1,9 +1,9 @@
 import { Modal } from '@/components/ui/Modal';
 import { glyphIcon } from '@/components/ui/glyphIcon';
 import { Button } from '@/components/base/buttons/button';
-import { FeaturedIcon } from '@/components/foundations/featured-icon/featured-icon';
+import { FeaturedIcon } from '@ichava/js-ui-kernel/react';
 import { ModalFooter, ModalHeader } from '@/components/application/modal-layouts/modal-layouts';
-import { cx } from '@/lib/utils/cx';
+import { cx } from '@ichava/js-ui-kernel/react';
 import { useT } from '@/hooks/useT';
 import { TOUR_STEPS } from '@/components/tour/steps';
 import { useAppStore } from '@/hooks/useStoreApi';

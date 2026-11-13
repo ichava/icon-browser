@@ -8,7 +8,7 @@ import { SearchMd } from '@/components/ui/chromeIcons';
 import { Glyph } from '@/components/ui/Glyph';
 import { InputBase } from '@/components/base/input/input';
 import { CheckboxBase } from '@/components/base/checkbox/checkbox';
-import { cx } from '@/lib/utils/cx';
+import { cx } from '@ichava/js-ui-kernel/react';
 import { Segmented } from '@/components/ui/Segmented';
 import { CategoryTree } from './CategoryTree';
 import { num } from '@/core/format';

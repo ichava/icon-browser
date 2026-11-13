@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react';
 
 import { glyphIcon } from '@/components/ui/glyphIcon';
-import { FeaturedIcon } from '@/components/foundations/featured-icon/featured-icon';
-import { cx } from '@/lib/utils/cx';
+import { FeaturedIcon } from '@ichava/js-ui-kernel/react';
+import { cx } from '@ichava/js-ui-kernel/react';
 
 /**
  * EmptyState — "nothing here" for the grid, the library tabs and the notifications list,

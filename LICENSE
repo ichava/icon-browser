@@ -24,8 +24,6 @@ and each file opens with a comment saying so. They are also compiled into:
 - public/assets/js/inertia-app.js and the chunks beside it, and
   public/assets/css/inertia-app.css (the committed browser bundle, published
   to host applications)
-- resources/vendor/react-icon-browser (the earlier vendored library build,
-  deprecated and no longer built)
 
 The Untitled UI licence does not permit redistributing these components on
 their own, or as a kit or library. Taking them out of this product, or using
@@ -40,8 +38,8 @@ Third-party code in this repository stays under its own licence:
   except the PRO folders listed above, and those taken from
   @ichava/js-ui-kernel/react): MIT License, Copyright (c) Untitled UI.
   https://github.com/untitleduico/react/blob/main/LICENSE
-- Geist and Geist Mono fonts (resources/assets/fonts, public/assets/fonts and
-  resources/vendor/react-icon-browser/fonts): SIL Open Font License 1.1,
+- Geist and Geist Mono fonts (resources/assets/fonts and public/assets/fonts):
+  SIL Open Font License 1.1,
   Copyright (c) Vercel. See resources/assets/fonts/LICENSE.txt.
 - Icon assets under resources/assets/svg keep the licence of their upstream
   icon set.

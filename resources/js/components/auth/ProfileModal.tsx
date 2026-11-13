@@ -4,7 +4,7 @@ import { useId } from 'react';
 import { useT } from '@/hooks/useT';
 import { Modal } from '@/components/ui/Modal';
 import { Button } from '@/components/base/buttons/button';
-import { RadioButton, RadioGroup } from '@/components/base/radio-buttons/radio-buttons';
+import { RadioButton, RadioGroup } from '@ichava/js-ui-kernel/react';
 import { ModalBody, ModalFooter, ModalHeader } from '@/components/application/modal-layouts/modal-layouts';
 import { useAppStore } from '@/hooks/useStoreApi';
 import { useAccount } from '@/hooks/useAccount';
