@@ -1,0 +1,156 @@
+# Seed the visual baselines from the environment that compares them.
+#
+# Ported from ichava/react-icon-browser with the suite (react consolidation 2.6, 2026-11-13).
+#
+# That environment is Playwright's own image, because CI's `visual` job runs inside
+# it (see browser.yml). Font stacks differ between the image and a bare GitHub runner --
+# about 1% of pixels, invisible to look at and enough to fail -- so "Linux" alone was
+# never specific enough. Pinning both to one image is what removed that gap; the same
+# image is also what `npm run visual:linux` uses, so a local seed and this workflow
+# produce identical pixels.
+#
+# Deliberately manual. A workflow that rewrites its own baselines on every run turns
+# every regression into a committed one and the gate silently stops existing, so this
+# only ever runs when someone dispatches it, and never writes to `main`.
+#
+# Two ways to run it (Sim, 2026-10-28: "automate" the download and the review):
+#   - commit: false (default): the new PNGs are uploaded as an artifact, as before.
+#   - commit: true, dispatched on a pull request's branch: the job first compares the
+#     current baselines and records how much each one changed, then regenerates them,
+#     commits only the changed PNGs to that branch with the Refresh Bot token (so CI runs
+#     again on the new head), and comments on the pull request with a table of what moved
+#     and by how much. The review is the pull request's own image diff ("Files changed"
+#     renders old and new side by side); merging stays a human decision.
+
+name: Seed visual baselines
+
+on:
+  workflow_dispatch:
+    inputs:
+      commit:
+        description: Commit the regenerated baselines to this branch and comment on its pull request
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  seed:
+    name: Generate baselines in the Playwright image
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    # Must match browser.yml's `visual` job exactly. If these two images ever differ, this
+    # workflow starts producing baselines the gate rejects, and the failure reads as a
+    # rendering regression rather than a configuration one.
+    container:
+      image: mcr.microsoft.com/playwright:v1.65.0-noble
+      options: --ipc=host
+
+    # A containerised job does NOT inherit the runner's bash default -- Actions runs
+    # `run:` steps under `sh -e` here, and the switch is invisible until something breaks.
+    # It broke loudly once (`shopt: not found`, exit 127), but the quiet version is worse:
+    # `arr=(...)` and `${#arr[@]}` are bash arrays that sh expands to something else
+    # entirely, so a baseline check could have reported zero and "passed".
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      # Refuse before doing any work: committing baselines straight onto the default
+      # branch would skip the review this workflow exists to keep.
+      - name: Refuse to commit to the default branch
+        if: inputs.commit
+        env:
+          REF_NAME: ${{ github.ref_name }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          if [ "${REF_NAME}" = "${DEFAULT_BRANCH}" ]; then
+            echo "::error::commit: true runs on a pull request's branch, never on ${DEFAULT_BRANCH}."
+            exit 1
+          fi
+
+      - name: Mint the Refresh Bot token
+        if: inputs.commit
+        id: app
+        uses: actions/create-github-app-token@v3
+        with:
+          client-id: ${{ vars.REFRESH_APP_CLIENT_ID }}
+          private-key: ${{ secrets.REFRESH_APP_PRIVATE_KEY }}
+          permission-contents: write
+          permission-pull-requests: write
+
+      - uses: actions/checkout@v7
+        with:
+          token: ${{ inputs.commit && steps.app.outputs.token || github.token }}
+
+      # No setup-node, no `playwright install`: the image ships both.
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      # Compare against the committed baselines first, so the comment can say how far
+      # each one moved. Failures are the point here, so this step never fails the job.
+      - name: Measure the drift
+        if: inputs.commit
+        continue-on-error: true
+        run: npx playwright test --config=e2e/browser/playwright.visual.config.ts --reporter=json > "${RUNNER_TEMP}/visual.json"
+
+      - name: Regenerate baselines
+        run: npx playwright test --config=e2e/browser/playwright.visual.config.ts --update-snapshots
+
+      - name: Commit the changed baselines and comment on the pull request
+        if: inputs.commit
+        env:
+          GH_TOKEN: ${{ steps.app.outputs.token }}
+          APP_SLUG: ${{ steps.app.outputs.app-slug }}
+          BRANCH: ${{ github.ref_name }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          mapfile -t CHANGED < <(git status --porcelain -- 'e2e/browser/*.spec.ts-snapshots/*.png' | awk '{print $2}')
+          echo "changed baselines: ${#CHANGED[@]}"
+          if [ "${#CHANGED[@]}" -eq 0 ]; then
+            echo "Baselines already match; nothing to commit."
+            exit 0
+          fi
+          {
+            echo '### Visual baselines regenerated'
+            echo
+            echo "${#CHANGED[@]} baseline(s) changed and were committed to this branch by [the seeding run](${RUN_URL})."
+            echo 'Review them in **Files changed**, which shows the old and new image side by side. Merge only if every change is intended.'
+            echo
+            node .dev/browser/visual-drift.mjs "${RUNNER_TEMP}/visual.json" "${CHANGED[@]}"
+          } > "${RUNNER_TEMP}/comment.md"
+          # The Playwright image has no gh CLI, so the API calls go through Node's fetch.
+          api() { node -e '
+            const [path, method = "GET", body] = process.argv.slice(1);
+            fetch("https://api.github.com" + path, { method, body, headers: {
+              authorization: "Bearer " + process.env.GH_TOKEN, accept: "application/vnd.github+json",
+              "content-type": "application/json", "x-github-api-version": "2022-11-28" } })
+              .then(async (r) => { const j = await r.json(); if (!r.ok) { console.error(r.status, JSON.stringify(j)); process.exit(1); } console.log(JSON.stringify(j)); });
+          ' "$@"; }
+          BOT_ID="$(api "/users/${APP_SLUG}%5Bbot%5D" | node -pe 'JSON.parse(require("fs").readFileSync(0)).id')"
+          git config user.name "${APP_SLUG}[bot]"
+          git config user.email "${BOT_ID}+${APP_SLUG}[bot]@users.noreply.github.com"
+          git add -- "${CHANGED[@]}"
+          git commit -m "Regenerate ${#CHANGED[@]} visual baseline(s)" -m "Seeded by ${RUN_URL}."
+          git push origin "HEAD:refs/heads/${BRANCH}"
+          PR="$(api "/repos/${GITHUB_REPOSITORY}/pulls?state=open&head=${GITHUB_REPOSITORY_OWNER}:${BRANCH}" | node -pe 'JSON.parse(require("fs").readFileSync(0))[0]?.number ?? ""')"
+          if [ -n "${PR}" ]; then
+            api "/repos/${GITHUB_REPOSITORY}/issues/${PR}/comments" POST \
+              "$(node -e 'console.log(JSON.stringify({ body: require("fs").readFileSync(process.argv[1], "utf8") }))' "${RUNNER_TEMP}/comment.md")" > /dev/null
+            echo "commented on #${PR}"
+          else
+            echo "::warning::No open pull request for ${BRANCH}; the baselines are committed but nobody was told."
+          fi
+          cat "${RUNNER_TEMP}/comment.md" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload for review
+        uses: actions/upload-artifact@v7
+        with:
+          name: visual-baselines
+          path: e2e/browser/*.spec.ts-snapshots/*.png
+          if-no-files-found: error
+          retention-days: 7
