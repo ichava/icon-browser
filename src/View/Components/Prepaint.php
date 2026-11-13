@@ -15,7 +15,7 @@ use Simtabi\Laranail\Ichava\IconBrowser\Support\PageNonce;
  * Usage, as the first child of <body>:
  *   <x-ichava-icon-browser::prepaint />
  *
- * The markup is the vendored `prepaint.html` (resources/vendor/react-icon-browser), read as
+ * The markup is `resources/views/prepaint.html`, written by `npm run build:prepaint`, read as
  * is and never compiled as Blade, since its CSS carries `@media` and `@keyframes`. Under the
  * `nonce` CSP mode its <style> and <script> get the request's nonce, which is the value the
  * middleware puts in the header. A missing file renders nothing rather than breaking the page.
@@ -26,7 +26,7 @@ final class Prepaint extends Component
 
     public static function path(): string
     {
-        return dirname(__DIR__, 3) . '/resources/vendor/react-icon-browser/prepaint.html';
+        return dirname(__DIR__, 3) . '/resources/views/prepaint.html';
     }
 
     public function render(): HtmlString

@@ -19,7 +19,7 @@ import {
 import type { MotionPreset } from '@/core/MotionEngine';
 import { groupPresets } from './presetGroups';
 import { useT } from '@/hooks/useT';
-import { cx } from '@/lib/utils/cx';
+import { cx } from '@ichava/js-ui-kernel/react';
 
 /**
  * MotionPicker -- a select that opens onto a search field and a grouped list.

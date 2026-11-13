@@ -1,7 +1,7 @@
 import { Modal } from '@/components/ui/Modal';
 import { glyphIcon } from '@/components/ui/glyphIcon';
 import { Button } from '@/components/base/buttons/button';
-import { FeaturedIcon } from '@/components/foundations/featured-icon/featured-icon';
+import { FeaturedIcon } from '@ichava/js-ui-kernel/react';
 import { ModalFooter, ModalHeader } from '@/components/application/modal-layouts/modal-layouts';
 import { useT } from '@/hooks/useT';
 import { useAppStore } from '@/hooks/useStoreApi';

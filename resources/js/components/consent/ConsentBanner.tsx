@@ -8,7 +8,7 @@ import { CONFIG_DEFAULTS } from '@/core/config';
 import { useDraggableNotice } from '@/hooks/useDraggableNotice';
 import { useT } from '@/hooks/useT';
 import { useAppStore } from '@/hooks/useStoreApi';
-import { cx } from '@/lib/utils/cx';
+import { cx } from '@ichava/js-ui-kernel/react';
 
 /**
  * ConsentBanner — the "Cookies & storage" notice (plan Part B). Shown until a

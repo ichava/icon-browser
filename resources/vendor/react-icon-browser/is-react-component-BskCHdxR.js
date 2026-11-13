@@ -1,3 +1,0 @@
-/*! @ichava/react-icon-browser | Proprietary. Copyright (c) Simtabi LLC. See LICENSE. */
-/*! @tabler/icons-react v3.50.0 | MIT | https://github.com/tabler/tabler-icons/blob/main/LICENSE */
-var e=e=>typeof e==`function`,t=e=>typeof e==`function`&&e.prototype&&(!!e.prototype.isReactComponent||!!e.prototype.render),n=e=>typeof e==`object`&&!!e&&e.$$typeof.toString()===`Symbol(react.forward_ref)`,r=r=>e(r)||n(r)||t(r);export{r as t};

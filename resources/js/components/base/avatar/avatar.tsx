@@ -1,8 +1,8 @@
 import { type FC, type ReactNode, useState } from "react";
 import { User01 } from "@/components/ui/chromeIcons";
-import { cx } from "@/lib/utils/cx";
-import { AvatarOnlineIndicator, VerifiedTick } from "./base-components";
-import { AvatarCount } from "./base-components/avatar-count";
+import { cx } from "@ichava/js-ui-kernel/react";
+import { AvatarOnlineIndicator, VerifiedTick } from "@ichava/js-ui-kernel/react";
+import { AvatarCount } from "@ichava/js-ui-kernel/react";
 
 export interface AvatarProps {
     size?: "xs" | "sm" | "md" | "lg" | "xl" | "2xl";

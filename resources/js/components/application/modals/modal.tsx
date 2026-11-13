@@ -1,6 +1,6 @@
 import type { DialogProps as AriaDialogProps, ModalOverlayProps as AriaModalOverlayProps } from "react-aria-components";
 import { Dialog as AriaDialog, DialogTrigger as AriaDialogTrigger, Modal as AriaModal, ModalOverlay as AriaModalOverlay } from "react-aria-components";
-import { cx } from "@/lib/utils/cx";
+import { cx } from "@ichava/js-ui-kernel/react";
 
 export const DialogTrigger = AriaDialogTrigger;
 

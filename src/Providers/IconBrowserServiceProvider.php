@@ -146,7 +146,7 @@ class IconBrowserServiceProvider extends PackageServiceProvider
         Blade::component(self::COMPONENT_PREFIX . '::sri-asset', SriAsset::class);
 
         // react-icon-browser's static loader, inlined first in <body> so it paints before
-        // the bundle runs (resources/vendor/react-icon-browser/prepaint.html).
+        // the bundle runs (resources/views/prepaint.html, written by `npm run build:prepaint`).
         Blade::component(self::COMPONENT_PREFIX . '::prepaint', Prepaint::class);
 
         // Publish the Vite-built browser bundle (CSS/JS/fonts) into the host's

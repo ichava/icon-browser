@@ -1,2 +1,0 @@
-export { ABILITIES, apiEndpoint, can, endpoint, feature, featureOn, fillEndpoint, hostApi, hostFromBootstrap, hostFromInertia, initialKind, isCompatible, restLibraryEndpoints, searchLanguageFor, type ApiEndpointKey, type FeatureName, type HostApi, type HostContext, type HostSource, } from './domain/HostContext';
-export { hostConfig, hostConfigFromProps, loadHostConfig, loadHostContext } from './infrastructure/hostConfig';

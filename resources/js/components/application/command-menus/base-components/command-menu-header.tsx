@@ -1,7 +1,7 @@
 // Untitled UI React PRO, used under licence; see LICENSE
 import type { ReactNode } from "react";
 import { Header as AriaHeader } from "react-aria-components";
-import { cx } from "@/lib/utils/cx";
+import { cx } from "@ichava/js-ui-kernel/react";
 
 interface CommandMenuHeaderProps {
     children: ReactNode;

@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { cx } from "@/lib/utils/cx";
+import { cx } from "@ichava/js-ui-kernel/react";
 import type { BadgeColors, BadgeTypeToColorMap, BadgeTypes, Sizes } from "./badge-types";
 import { badgeTypes } from "./badge-types";
 

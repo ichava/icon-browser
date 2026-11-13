@@ -7,7 +7,7 @@ import { Glyph } from '@/components/ui/Glyph';
 import { Popover } from '@/components/ui/Popover';
 import { iconBtn } from '@/components/ui/controls';
 import { Segmented } from '@/components/ui/Segmented';
-import { Toggle } from '@/components/base/toggle/toggle';
+import { Toggle } from '@ichava/js-ui-kernel/react';
 import { isValidHex } from '@ichava/js-ui-kernel';
 import { CONFIG_DEFAULTS } from '@/core/config';
 import { LOCALES, type Locale } from '@/core/i18n';

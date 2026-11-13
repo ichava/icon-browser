@@ -6,8 +6,8 @@ import { Button as AriaButton, ListBox as AriaListBox, Select as AriaSelect, Sel
 import { Avatar } from "@/components/base/avatar/avatar";
 import { HintText } from "@/components/base/input/hint-text";
 import { Label } from "@/components/base/input/label";
-import { cx } from "@/lib/utils/cx";
-import { isReactComponent } from "@/lib/utils/is-react-component";
+import { cx } from "@ichava/js-ui-kernel/react";
+import { isReactComponent } from "@ichava/js-ui-kernel/react";
 import { ComboBox } from "./combobox";
 import { Popover } from "./popover";
 import { SelectItem } from "./select-item";

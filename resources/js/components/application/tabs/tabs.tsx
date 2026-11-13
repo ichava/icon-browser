@@ -3,8 +3,8 @@ import { createContext, isValidElement, useContext } from "react";
 import type { TabListProps as AriaTabListProps, TabProps as AriaTabProps, TabRenderProps as AriaTabRenderProps } from "react-aria-components";
 import { Tab as AriaTab, TabList as AriaTabList, TabPanel as AriaTabPanel, Tabs as AriaTabs, TabsContext, useSlottedContext } from "react-aria-components";
 import { Badge } from "@/components/base/badges/badges";
-import { cx } from "@/lib/utils/cx";
-import { isReactComponent } from "@/lib/utils/is-react-component";
+import { cx } from "@ichava/js-ui-kernel/react";
+import { isReactComponent } from "@ichava/js-ui-kernel/react";
 
 type Orientation = "horizontal" | "vertical";
 

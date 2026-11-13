@@ -1,7 +1,7 @@
 import type { Key } from 'react-aria-components';
 
 import { ButtonGroup, ButtonGroupItem } from '@/components/base/button-group/button-group';
-import { cx } from '@/lib/utils/cx';
+import { cx } from '@ichava/js-ui-kernel/react';
 
 /**
  * Segmented — a compact single-choice control on Untitled UI's `ButtonGroup` (a react-aria

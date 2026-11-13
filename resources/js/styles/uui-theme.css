@@ -1,6 +1,0 @@
-/*
- * @deprecated since 2026-11-12 (react consolidation 3d): the Untitled UI theme lives in
- * @ichava/js-ui-kernel/react/uui-theme.css now, shared with ichava.com. This file imports it so
- * styles/theme.css keeps working unchanged; removing it needs the owner's yes.
- */
-@import '@ichava/js-ui-kernel/react/uui-theme.css';

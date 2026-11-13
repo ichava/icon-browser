@@ -3,7 +3,7 @@
 // Local adaptation: `size="sm"` for the compact palette rows (see command-menu-item.tsx).
 import { Fragment } from "react";
 import { ArrowRight } from "@/components/ui/chromeIcons";
-import { cx } from "@/lib/utils/cx";
+import { cx } from "@ichava/js-ui-kernel/react";
 
 interface CommandShortcutProps {
     keys: string[];

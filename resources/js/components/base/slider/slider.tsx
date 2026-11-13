@@ -6,7 +6,7 @@ import {
     SliderThumb as AriaSliderThumb,
     SliderTrack as AriaSliderTrack,
 } from "react-aria-components";
-import { cx, sortCx } from "@/lib/utils/cx";
+import { cx, sortCx } from "@ichava/js-ui-kernel/react";
 
 const styles = sortCx({
     default: "hidden",

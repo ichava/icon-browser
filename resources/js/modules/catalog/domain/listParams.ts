@@ -8,7 +8,7 @@ import type { IconKind } from '@ichava/js-ui-kernel';
  * answers.
  *
  * Written out member by member rather than extending the kernel's type, so the public
- * declaration only gains lines (scripts/check-public-api.mjs).
+ * declaration only gains lines.
  */
 export interface ListParams {
   search?: string;

@@ -81,13 +81,14 @@ folder whose files lack that line. Taking these components out of this product, 
 needs your own Untitled UI licence. The 20 Metronic paths in react-icon-browser (its visual
 baselines of the private Metronic pack) were not imported.
 
-### The vendored build is deprecated
+### The vendored build was removed
 
-`resources/vendor/react-icon-browser` stays, unbuilt, with a `DEPRECATED.md`. Nothing imports it.
-One file in it is still read at run time: the `<x-ichava-icon-browser::prepaint />` component
-inlines its `prepaint.html`. `npm run build:prepaint` writes that file from
-`resources/js/boot/prepaint.html`, and a Vitest test fails while the two differ. `build:lib`,
-`sync:react-icon-browser` and `check:consumers` print where the work moved and exit 0.
+`resources/vendor/react-icon-browser` was removed on 2026-11-13, with the `build:lib`,
+`sync:react-icon-browser` and `check:consumers` scripts that had only printed where the work
+moved. The one file still read from it, `prepaint.html`, now lives at
+`resources/views/prepaint.html`: the `<x-ichava-icon-browser::prepaint />` component inlines it,
+`npm run build:prepaint` writes it from `resources/js/boot/prepaint.html`, and a Vitest test
+fails while the two differ.
 
 The look comes with the library: since the 0.1.0 restyle the browser draws Ichava's warm greys,
 the teal `#0e7c66` default accent, a 6px radius, Tabler chrome icons, square tags and tabs, flat

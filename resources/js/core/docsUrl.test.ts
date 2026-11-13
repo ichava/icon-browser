@@ -33,10 +33,10 @@ describe('docs link', () => {
     expect(docs[0]!.href).toBe(expected);
   });
 
-  it('matches the fallback built into the vendored library', () => {
-    // The library ships index.js plus the chunks its on-demand layers load; the defaults may sit in either.
-    const dir = resolve(process.cwd(), 'resources/vendor/react-icon-browser');
-    const bundle = readdirSync(dir).filter((f) => f.endsWith('.js')).map((f) => readFileSync(resolve(dir, f), 'utf8')).join('\n');
+  it('matches the fallback built into the committed bundle', () => {
+    // The bundle is the entry plus the chunks its on-demand layers load; the defaults may sit in either.
+    const dir = resolve(process.cwd(), 'public/assets/js');
+    const bundle = readdirSync(dir).filter((f) => f.startsWith('inertia-app') && f.endsWith('.js')).map((f) => readFileSync(resolve(dir, f), 'utf8')).join('\n');
     const urls = bundle.match(/https:\/\/github\.com\/ichava\/icon-browser\/tree\/main\/docs/g) ?? [];
 
     // Floor: the default Docs link and HelpMenu's fallback. A pattern that stops matching must fail.

@@ -1,7 +1,0 @@
-[
-  {
-    "repo": "ichava/icon-browser",
-    "manifest": "resources/vendor/react-icon-browser/vendored.json",
-    "update": "run `npm run build:lib` in react-icon-browser at v{version}, then in ichava/icon-browser run `node .dev/tools/sync-react-icon-browser.mjs <path to that react-icon-browser checkout>` and `npm run build:prod`; then `composer update` in the local demos/ichava-app, and update the docs that describe the change"
-  }
-]

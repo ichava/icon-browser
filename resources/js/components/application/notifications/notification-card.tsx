@@ -12,8 +12,8 @@
 import type { FC, ReactNode } from "react";
 import { X } from "@/components/ui/chromeIcons";
 import { Button } from "@/components/base/buttons/button";
-import { FeaturedIcon } from "@/components/foundations/featured-icon/featured-icon";
-import { cx } from "@/lib/utils/cx";
+import { FeaturedIcon } from "@ichava/js-ui-kernel/react";
+import { cx } from "@ichava/js-ui-kernel/react";
 
 export type NotificationColor = "brand" | "gray" | "error" | "warning" | "success";
 

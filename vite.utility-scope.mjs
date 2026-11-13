@@ -161,7 +161,7 @@ function withScopeRoot(selectorList) {
 /**
  * The selectors in `css` that can reach a host's elements: rules outside any `@scope`
  * that are not the app's own, and scoped layers whose body is not a single `@scope`.
- * Empty for a sheet scopeSheet() produced. check-lib-build fails the build on any.
+ * Empty for a sheet scopeSheet() produced; the minified-bundle tests fail on any.
  */
 export function reachingRules(css) {
   const found = [];

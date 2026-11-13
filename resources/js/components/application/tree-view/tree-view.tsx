@@ -16,8 +16,8 @@ import {
     useDragAndDrop,
 } from "react-aria-components";
 import { CheckboxBase } from "@/components/base/checkbox/checkbox";
-import { cx } from "@/lib/utils/cx";
-import { isReactComponent } from "@/lib/utils/is-react-component";
+import { cx } from "@ichava/js-ui-kernel/react";
+import { isReactComponent } from "@ichava/js-ui-kernel/react";
 import { type TreeCollection, cascadeSelection, createDragPreview, getDescendants } from "./tree-view-utils";
 
 interface TreeViewContextType {

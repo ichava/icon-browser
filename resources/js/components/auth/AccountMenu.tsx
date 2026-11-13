@@ -7,7 +7,7 @@ import { Glyph } from '@/components/ui/Glyph';
 import { glyphIcon } from '@/components/ui/glyphIcon';
 import { MENU_CLASS, MenuPopover, MenuText } from '@/components/ui/Menu';
 import { Dropdown } from '@/components/base/dropdown/dropdown';
-import { cx } from '@/lib/utils/cx';
+import { cx } from '@ichava/js-ui-kernel/react';
 import { useAppStore } from '@/hooks/useStoreApi';
 import { useAccount } from '@/hooks/useAccount';
 import { AccountAvatar } from '@/components/auth/AccountAvatar';

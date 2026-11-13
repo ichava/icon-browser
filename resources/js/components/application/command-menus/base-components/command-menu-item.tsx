@@ -11,8 +11,8 @@
 import type { FC } from "react";
 import { Text as AriaText, ListBoxItem, type ListBoxItemProps } from "react-aria-components";
 import { Avatar } from "@/components/base/avatar/avatar";
-import { FeaturedIcon } from "@/components/foundations/featured-icon/featured-icon";
-import { cx } from "@/lib/utils/cx";
+import { FeaturedIcon } from "@ichava/js-ui-kernel/react";
+import { cx } from "@ichava/js-ui-kernel/react";
 import { CommandShortcut } from "./command-shortcut";
 
 interface CommandMenuItemBaseType {

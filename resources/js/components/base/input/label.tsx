@@ -3,7 +3,7 @@ import { HelpCircle } from "@/components/ui/chromeIcons";
 import type { LabelProps as AriaLabelProps } from "react-aria-components";
 import { Label as AriaLabel } from "react-aria-components";
 import { Tooltip, TooltipTrigger } from "@/components/base/tooltip/tooltip";
-import { cx } from "@/lib/utils/cx";
+import { cx } from "@ichava/js-ui-kernel/react";
 
 interface LabelProps extends AriaLabelProps {
     children: ReactNode;

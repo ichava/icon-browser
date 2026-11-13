@@ -1,7 +1,7 @@
 // Untitled UI React PRO, used under licence; see LICENSE
 import { ArrowDown, ArrowLeft, ArrowUp, CornerDownLeft, Settings01 } from "@/components/ui/chromeIcons";
 import { Button } from "@/components/base/buttons/button";
-import { cx } from "@/lib/utils/cx";
+import { cx } from "@ichava/js-ui-kernel/react";
 import { CommandMenuNavigationIcon } from "./command-menu-navigation-icon";
 
 interface CommandMenuFooterProps {
