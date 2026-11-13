@@ -28,6 +28,13 @@
    .dev/imported), and the fonts' README, are not this package's markup. */
 @source not "../../../.dev";
 @source not "../fonts";
+/* The browser's Playwright suite (e2e/browser, react consolidation 3.1, 2026-11-13) came from
+   .dev/imported, which the line above excludes. Its words (`hidden`, `ring`, `grow` ...) would
+   otherwise become global utilities here. */
+@source not "../../../e2e/browser";
+/* Workflow comments are not markup either: a word in one (`invisible`) became a global utility
+   while the browser's CI was ported (react consolidation 2.6). */
+@source not "../../../.github";
 
 @plugin "tailwindcss-animate";
 

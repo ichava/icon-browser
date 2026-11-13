@@ -4,7 +4,7 @@
 #
 # That environment is Playwright's own image, because CI's `visual` job runs inside
 # it (see browser.yml). Font stacks differ between the image and a bare GitHub runner --
-# about 1% of pixels, invisible to look at and enough to fail -- so "Linux" alone was
+# about 1% of pixels, too few to see and enough to fail -- so "Linux" alone was
 # never specific enough. Pinning both to one image is what removed that gap; the same
 # image is also what `npm run visual:linux` uses, so a local seed and this workflow
 # produce identical pixels.
@@ -49,7 +49,7 @@ jobs:
       options: --ipc=host
 
     # A containerised job does NOT inherit the runner's bash default -- Actions runs
-    # `run:` steps under `sh -e` here, and the switch is invisible until something breaks.
+    # `run:` steps under `sh -e` here, and nothing shows the switch until something breaks.
     # It broke loudly once (`shopt: not found`, exit 127), but the quiet version is worse:
     # `arr=(...)` and `${#arr[@]}` are bash arrays that sh expands to something else
     # entirely, so a baseline check could have reported zero and "passed".

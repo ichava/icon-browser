@@ -64,7 +64,7 @@ jobs:
 
       # Reads the stylesheet hosts receive (public/assets/css), which committed-build.yml proves
       # equals a fresh build. A class Tailwind could not resolve is dropped with no warning, and
-      # nothing else notices: strings are invisible to tsc and ESLint.
+      # nothing else notices: tsc and ESLint do not read strings.
       - name: Dead CSS classes
         run: npm run check:dead-classes
 
