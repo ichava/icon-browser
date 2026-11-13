@@ -1,0 +1,430 @@
+/**
+ * ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ * Ichava Package Styles
+ * ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ *
+ * Tailwind CSS v4 with v4 prototype theme variables.
+ * Combines the base design tokens with custom Ichava theming.
+ *
+ * @version 3.0.0
+ */
+/*---break---
+ */
+/* Tailwind CSS v4 - Import base styles */
+@use "tailwindcss";
+
+/* The browser's own source lives in resources/js beside this package's pages since react
+   consolidation 3d (2026-11-12). Its stylesheet (resources/js/styles/theme.css) generates its
+   classes against its own theme, scoped to its root, so this one must not scan it either: the
+   same class names would come out a second time, global and against this file's theme. What is
+   left is the package's own adapter: app.tsx, pages/, the six components at the top of
+   components/, and its own files in core/, hooks/ and lib/, which render no markup (measured
+   2026-11-12: leaving them out drops one class, `invert`, which only a test's text named). */
+@source not "../../js/*.{ts,tsx}";
+@source not "../../js/{app,boot,core,hooks,lib,modules,state,styles,test}";
+@source not "../../js/components/*/**";
+@source "../../js/app.tsx";
+/* The browser's imported tooling, fixtures and retired root files (.dev/browser,
+   .dev/imported), and the fonts' README, are not this package's markup. */
+@source not "../../../.dev";
+@source not "../fonts";
+
+@plugin "tailwindcss-animate";
+
+/* Custom Animations */
+@keyframes loadingBar {
+  0% {
+    transform: translateX(-100%);
+  }
+  50% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.animate-loading-bar {
+  animation: loadingBar 2s ease-in-out infinite;
+}
+
+/* Transition classes */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.slide-down-enter-active,
+.slide-down-leave-active {
+  transition: all 0.3s ease;
+}
+
+.slide-down-enter-from,
+.slide-down-leave-to {
+  transform: translateY(-100%);
+  opacity: 0;
+}
+
+/*---break---
+ *
+ * The one `dark:` variant in this stylesheet, keyed off `.dark-mode` to match the
+ * `documentElement` toggle the browser makes when it owns the document. It used to
+ * live in the forked React theme entry (`resources/js/styles/theme.css`), which the
+ * port onto @ichava/react-icon-browser removed; without it here, `dark:` would fall
+ * back to the OS preference and the root template's `dark:bg-[#0a0d1a]` body would
+ * stop following the browser's own theme switch. The library's prebuilt stylesheet
+ * keys its dark mode off the same class, so the two stay in sync.
+ *
+ * Both conditions, as before: the built bundle carried this stylesheet's default
+ * (OS preference) `dark:` rules and the theme entry's `.dark-mode` ones side by side.
+ */
+@custom-variant dark {
+  &:where(.dark-mode, .dark-mode *) {
+    @slot;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    @slot;
+  }
+}
+/* ============================================
+   THEME VARIABLES
+   ============================================ */
+
+:root {
+  /* Light theme (default) */
+  --bg-page: #f8fafc;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f1f5f9;
+  --bg-sidebar: #ffffff;
+  --bg-input: #f1f5f9;
+  --bg-muted: #e2e8f0;
+  --bg-accent: #8b5cf6;
+  --bg-accent-muted: rgba(139, 92, 246, 0.1);
+
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  --text-accent: #8b5cf6;
+  --text-inverse: #ffffff;
+
+  --border-default: #e2e8f0;
+  --border-muted: #cbd5e1;
+
+  --icon-fill: #64748b;
+  --icon-color: #8b5cf6;
+
+  /* Scrollbar */
+  --scrollbar-track: #f1f5f9;
+  --scrollbar-thumb: #cbd5e1;
+  --scrollbar-thumb-hover: #94a3b8;
+
+  /* Base design tokens (HSL format) */
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: 0 0% 98%;
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --radius: 0.625rem;
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+/* Dark theme */
+.dark {
+  --bg-page: #0a0d1a;
+  --bg-card: #151823;
+  --bg-card-hover: #1a1d2e;
+  --bg-sidebar: #0a0d1a;
+  --bg-input: #151823;
+  --bg-muted: #1e2235;
+  --bg-accent: #8b5cf6;
+  --bg-accent-muted: rgba(139, 92, 246, 0.15);
+
+  --text-primary: #e5e7eb;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+  --text-accent: #a78bfa;
+  --text-inverse: #ffffff;
+
+  --border-default: #1e2235;
+  --border-muted: #2d3348;
+
+  --icon-fill: #6b7280;
+  --icon-color: #8b5cf6;
+
+  /* Scrollbar */
+  --scrollbar-track: #0a0d1a;
+  --scrollbar-thumb: #1e2235;
+  --scrollbar-thumb-hover: #2d3348;
+
+  /* Base design tokens (dark) */
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --destructive-foreground: 0 0% 98%;
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+}
+
+/* ============================================
+   BASE STYLES
+   ============================================ */
+
+body {
+  background-color: var(--bg-page);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* ============================================
+   UTILITY CLASSES FOR THEMING
+   ============================================ */
+
+/* Backgrounds */
+.theme-bg-page { background-color: var(--bg-page); }
+.theme-bg-card { background-color: var(--bg-card); }
+.theme-bg-card-hover:hover { background-color: var(--bg-card-hover); }
+.theme-bg-sidebar { background-color: var(--bg-sidebar); }
+.theme-bg-input { background-color: var(--bg-input); }
+.theme-bg-muted { background-color: var(--bg-muted); }
+.theme-bg-accent { background-color: var(--bg-accent); }
+.theme-bg-accent-muted { background-color: var(--bg-accent-muted); }
+
+/* Text */
+.theme-text-primary { color: var(--text-primary); }
+.theme-text-secondary { color: var(--text-secondary); }
+.theme-text-muted { color: var(--text-muted); }
+.theme-text-accent { color: var(--text-accent); }
+/* A text link changes colour on hover and never underlines (Sim, 2026-10-27). */
+.theme-link { transition: color 0.14s ease; }
+.theme-link:hover { color: color-mix(in oklab, var(--text-accent) 72%, var(--text-primary)); }
+.theme-text-inverse { color: var(--text-inverse); }
+
+/* Borders */
+.theme-border { border-color: var(--border-default); }
+.theme-border-muted { border-color: var(--border-muted); }
+
+/* Transitions */
+.theme-transition {
+  transition: background-color 0.2s ease,
+              color 0.2s ease,
+              border-color 0.2s ease,
+              box-shadow 0.2s ease;
+}
+
+/* ============================================
+   SCROLLBAR STYLING
+   ============================================ */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+
+/* Thin scrollbar variant */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: hsl(var(--muted-foreground) / 0.2);
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background-color: hsl(var(--muted-foreground) / 0.3);
+}
+
+/* ============================================
+   ICON SVG STYLING
+   ============================================ */
+
+/* Icon SVG styling - make SVGs inherit color and size. Plain descendant selectors: the
+   Vue-only deep combinator these were written with made browsers drop every rule. */
+.icon-svg svg,
+.icon-svg-modal svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* When icon-colored class is applied, use currentColor */
+.icon-svg.icon-colored svg,
+.icon-svg-modal.icon-colored svg {
+  fill: currentColor;
+  stroke: currentColor;
+}
+
+.icon-svg.icon-colored svg path,
+.icon-svg.icon-colored svg circle,
+.icon-svg.icon-colored svg rect,
+.icon-svg.icon-colored svg line,
+.icon-svg.icon-colored svg polyline,
+.icon-svg.icon-colored svg polygon,
+.icon-svg-modal.icon-colored svg path,
+.icon-svg-modal.icon-colored svg circle,
+.icon-svg-modal.icon-colored svg rect,
+.icon-svg-modal.icon-colored svg line,
+.icon-svg-modal.icon-colored svg polyline,
+.icon-svg-modal.icon-colored svg polygon {
+  fill: inherit;
+  stroke: inherit;
+}
+
+/* For SVGs that use stroke only (outline icons) */
+.icon-svg svg[fill="none"],
+.icon-svg-modal svg[fill="none"] {
+  fill: none;
+}
+
+.icon-svg.icon-colored svg[fill="none"] path,
+.icon-svg.icon-colored svg[fill="none"] circle,
+.icon-svg.icon-colored svg[fill="none"] rect,
+.icon-svg.icon-colored svg[fill="none"] line,
+.icon-svg-modal.icon-colored svg[fill="none"] path,
+.icon-svg-modal.icon-colored svg[fill="none"] circle,
+.icon-svg-modal.icon-colored svg[fill="none"] rect,
+.icon-svg-modal.icon-colored svg[fill="none"] line {
+  fill: none;
+  stroke: currentColor;
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Fade transition for loading overlay */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+/* Slide down transition for error banner */
+.slide-down-enter-active,
+.slide-down-leave-active {
+  transition: all 0.3s ease;
+}
+
+.slide-down-enter-from,
+.slide-down-leave-to {
+  opacity: 0;
+  transform: translateY(-100%);
+}
+
+/*---break---
+ *
+ * NOTE: the `@theme inline` bridge that used to live here is gone on
+ * purpose. It mapped `bg-primary`, `text-secondary`, `ring-primary`... onto the
+ * base page tokens (`--primary` et al), which only invert under `.dark` --
+ * a class the React app never sets (it toggles `.dark-mode`). So in light mode
+ * every input, select, button and popover rendered near-black surfaces with
+ * near-black text. The bare-name contract now lives in `theme.css`, mapped
+ * onto Untitled UI tokens that follow `.dark-mode`.
+ *
+ * The base `:root` / `.dark` token blocks below stay: the `.theme-*` helper
+ * classes in this file still read them, and they are inert otherwise.
+ * The `@layer base` block moved to `theme.css` with the rest of base.
+ */
+
+/* NOTE: no `@layer base` here either -- `theme.css` owns base. */

@@ -1,0 +1,66 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Simtabi\Laranail\Ichava\IconBrowser\Http\Controllers\Api;
+
+use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
+use Simtabi\Laranail\Ichava\Services\IchavaLogger;
+use Simtabi\Laranail\Ichava\Contracts\ChecksPackUpdates;
+
+/**
+ * Surfaces the upstream-tracking checker over HTTP for host apps that
+ * want to display pack health on a dashboard / admin panel.
+ *
+ * Wraps core's `ChecksPackUpdates` contract (`IconPackUpdateChecker` by default); response shape
+ * mirrors the Artisan command `ichava:icons:check-updates --format=json`
+ * so any consumer of one trivially consumes the other.
+ *
+ * Endpoint:
+ *
+ *   GET /{prefix}/api/v1/icons/update-status              -- all packs
+ *   GET /{prefix}/api/v1/icons/update-status?package=...  -- single pack
+ *
+ * Cached per-pack for 12 hours by the underlying service; this endpoint
+ * adds no caching of its own.
+ */
+final class UpdateStatusApiController extends BaseApiController
+{
+    public function __construct(
+        IchavaLogger $logger,
+        protected ChecksPackUpdates $checker,
+    ) {
+        parent::__construct($logger);
+    }
+
+    public function index(Request $request): JsonResponse
+    {
+        $package = $request->query('package');
+        $packageFilter = is_string($package) && $package !== '' ? $package : null;
+
+        $rows = $this->checker->checkAll($packageFilter);
+
+        $stale = array_values(array_filter(
+            $rows,
+            static fn (array $r): bool => $r['status'] === 'update-available',
+        ));
+        $unreachable = array_values(array_filter(
+            $rows,
+            static fn (array $r): bool => in_array($r['status'], ['unreachable', 'error'], true),
+        ));
+
+        return $this->successResponse([
+            'rows'    => $rows,
+            'summary' => [
+                'total'      => count($rows),
+                'up_to_date' => count(array_filter(
+                    $rows,
+                    static fn (array $r): bool => $r['status'] === 'up-to-date',
+                )),
+                'update_available' => count($stale),
+                'unreachable'      => count($unreachable),
+            ],
+        ]);
+    }
+}

@@ -1,0 +1,46 @@
+version: 2
+
+updates:
+  - package-ecosystem: composer
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: '06:00'
+      timezone: America/New_York
+    groups:
+      composer-minor-and-patch:
+        update-types: [minor, patch]
+    commit-message:
+      prefix: 'chore(deps)'
+      include: scope
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: '06:00'
+      timezone: America/New_York
+    groups:
+      actions-minor-and-patch:
+        update-types: [minor, patch]
+    commit-message:
+      prefix: 'chore(actions)'
+      include: scope
+
+  # The npm dependencies of the adapter and of the browser UI, whose source is
+  # resources/js (the vendored react-icon-browser build was removed on 2026-11-13).
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: '06:00'
+      timezone: America/New_York
+    groups:
+      npm-minor-and-patch:
+        update-types: [minor, patch]
+    commit-message:
+      prefix: 'chore(deps)'
+      include: scope

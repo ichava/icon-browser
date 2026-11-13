@@ -1,0 +1,85 @@
+name: Rebuild committed bundle
+
+# public/assets is checked in, and no lock file is committed (org rule), so a fresh install can
+# resolve newer dependencies than the ones the bundle was built with. Committed build then fails
+# the next unrelated pull request. This rebuilds main weekly and, when the output changes, opens
+# (or updates) one pull request carrying the new bundle, so the drift arrives as its own change.
+on:
+  schedule:
+    - cron: '0 5 * * 1'
+  workflow_dispatch:
+
+# The workflow's own token only reads. The branch and the pull request come from the Refresh Bot
+# app: a pull request opened with GITHUB_TOKEN starts no workflows, so main's required checks would
+# never report on it.
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  rebuild:
+    name: Rebuild and open a pull request
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      # A per-run token, scoped to this repository's contents and pull requests and revoked when the
+      # job ends. The client ID and key are organisation-level (REFRESH_APP_CLIENT_ID, REFRESH_APP_PRIVATE_KEY).
+      - name: Mint the Refresh Bot token
+        id: app
+        uses: actions/create-github-app-token@v3
+        with:
+          client-id: ${{ vars.REFRESH_APP_CLIENT_ID }}
+          private-key: ${{ secrets.REFRESH_APP_PRIVATE_KEY }}
+          permission-contents: write
+          permission-pull-requests: write
+
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          token: ${{ steps.app.outputs.token }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      # Same install and build as Committed build, so the pull request it opens passes that check.
+      - name: Install dependencies
+        run: npm install --no-package-lock --no-audit --no-fund
+
+      - name: Build the browser bundle
+        run: npm run build:prod
+
+      - name: Open the rebuild pull request
+        run: |
+          set -euo pipefail
+          # One stable branch, so every run updates the same pull request instead of opening more.
+          BRANCH='chore/rebuild-bundle'
+          if [ -z "$(git status --porcelain --untracked-files=all public/assets)" ]; then
+            echo 'public/assets matches a fresh build; nothing to do.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          # actions/checkout fetches only main, so fetch the branch first or --force-with-lease has
+          # nothing to compare against and rejects the push as stale.
+          git fetch origin "+refs/heads/$BRANCH:refs/remotes/origin/$BRANCH" || true
+          git checkout -B "$BRANCH"
+          git add public/assets
+          git commit -m 'build: rebuild the committed browser bundle'
+          git push --force-with-lease origin "$BRANCH"
+          # --state open: `gh pr view <branch>` also finds merged pull requests and would skip creation.
+          OPEN=$(gh pr list --head "$BRANCH" --state open --json number --jq 'length')
+          if [ "$OPEN" -gt 0 ]; then
+            echo "Pull request already open for $BRANCH; updated in place."
+          else
+            gh pr create --base main --head "$BRANCH" \
+              --title 'build: rebuild the committed browser bundle' \
+              --body "Weekly rebuild of public/assets from main with a fresh dependency install. Opened because the output differed from the committed bundle."
+          fi
+        env:
+          GH_TOKEN: ${{ steps.app.outputs.token }}

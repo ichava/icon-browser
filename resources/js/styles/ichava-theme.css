@@ -1,0 +1,91 @@
+/*
+ * Ichava token layer (the 0.1.0 restyle).
+ *
+ * Imported after `uui-theme.css`, so every value here replaces the vendored default
+ * while the vendored semantic chain (`--color-bg-primary`, `--color-text-tertiary`, ...)
+ * keeps pointing at the same step names. Changing a step here therefore repaints every
+ * component, free and PRO, without touching them.
+ *
+ * What moves, and why each one reads as Untitled UI today:
+ *
+ *   neutrals   Tailwind's achromatic neutral (#fafafa ... #0a0a0a) -> a warm "paper and
+ *              ink" ramp. Step 500 is darker than Tailwind's so `text-quaternary` clears
+ *              AA on the canvas, not just on white.
+ *   weights    semibold 600 -> 500 and bold 700 -> 600: the owner's "no heavy bold" cap,
+ *              applied at the token so every `font-semibold` follows.
+ *   shadows    the skeuomorphic inset ring on every button and input is the single most
+ *              recognisable Untitled UI detail; it becomes a flat hairline.
+ */
+@theme {
+  --color-neutral-50: rgb(246 244 238);
+  --color-neutral-100: rgb(236 232 222);
+  --color-neutral-200: rgb(222 216 203);
+  --color-neutral-300: rgb(203 196 180);
+  --color-neutral-400: rgb(168 161 146);
+  --color-neutral-500: rgb(103 99 90);
+  --color-neutral-600: rgb(94 90 82);
+  --color-neutral-700: rgb(71 68 62);
+  --color-neutral-800: rgb(47 43 36);
+  --color-neutral-900: rgb(31 28 23);
+  --color-neutral-950: rgb(20 18 14);
+
+  --font-weight-semibold: 500;
+  --font-weight-bold: 600;
+
+  --shadow-xs: 0px 1px 0px rgba(18, 17, 15, 0.04);
+  --shadow-sm: 0px 1px 2px rgba(18, 17, 15, 0.06);
+  --shadow-md: 0px 1px 2px rgba(18, 17, 15, 0.06), 0px 8px 20px -10px rgba(18, 17, 15, 0.18);
+  --shadow-lg: 0px 1px 2px rgba(18, 17, 15, 0.06), 0px 12px 32px -12px rgba(18, 17, 15, 0.24);
+  --shadow-xl: 0px 1px 2px rgba(18, 17, 15, 0.08), 0px 20px 48px -16px rgba(18, 17, 15, 0.3);
+  --shadow-2xl: var(--shadow-xl);
+  --shadow-skeuomorphic: 0px 0px 0px 0px transparent;
+  --shadow-xs-skeuomorphic: var(--shadow-xs);
+}
+
+@layer base {
+  /* Headings and titles: a touch of negative tracking instead of extra weight. */
+  [data-ichava-root] :is(h1, h2, h3),
+  [data-ichava-portal] :is(h1, h2, h3) {
+    letter-spacing: -0.01em;
+  }
+}
+
+/* The scrim is a flat ink wash; the frosted blur is an Untitled UI modal signature. */
+.dark-mode {
+  --color-bg-overlay: rgb(0 0 0);
+}
+
+/*
+ * Chrome frame. The header and sidebar sit on one tinted frame (`--canvas`) and the
+ * grid sits on the raised surface inside it, so the work area reads as a sheet laid on
+ * a desk rather than Untitled UI's white-on-white app shell. In dark the frame is the
+ * deepest ink and the sheet one step lighter (the dark block in theme.css).
+ */
+:where(:root, [data-ichava-theme]):not(.dark-mode) {
+  --canvas: var(--color-bg-tertiary);
+}
+
+/*
+ * The work sheet: the grid column is a raised, rounded panel inset in the frame. The
+ * header and sidebar lose their dividing hairlines, so frame and sheet carry the layout.
+ */
+.ich-shell {
+  background: var(--canvas);
+}
+.ich-sheet {
+  margin: 0 8px 8px 0;
+  border: 1px solid var(--color-border-secondary);
+  border-radius: calc(var(--radius) * 2);
+  overflow: hidden;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+[dir='rtl'] .ich-sheet {
+  margin: 0 0 8px 8px;
+}
+@media (max-width: 860px) {
+  .ich-sheet,
+  [dir='rtl'] .ich-sheet {
+    margin: 0 6px 6px;
+  }
+}

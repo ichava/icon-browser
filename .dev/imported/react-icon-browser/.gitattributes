@@ -1,0 +1,18 @@
+# Force LF so Windows clones do not break scripts or snapshots.
+*.sh    text eol=lf
+*.ts    text
+*.tsx   text
+*.json  text
+*.yml   text
+*.yaml  text
+*.css   text
+
+# Playwright baselines are binary; never normalise them or every visual
+# comparison fails for a reason that has nothing to do with the UI.
+*.png   -text
+*.svg   -text
+
+# Same reasoning, one step earlier in the chain: a normalised woff2 is a corrupt
+# woff2, the browser silently falls back, and the damage shows up as a screenshot
+# diff that blames the UI.
+*.woff2 -text
