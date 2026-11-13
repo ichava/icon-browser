@@ -188,7 +188,7 @@ describe('G12/G13: no stale literals', () => {
     }
   });
   it('no icon count older than the catalog is written down', () => {
-    for (const f of ['.dev/imported/react-icon-browser/index.html', '.dev/browser/public/data/app-config.json', 'resources/js/core/config.ts', 'README.md']) {
+    for (const f of ['e2e/browser/index.html', '.dev/browser/public/data/app-config.json', 'resources/js/core/config.ts', 'README.md']) {
       expect(readFileSync(f, 'utf8'), f).not.toMatch(/127,000|128,000/);
     }
   });

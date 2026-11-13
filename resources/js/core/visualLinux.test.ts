@@ -5,7 +5,7 @@ import { join, resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 /**
- * The container side of `npm run visual:linux` (`scripts/visual-linux.sh`).
+ * The container side of `npm run visual:linux` (`.dev/browser/visual-linux.sh`).
  *
  * Mounting the checkout and installing in place failed from a git worktree, whose `.git` is a
  * pointer to a directory outside the mount, and replaced the host's node_modules with Linux
@@ -15,26 +15,27 @@ import { describe, expect, it } from 'vitest';
  */
 const root = process.cwd();
 // The standalone app's Playwright tooling moved to .dev/browser/ with react consolidation 3d
-// (2026-11-12), and its npm scripts stay in the imported package.json until its e2e suite is
-// ported; this checks them where they are.
+// (2026-11-12), and its suite to e2e/browser/ with its npm scripts in package.json in 3.1
+// (2026-11-13).
 const script = resolve(root, '.dev/browser/visual-linux.sh');
-const pkg = JSON.parse(readFileSync(resolve(root, '.dev/imported/react-icon-browser/package.json'), 'utf8')) as { scripts: Record<string, string> };
+const pkg = JSON.parse(readFileSync(resolve(root, 'package.json'), 'utf8')) as { scripts: Record<string, string> };
+const SNAPSHOTS = ['e2e', 'browser', 'visual.spec.ts-snapshots'];
 
 function fakeCheckout(playwrightExit: number, args: string[] = []) {
   const base = mkdtempSync(join(tmpdir(), 'visual-linux-'));
   const src = join(base, 'src');
   const bin = join(base, 'bin');
-  mkdirSync(join(src, 'e2e', 'visual.spec.ts-snapshots'), { recursive: true });
+  mkdirSync(join(src, ...SNAPSHOTS), { recursive: true });
   mkdirSync(join(src, 'node_modules'), { recursive: true });
   mkdirSync(bin);
   writeFileSync(join(src, '.git'), 'gitdir: /nowhere/.git/worktrees/x\n');
   writeFileSync(join(src, 'node_modules', 'host.txt'), 'darwin');
-  writeFileSync(join(src, 'e2e', 'visual.spec.ts-snapshots', 'toolbar.png'), 'old');
+  writeFileSync(join(src, ...SNAPSHOTS, 'toolbar.png'), 'old');
   writeFileSync(join(src, 'package.json'), '{}');
   // npm fails if it can see .git or the host's node_modules.
   writeFileSync(join(bin, 'npm'), '#!/bin/sh\n[ ! -e .git ] || exit 7\n[ ! -e node_modules/host.txt ] || exit 8\nmkdir -p node_modules && echo linux > node_modules/host.txt\n');
   // Records its arguments, so a test can see which suite and options a mode ran.
-  writeFileSync(join(bin, 'npx'), `#!/bin/sh\necho "$*" >> ${join(base, 'npx.log')}\necho new > e2e/visual.spec.ts-snapshots/toolbar.png\nexit ${playwrightExit}\n`);
+  writeFileSync(join(bin, 'npx'), `#!/bin/sh\necho "$*" >> ${join(base, 'npx.log')}\necho new > e2e/browser/visual.spec.ts-snapshots/toolbar.png\nexit ${playwrightExit}\n`);
   chmodSync(join(bin, 'npm'), 0o755);
   chmodSync(join(bin, 'npx'), 0o755);
   const run = spawnSync('sh', [script, ...args], {
@@ -49,45 +50,45 @@ describe('visual:linux', () => {
   it('installs and runs in a copy without .git, and hands back only the snapshots', () => {
     const { src, run } = fakeCheckout(0);
     expect(run.status, run.stderr).toBe(0);
-    expect(readFileSync(join(src, 'e2e', 'visual.spec.ts-snapshots', 'toolbar.png'), 'utf8').trim()).toBe('new');
+    expect(readFileSync(join(src, ...SNAPSHOTS, 'toolbar.png'), 'utf8').trim()).toBe('new');
     expect(readFileSync(join(src, 'node_modules', 'host.txt'), 'utf8')).toBe('darwin');
   });
 
   it('still hands back what a failing run wrote, and fails', () => {
     const { src, run } = fakeCheckout(1);
     expect(run.status).toBe(1);
-    expect(existsSync(join(src, 'e2e', 'visual.spec.ts-snapshots', 'toolbar.png'))).toBe(true);
+    expect(existsSync(join(src, ...SNAPSHOTS, 'toolbar.png'))).toBe(true);
   });
 
   it('checks without touching the committed baselines', () => {
     const { src, run, calls } = fakeCheckout(0, ['visual-check']);
     expect(run.status, run.stderr).toBe(0);
-    expect(readFileSync(join(src, 'e2e', 'visual.spec.ts-snapshots', 'toolbar.png'), 'utf8')).toBe('old');
-    expect(calls()).toEqual(['playwright test --config=playwright.visual.config.ts']);
+    expect(readFileSync(join(src, ...SNAPSHOTS, 'toolbar.png'), 'utf8')).toBe('old');
+    expect(calls()).toEqual(['playwright test --config=e2e/browser/playwright.visual.config.ts']);
   });
 
   it('runs the E2E suite with the arguments it was given', () => {
-    const { src, run, calls } = fakeCheckout(0, ['e2e', 'e2e/tooltip.spec.ts']);
+    const { src, run, calls } = fakeCheckout(0, ['e2e', 'e2e/browser/tooltip.spec.ts']);
     expect(run.status, run.stderr).toBe(0);
-    expect(calls()).toEqual(['playwright test e2e/tooltip.spec.ts']);
-    expect(readFileSync(join(src, 'e2e', 'visual.spec.ts-snapshots', 'toolbar.png'), 'utf8')).toBe('old');
+    expect(calls()).toEqual(['playwright test --config=e2e/browser/playwright.config.ts e2e/browser/tooltip.spec.ts']);
+    expect(readFileSync(join(src, ...SNAPSHOTS, 'toolbar.png'), 'utf8')).toBe('old');
   });
 
   it('measures, then regenerates, when updating', () => {
     const { run, calls } = fakeCheckout(0, ['visual-update']);
     expect(run.status, run.stderr).toBe(0);
     expect(calls()).toEqual([
-      'playwright test --config=playwright.visual.config.ts --reporter=json',
-      'playwright test --config=playwright.visual.config.ts --update-snapshots',
+      'playwright test --config=e2e/browser/playwright.visual.config.ts --reporter=json',
+      'playwright test --config=e2e/browser/playwright.visual.config.ts --update-snapshots',
     ]);
   });
 
   it('wires each npm script to its mode through the one pinned image', () => {
-    expect(pkg.scripts['visual:linux']).toBe('sh scripts/linux.sh visual-update');
-    expect(pkg.scripts['visual:linux:check']).toBe('sh scripts/linux.sh visual-check');
-    expect(pkg.scripts['e2e:linux']).toBe('sh scripts/linux.sh e2e');
+    expect(pkg.scripts['visual:linux']).toBe('sh .dev/browser/linux.sh visual-update');
+    expect(pkg.scripts['visual:linux:check']).toBe('sh .dev/browser/linux.sh visual-check');
+    expect(pkg.scripts['e2e:linux']).toBe('sh .dev/browser/linux.sh e2e');
     const wrapper = readFileSync(resolve(root, '.dev/browser/linux.sh'), 'utf8');
     expect(wrapper).toMatch(/-v "\$PWD":\/src /);
-    expect(wrapper).toMatch(/sh \/src\/scripts\/visual-linux\.sh "\$mode" "\$@"/);
+    expect(wrapper).toMatch(/sh \/src\/\.dev\/browser\/visual-linux\.sh "\$mode" "\$@"/);
   });
 });
