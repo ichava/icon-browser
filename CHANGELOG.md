@@ -4,28 +4,15 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
 
 ## [Unreleased]
 
-### Added
-
-- **[Work on the browser UI](docs/recipes/frontend-development.md)**, a recipe for the dev server with hot reload, the checks, the Playwright suite and its baselines, and the build.
-- **The browser's Playwright suite and guards run here** (react consolidation 2.6, 3.1 and 3.3). react-icon-browser's 20 e2e specs and their harness pages moved to `e2e/browser/`, built from `resources/js` by `e2e/browser/vite.config.ts` and run by `npm run e2e:browser` (98 tests, as in react-icon-browser); `npm run visual` compares the 12 committed Linux baselines inside the pinned Playwright image. `.github/workflows/browser.yml` runs the guards and the e2e suite on pull requests and the visual suite weekly and by dispatch; `visual-baselines.yml` seeds baselines on a pull request's branch. New npm scripts: `typecheck:domain`, `typecheck:e2e`, `boundaries`, `check:boundary-rules`, `check:schema-types`, `schema:types`, `check:dead-classes`, `check:dead-links`, `check:playwright-image`, `visual`, `visual:update`, `visual:linux`, `visual:linux:check`, `e2e:linux`.
-- **The SVG rendering sample is tracked, with the public packs only** (tabler and flag, react-icon-browser's own 18 files). The svg-baseline spec no longer renders the private bundled and Metronic packs, so it covers six archetypes, not eight; `noPrivateContent.test.ts` fails if the sample holds anything else.
-
-### Changed
-
-- **`npm run dev` serves the browser as it ships** (react consolidation 4.1). The dev server scopes the browser's stylesheet to its root and serves its fonts, as the build always did; before, a page in dev carried the browser's tokens on `:root` and its rules on the whole host page, with fallback fonts. `devStylesheet.test.ts` pins it.
-- **One build per UI change.** `npm run build` and `npm run build:prod` write `resources/views/prepaint.html` before the bundle; `npm run build:prepaint` still works alone. `committed-build.yml` compares the prepaint view as well as `public/assets`.
-- **The Composer archive leaves out `e2e/`, `.dependency-cruiser.cjs` and `tsconfig.domain.json`**, which the previous change had added (484 files, from 529).
-- `core/minifiedBundle.ts`, used only by its test, moved to `resources/js/test/minifiedBundle.ts`; dependency-cruiser's `no-unreachable` rule reported it.
-
-### Fixed
-
-- `resources/assets/fonts/README.md` linked `../../src/styles/theme.css`, which does not exist; `check:dead-links` found it.
-
 ## [0.1.0] - 2026-11-13
 
 First release of `ichava/icon-browser`. The repository is published as a single commit; the 0.1.x tags cut between 2026-10-23 and 2026-11-02 (v0.1.0 to v0.1.1, including the release-please v0.1.1 of 2026-11-02) are folded into this release, and their notes are kept below under *Archived history*.
 
 ### Added
+
+- **[Work on the browser UI](docs/recipes/frontend-development.md)**, a recipe for the dev server with hot reload, the checks, the Playwright suite and its baselines, and the build.
+- **The browser's Playwright suite and guards run here** (react consolidation 2.6, 3.1 and 3.3). react-icon-browser's 20 e2e specs and their harness pages moved to `e2e/browser/`, built from `resources/js` by `e2e/browser/vite.config.ts` and run by `npm run e2e:browser` (98 tests, as in react-icon-browser); `npm run visual` compares the 12 committed Linux baselines inside the pinned Playwright image. `.github/workflows/browser.yml` runs the guards and the e2e suite on pull requests and the visual suite weekly and by dispatch; `visual-baselines.yml` seeds baselines on a pull request's branch. New npm scripts: `typecheck:domain`, `typecheck:e2e`, `boundaries`, `check:boundary-rules`, `check:schema-types`, `schema:types`, `check:dead-classes`, `check:dead-links`, `check:playwright-image`, `visual`, `visual:update`, `visual:linux`, `visual:linux:check`, `e2e:linux`.
+- **The SVG rendering sample is tracked, with the public packs only** (tabler and flag, react-icon-browser's own 18 files). The svg-baseline spec no longer renders the private bundled and Metronic packs, so it covers six archetypes, not eight; `noPrivateContent.test.ts` fails if the sample holds anything else.
 
 - **The browser page can live at a path of the host's choosing**: `browser.path` (`ICHAVA_BROWSER_PATH`, e.g. `app` for `/app`), read through `Helpers::browserPath()`. The page and its icon pages (`/{path}/{id}`) move under the same route names; the REST API and the other pages stay under `/{prefix}`. When it moves, `/{prefix}/icons` and `/{prefix}/icons/{id}` answer **301** to the new URLs with the query kept (`MovedBrowserRedirectController`; `Route::redirect()` would drop `?icon=` deep links), and `/{prefix}` redirects to the new path. `ValidateIchavaRoute` accepts the moved path. The pages share it as `ichava.browserPath`, and the Inertia pages build icon links from it (`iconPageBase`), with a guard that fails any page building them from the prefix. The browser and its icon pages carry `<link rel="canonical">` to their URL without the filter query. Unset, empty, not a plain path, the bare prefix or under `{prefix}/api`: `/{prefix}/icons`, unchanged. Tests: `tests/Feature/BrowserPathTest.php`, the `MovedBrowser` suite.
 
@@ -74,6 +61,11 @@ First release of `ichava/icon-browser`. The repository is published as a single 
 - **A weekly `Rebuild committed bundle` workflow keeps `public/assets` current.** No lock file is committed, so a fresh install can resolve newer dependencies than the bundle was built with. Each Monday it rebuilds `main` the way `Committed build` does and, when the output differs, opens or updates one pull request from `chore/rebuild-bundle` with a Refresh Bot token, so the change runs CI like any other. `Committed build` is unchanged.
 
 ### Changed
+
+- **`npm run dev` serves the browser as it ships** (react consolidation 4.1). The dev server scopes the browser's stylesheet to its root and serves its fonts, as the build always did; before, a page in dev carried the browser's tokens on `:root` and its rules on the whole host page, with fallback fonts. `devStylesheet.test.ts` pins it.
+- **One build per UI change.** `npm run build` and `npm run build:prod` write `resources/views/prepaint.html` before the bundle; `npm run build:prepaint` still works alone. `committed-build.yml` compares the prepaint view as well as `public/assets`.
+- **The Composer archive leaves out `e2e/`, `.dependency-cruiser.cjs` and `tsconfig.domain.json`**, which the previous change had added (484 files, from 529).
+- `core/minifiedBundle.ts`, used only by its test, moved to `resources/js/test/minifiedBundle.ts`; dependency-cruiser's `no-unreachable` rule reported it.
 
 - **`zustand` may resolve to 5.1.x (`>=5.0.15 <5.2.0`, icon-browser#147).** It was held below 5.1.0 because 5.1.0 narrows `persist.rehydrate()`'s type, which changed the published type of the old library's `useStore` and failed `check:public-api`. That check went with the library build in icon-browser#146, so the hold had no reason left. Typecheck and the 993 Vitest tests pass on 5.1.0, and `inertia-app.*` is rebuilt from a fresh `npm install --no-package-lock`, as `committed-build.yml` does.
 - **The browser UI's source lives in this repository** (react consolidation 3d). `ichava/react-icon-browser`'s `main` at `3cdbd1b` is imported as a snapshot with no history: its `src/` into `resources/js/`, its tooling and fixture catalogue into `.dev/browser/`, its fonts into `resources/assets/fonts/`, and its other root files into `.dev/imported/react-icon-browser/`; the 20 Metronic baseline paths are not imported. `npm run build:prod` builds the committed bundle from that source: `theme.css` is compiled with Tailwind and scoped to `[data-ichava-theme]` as the library build did, and `ichava.scss` no longer scans the browser's files. The browser's 875 Vitest tests (and 3 skipped) run here, 994 passing in all. TypeScript 6 and Tailwind ^4.3 match the source, and `typecheck:inertia` uses its stricter `tsconfig.base.json`.
@@ -144,6 +136,8 @@ First release of `ichava/icon-browser`. The repository is published as a single 
 - **The `ichava.api.security` middleware alias.** Use `ichava.security`, which names the same `IchavaApiSecurity` middleware.
 
 ### Fixed
+
+- `resources/assets/fonts/README.md` linked `../../src/styles/theme.css`, which does not exist; `check:dead-links` found it.
 
 - **Re-vendored `ichava/react-icon-browser` at `41b0a4b`** (react-icon-browser#214): one caret for every dropdown and popover, drawn in the panel's own colours over its edge and centred on the trigger (the header menus drew none), and the "Cookies & storage" notice moves by its grip or the arrow keys, inside the window, for the session. `inertia-app.*` rebuilt with `npm run build:prod` after a fresh `npm install --no-package-lock`, as `committed-build.yml` does. `zustand` is held at `>=5.0.15 <5.1.0`, the vendored library's own range: 5.1.0 (2026-11-06) changes the type react-icon-browser publishes for `useStore`, and a fresh build that took it would no longer match the committed bundle.
 
