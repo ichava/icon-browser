@@ -21,7 +21,7 @@ import { test, expect } from '@playwright/test';
  * `foreignObject`/`script`/`image`, which is precisely what S1/S2 exist to strip. Sampling
  * three per feature per pack covers every way an SVG here can be structured.
  *
- * Regenerate the fixture with `node scripts/sample-svg-archetypes.mjs`. Do NOT refresh
+ * Regenerate the fixture with `node .dev/browser/sample-svg-archetypes.mjs`. Do NOT refresh
  * these baselines to make a diff go away: a change here means the pipeline started
  * rendering an icon differently, which is the entire question this suite exists to answer.
  */
@@ -37,17 +37,22 @@ test.describe('svg archetype rendering', () => {
 
     // A baseline over an empty or truncated sample would pass forever while covering
     // nothing, which is the failure mode that makes a suite worse than none.
-    expect(manifest.length, 'sample is suspiciously small').toBeGreaterThan(40);
+    //
+    // icon-browser is public, so the sample holds the public packs only (tabler, flag): 18 of
+    // react-icon-browser's 53 files. icon-sets-bundled and icon-sets-metronic are private, and
+    // the style_block and foreign archetypes came only from them, so those two are not covered
+    // here (react consolidation 3.1, 2026-11-13). The floor is the public sample's exact size.
+    expect(manifest.length, 'sample is suspiciously small').toBeGreaterThanOrEqual(18);
     const features = new Set(manifest.map((m) => m.feature));
-    for (const required of ['style_block', 'defs_ids', 'use_ref', 'gradient', 'clip_or_mask', 'own_colour', 'current_color', 'foreign']) {
+    for (const required of ['defs_ids', 'use_ref', 'gradient', 'clip_or_mask', 'own_colour', 'current_color']) {
       expect(features, `no sample for the ${required} archetype`).toContain(required);
     }
   });
 
-  // Directory names, matching `scripts/sample-svg-archetypes.mjs`'s PACKS and the
+  // Directory names, matching `.dev/browser/sample-svg-archetypes.mjs`'s PACKS and the
   // `pack` field it writes into the manifest. All three move together or this
   // loop filters to zero and fails with `no samples for <pack>`.
-  for (const pack of ['icon-sets-tabler', 'icon-sets-bundled', 'icon-sets-metronic', 'icon-sets-flag']) {
+  for (const pack of ['icon-sets-tabler', 'icon-sets-flag']) {
     test(`${pack} renders as it does today`, async ({ page }) => {
       await page.goto('/baseline/manifest.json');
       const manifest = JSON.parse(await page.locator('body').innerText()) as Manifest;

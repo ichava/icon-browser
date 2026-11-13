@@ -1,5 +1,5 @@
 {
-  "extends": "./tsconfig.base.json",
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "target": "ES2023",
     "lib": ["ES2023", "DOM", "DOM.Iterable"],
@@ -7,5 +7,5 @@
     "noEmit": true,
     "allowJs": false
   },
-  "include": ["e2e/**/*.ts", "playwright.config.ts", "playwright.visual.config.ts"]
+  "include": ["*.ts"]
 }

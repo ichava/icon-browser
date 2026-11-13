@@ -4,10 +4,16 @@ const PORT = 4174;
 
 /**
  * E2E config (plan P5). Builds the multi-page app and serves the production
- * bundle, then runs the specs in e2e/ against it in Chromium.
+ * bundle, then runs the specs in e2e/browser/ against it in Chromium.
+ *
+ * react-icon-browser's suite, moved here in react consolidation 3.1 (2026-11-13). The pages are
+ * built by e2e/browser/vite.config.ts from resources/js; the server runs from the repository root.
+ * The Laravel host's own checks are e2e/playwright.config.ts, which needs a seeded host.
  */
 export default defineConfig({
-  testDir: './e2e',
+  testDir: '.',
+  // At the repository root, where CI uploads them from.
+  outputDir: '../../test-results',
   // Screenshot-asserting specs are opted OUT of the default run and live behind
   // `npm run visual`. `svg-baseline.spec.ts` belongs here too: it asserts with
   // `toHaveScreenshot`, so leaving it in the behavioural suite meant CI ran it without
@@ -29,7 +35,8 @@ export default defineConfig({
   },
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
   webServer: {
-    command: `vite build && vite preview --port ${PORT} --strictPort`,
+    command: `vite build --config e2e/browser/vite.config.ts && vite preview --config e2e/browser/vite.config.ts --port ${PORT} --strictPort`,
+    cwd: '../..',
     url: `http://localhost:${PORT}/index.html`,
     timeout: 120_000,
     reuseExistingServer: !process.env.CI,

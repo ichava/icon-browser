@@ -12,7 +12,7 @@ async function dismissFirstRun(page: Page) {
   await page.getByRole('button', { name: 'Skip' }).click({ timeout: 10_000 }).catch(() => {});
 }
 
-const FIXTURE_ICON_COUNT = JSON.parse(readFileSync(new URL('../public/data/icons.json', import.meta.url), 'utf8')).icons.length;
+const FIXTURE_ICON_COUNT = JSON.parse(readFileSync(new URL('../../.dev/browser/public/data/icons.json', import.meta.url), 'utf8')).icons.length;
 
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => localStorage.clear());

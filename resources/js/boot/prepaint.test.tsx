@@ -38,7 +38,7 @@ describe('prepaint fragment', () => {
   });
 
   it('is injected after the real <body>, not inside a comment that mentions one', () => {
-    const html = readFileSync(join(process.cwd(), '.dev/imported/react-icon-browser/index.html'), 'utf8');
+    const html = readFileSync(join(process.cwd(), 'e2e/browser/index.html'), 'utf8');
     expect(html, 'the regression needs a comment naming <body> before the tag').toMatch(/<!--[\s\S]*<body>[\s\S]*-->[\s\S]*<body/);
     const out = insertAfterBody(html, '<i id="probe"></i>');
     const doc = new DOMParser().parseFromString(out, 'text/html');

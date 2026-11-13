@@ -1,8 +1,10 @@
 # Vendored fonts
 
-Geist and Geist Mono, self-hosted. Two variable `woff2` files, served at `/fonts/*.woff2`
-in both dev and the production build, and declared by the `@font-face` block in
-[`src/styles/theme.css`](../../src/styles/theme.css).
+Geist and Geist Mono, self-hosted. Two variable `woff2` files, declared by the `@font-face`
+block in [`resources/js/styles/theme.css`](../../js/styles/theme.css) at `/fonts/*.woff2`. The
+Inertia build (`vite.inertia.config.ts`) emits them to `public/assets/fonts/` and rewrites those
+URLs relative to the stylesheet; the e2e harness (`e2e/browser/vite.config.ts`) serves them at
+`/fonts/`.
 
 ## Why they are committed rather than installed
 
@@ -46,20 +48,21 @@ baseline. Treat it as a deliberate visual change, not a dependency bump:
 ```bash
 curl -sSLO https://registry.npmjs.org/geist/-/geist-<version>.tgz
 tar -xzf geist-<version>.tgz
-cp package/dist/fonts/geist-sans/Geist-Variable.woff2 public/fonts/
-cp package/dist/fonts/geist-mono/GeistMono-Variable.woff2 public/fonts/
-cp package/LICENSE.txt public/fonts/LICENSE.txt
-shasum -a 256 public/fonts/*.woff2      # update the table above
+cp package/dist/fonts/geist-sans/Geist-Variable.woff2 resources/assets/fonts/
+cp package/dist/fonts/geist-mono/GeistMono-Variable.woff2 resources/assets/fonts/
+cp package/LICENSE.txt resources/assets/fonts/LICENSE.txt
+shasum -a 256 resources/assets/fonts/*.woff2      # update the table above
+npm run build:prod                                # the committed bundle carries them
 ```
 
-Then regenerate both platforms' baselines and review the PNGs before committing. A baseline
+Then regenerate the baselines and review the PNGs before committing. A baseline
 refreshed without looking converts a caught regression into a committed one.
 
 The baselines are `-chromium-linux` only, rendered in Playwright's own image, which CI's visual
 job also runs in. Regenerate them either way; both use that image, so they produce the same pixels:
 
 - **Locally**: `npm run visual:linux` (needs Docker). It prints what moved; check `git diff`.
-- **On a pull request**: `gh workflow run visual-baselines.yml --ref <branch> -f commit=true`,
+- **On a pull request**: `gh workflow run visual-baselines.yml --repo ichava/icon-browser --ref <branch> -f commit=true`,
   which commits the changed PNGs to the branch and comments the drift on the pull request.
 
-`docs/release.md` and `.github/workflows/visual-baselines.yml` carry the full reasoning.
+`.github/workflows/visual-baselines.yml` carries the full reasoning.

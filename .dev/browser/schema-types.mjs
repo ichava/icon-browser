@@ -1,6 +1,13 @@
 #!/usr/bin/env node
 // Types for the icon-browser payloads, generated from its JSON Schema.
 //
+// Since react consolidation 3d (2026-11-12) the schema and the browser are in this one
+// repository: the generator reads resources/schema/icon-browser.schema.json and writes
+// resources/js/core/api/schema.gen.ts, and the record of the schema it was generated from is
+// .dev/imported/react-icon-browser/schema/source.json (SOURCE_PATH). Run it with
+// `npm run schema:types`, and check with `npm run check:schema-types`. The text below is
+// react-icon-browser's, from when the schema was copied across repositories.
+//
 // icon-browser owns the schema (resources/schema/icon-browser.schema.json); this repo
 // keeps a copy in schema/, with the commit it came from in schema/source.json, because
 // the two are separate repositories and CI cannot read across them. The generated file
@@ -197,7 +204,7 @@ function main() {
     let current = '';
     try { current = readFileSync(OUTPUT_PATH, 'utf8'); } catch { /* missing counts as drift */ }
     if (current !== text) {
-      console.error('src/core/api/schema.gen.ts does not match schema/icon-browser.schema.json. Run `npm run schema:types`.');
+      console.error('resources/js/core/api/schema.gen.ts does not match resources/schema/icon-browser.schema.json. Run `npm run schema:types`.');
       process.exit(1);
     }
     console.log(`schema types match (${Object.keys(schema.$defs ?? {}).length} definitions, schema ${schema.version}).`);

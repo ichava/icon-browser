@@ -7,17 +7,17 @@
 #   npm run e2e:linux             run the behavioural E2E suite
 #
 # Needs Docker. Arguments after the mode go to `playwright test` (a spec file, --grep ...).
-# The image is pinned here once; check:playwright-image fails if it drifts from ci.yml's
+# The image is pinned here once; check:playwright-image fails if it drifts from browser.yml's
 # visual job, the seed workflow or @playwright/test.
 set -eu
 
 IMAGE=mcr.microsoft.com/playwright:v1.65.0-noble
-mode=${1:?usage: scripts/linux.sh visual-update|visual-check|e2e [playwright args]}
+mode=${1:?usage: .dev/browser/linux.sh visual-update|visual-check|e2e [playwright args]}
 shift
 
 if ! command -v docker >/dev/null 2>&1; then
-  echo "scripts/linux.sh: Docker is not installed or not on PATH; CI's image needs it." >&2
+  echo ".dev/browser/linux.sh: Docker is not installed or not on PATH; CI's image needs it." >&2
   exit 127
 fi
 
-exec docker run --rm --ipc=host -v "$PWD":/src "$IMAGE" sh /src/scripts/visual-linux.sh "$mode" "$@"
+exec docker run --rm --ipc=host -v "$PWD":/src "$IMAGE" sh /src/.dev/browser/visual-linux.sh "$mode" "$@"

@@ -4,6 +4,19 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
 
 ## [Unreleased]
 
+### Added
+
+- **The browser's Playwright suite and guards run here** (react consolidation 2.6, 3.1 and 3.3). react-icon-browser's 20 e2e specs and their harness pages moved to `e2e/browser/`, built from `resources/js` by `e2e/browser/vite.config.ts` and run by `npm run e2e:browser` (98 tests, as in react-icon-browser); `npm run visual` compares the 12 committed Linux baselines inside the pinned Playwright image. `.github/workflows/browser.yml` runs the guards and the e2e suite on pull requests and the visual suite weekly and by dispatch; `visual-baselines.yml` seeds baselines on a pull request's branch. New npm scripts: `typecheck:domain`, `typecheck:e2e`, `boundaries`, `check:boundary-rules`, `check:schema-types`, `schema:types`, `check:dead-classes`, `check:dead-links`, `check:playwright-image`, `visual`, `visual:update`, `visual:linux`, `visual:linux:check`, `e2e:linux`.
+- **The SVG rendering sample is tracked, with the public packs only** (tabler and flag, react-icon-browser's own 18 files). The svg-baseline spec no longer renders the private bundled and Metronic packs, so it covers six archetypes, not eight; `noPrivateContent.test.ts` fails if the sample holds anything else.
+
+### Changed
+
+- `core/minifiedBundle.ts`, used only by its test, moved to `resources/js/test/minifiedBundle.ts`; dependency-cruiser's `no-unreachable` rule reported it.
+
+### Fixed
+
+- `resources/assets/fonts/README.md` linked `../../src/styles/theme.css`, which does not exist; `check:dead-links` found it.
+
 ## [0.1.0] - 2026-11-13
 
 First release of `ichava/icon-browser`. The repository is published as a single commit; the 0.1.x tags cut between 2026-10-23 and 2026-11-02 (v0.1.0 to v0.1.1, including the release-please v0.1.1 of 2026-11-02) are folded into this release, and their notes are kept below under *Archived history*.

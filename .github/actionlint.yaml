@@ -16,3 +16,9 @@ paths:
       # The same create-github-app-token v3 false positive as release-please.yml above; delete with it.
       - 'missing input "app-id" which is required by action "actions/create-github-app-token@v3"'
       - 'input "client-id" is not defined in action "actions/create-github-app-token@v3"'
+  .github/workflows/visual-baselines.yml:
+    ignore:
+      # The same create-github-app-token v3 false positive as release-please.yml above; delete with it.
+      # Added with the workflow, ported from react-icon-browser (react consolidation 2.6, 2026-11-13).
+      - 'missing input "app-id" which is required by action "actions/create-github-app-token@v3"'
+      - 'input "client-id" is not defined in action "actions/create-github-app-token@v3"'

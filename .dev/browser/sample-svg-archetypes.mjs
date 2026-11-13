@@ -9,7 +9,7 @@
  * Deterministic: directory entries are sorted before sampling, so re-running picks the
  * same files and the baseline does not churn.
  *
- * Writes to `public/baseline/` plus a manifest the spec reads.
+ * Writes to `.dev/browser/public/baseline/` plus a manifest the spec reads.
  */
 import { readdirSync, readFileSync, statSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
 import { join, basename, dirname } from 'node:path';
@@ -20,10 +20,19 @@ import { fileURLToPath } from 'node:url';
 // list of directory names that the 2026-09-21 rebrand renamed -- three ways of
 // being wrong, none of which anything reported, because the script is run by
 // hand and is not wired to an npm script.
-const APP = dirname(dirname(fileURLToPath(import.meta.url)));
+//
+// Moved from react-icon-browser's scripts/ to icon-browser's .dev/browser/ (react consolidation
+// 3.1, 2026-11-13): the repository root is two levels up, the packs sit beside it in packages/,
+// and the sample lands in the e2e harness's public directory.
+//
+// Public packs only. icon-browser is public, and icon-sets-bundled and icon-sets-metronic are
+// private (Metronic "is never shown publicly"), so their samples and contact sheets stay in the
+// retired react-icon-browser and are not reproduced here. The style_block and foreign archetypes
+// came only from those two packs; e2e/browser/svg-baseline.spec.ts says so where it checks.
+const APP = dirname(dirname(dirname(fileURLToPath(import.meta.url))));
 const ROOT = dirname(APP);
-const OUT = join(APP, 'public', 'baseline');
-const PACKS = ['icon-sets-tabler', 'icon-sets-bundled', 'icon-sets-metronic', 'icon-sets-flag'];
+const OUT = join(APP, '.dev', 'browser', 'public', 'baseline');
+const PACKS = ['icon-sets-tabler', 'icon-sets-flag'];
 
 const FEATURES = {
   style_block:   (s) => /<style[\s>]/i.test(s),

@@ -19,10 +19,10 @@ import { describe, expect, it } from 'vitest';
  */
 
 // The repository root. The source is resources/js since react consolidation 3d (2026-11-12), and
-// the standalone app's two pages wait with the other imported root files.
+// the standalone app's two pages are the e2e harness since 3.1 (2026-11-13).
 const ROOT = join(__dirname, '..', '..');
 const DIRS = ['resources/js'];
-const EXTRA = ['.dev/imported/react-icon-browser/index.html', '.dev/imported/react-icon-browser/embedded.html'];
+const EXTRA = ['e2e/browser/index.html', 'e2e/browser/embedded.html'];
 const EXT = /\.(tsx?|css|html)$/;
 const MIN_FILES = 150;
 const MAX_WEIGHT = 600;

@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { loadLocale, translate, type Locale } from '../src/core/i18n';
+import { loadLocale, translate, type Locale } from '../../resources/js/core/i18n';
 
 /**
  * B8: the header at phone width, left-to-right and right-to-left.

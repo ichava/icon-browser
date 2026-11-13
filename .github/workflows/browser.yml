@@ -1,0 +1,193 @@
+name: Browser
+
+# The browser UI's own checks, ported from ichava/react-icon-browser's ci.yml when its source
+# moved into resources/js (react consolidation 2.6, 2026-11-13). What that workflow ran and where
+# it went:
+#
+#   typecheck, build, lint, Vitest      tests.yml's frontend job (typecheck:inertia covers the
+#                                       whole of resources/js, tests included; build:prod builds it)
+#   check:config-drift                  tests.yml's frontend job
+#   actionlint, changelog order         code-quality.yml, changelog.yml
+#   build:lib, check:public-api,        not ported: the library build is retired (Q2) and nothing
+#   consumer self-test                  vendors the browser any more (icon-browser#146)
+#   everything else                     below
+#
+# Pull requests run Linux only, drafts run nothing, superseded runs are cancelled and every job
+# has a timeout. The visual suite runs weekly and by dispatch, not on every pull request.
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, ready_for_review]
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  guards:
+    name: Browser guards
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      # No lock file is committed (org rule), so this resolves fresh.
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      # The payload types are generated from resources/schema/icon-browser.schema.json. A hand
+      # edit to the generated file fails here before anything type-checks against the wrong shapes.
+      - name: Payload types match the schema
+        run: npm run check:schema-types
+
+      # The stricter overlay for resources/js/modules/*/domain and application: no DOM in lib,
+      # and exactOptionalPropertyTypes. Its own step, so a vendored component cannot fail it.
+      - name: Typecheck the domain layer
+        run: npm run typecheck:domain
+
+      - name: Typecheck the e2e specs
+        run: npm run typecheck:e2e
+
+      # Reads the stylesheet hosts receive (public/assets/css), which committed-build.yml proves
+      # equals a fresh build. A class Tailwind could not resolve is dropped with no warning, and
+      # nothing else notices: tsc and ESLint do not read strings.
+      - name: Dead CSS classes
+        run: npm run check:dead-classes
+
+      # The documentation portal has no Ichava pages yet; this fails on a link to them, and on a
+      # relative Markdown link to a file that does not exist.
+      - name: Dead documentation links
+        run: npm run check:dead-links
+
+      # The layering is what makes a later Vue or Blade consumer possible, and it only stays
+      # true if something checks. core/ leaked React because nothing did.
+      - name: Layer boundaries
+        run: npm run boundaries
+
+      # The module rules match little on this tree, so this plants a violation of each and
+      # fails unless every rule fires.
+      - name: Boundary rules can fail
+        run: npm run check:boundary-rules
+
+      # Cheap, and it fails on a config mistake that would otherwise surface as a screenshot
+      # diff, which reads as a rendering regression that is not one.
+      - name: Playwright image pinned consistently
+        run: npm run check:playwright-image
+
+  e2e:
+    name: Browser E2E (Playwright)
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      # The browser comes from Playwright's CDN; its system packages come from Ubuntu's apt
+      # mirrors, which went unreachable from the runner on 2026-11-11. The runner image already
+      # ships Chrome's libraries, so the extra packages are best effort: two minutes, then a
+      # warning instead of a red job.
+      - name: Install Playwright browsers
+        run: |
+          npx playwright install chromium
+          timeout 120 npx playwright install-deps chromium && exit 0
+          echo "::warning title=Playwright system deps::apt mirrors unreachable; running with the runner's own libraries"
+
+      # The config builds the harness (e2e/browser/vite.config.ts) and serves it itself.
+      - name: Playwright
+        run: npm run e2e:browser
+
+      - name: Upload report on failure
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: browser-e2e-report
+          path: test-results/
+          retention-days: 7
+
+  visual:
+    name: Browser visual regression
+    runs-on: ubuntu-latest
+    # Weekly and by dispatch (react consolidation 3.1): the suite compares pixels in a container
+    # and is the slowest job here.
+    if: github.event_name != 'pull_request'
+    timeout-minutes: 20
+
+    # The gate runs INSIDE Playwright's own image, not bare on the runner. Font stacks differ
+    # between the two, so a baseline made in the container misses a bare runner by ~1% of
+    # pixels. Running here makes `npm run visual:linux` byte-identical to CI.
+    #
+    # `npm run check:playwright-image` asserts this tag, the seed workflow's and linux.sh's all
+    # agree, and that they match @playwright/test. Do not edit one alone.
+    container:
+      image: mcr.microsoft.com/playwright:v1.65.0-noble
+      options: --ipc=host
+
+    # A containerised job does NOT inherit the runner's bash default: Actions runs `run:` steps
+    # under `sh -e`, where the bash arrays below expand to something else entirely.
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      # No setup-node and no `playwright install`: the image ships both.
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      # Without committed Linux baselines Playwright WRITES them and fails, which reads as a
+      # mysterious diff. Fail here instead, with the fix in the message.
+      - name: Require Linux baselines
+        run: |
+          shopt -s nullglob
+          baselines=(e2e/browser/*.spec.ts-snapshots/*-linux.png)
+          if [ ${#baselines[@]} -eq 0 ]; then
+            echo "::error::No Linux screenshot baselines are committed, so the visual"
+            echo "::error::suite cannot compare anything."
+            echo "::error::Seed them with the same image this job runs in:"
+            echo "::error::  npm run visual:linux          # locally, needs Docker"
+            echo "::error::  gh workflow run visual-baselines.yml --repo ichava/icon-browser --ref $GITHUB_REF_NAME"
+            echo "::error::Review the PNGs, then commit e2e/browser/*.spec.ts-snapshots/."
+            exit 1
+          fi
+          echo "Found ${#baselines[@]} Linux baseline(s)."
+
+      # Never --update-snapshots in CI. A self-updating baseline turns every regression into a
+      # committed one and the gate silently stops existing.
+      - name: Playwright (visual)
+        run: npm run visual
+
+      - name: Upload diff report on failure
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: browser-visual-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7
