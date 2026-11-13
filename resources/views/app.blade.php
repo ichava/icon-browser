@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    @php
+        $pageNonce = app(\Simtabi\Laranail\Ichava\IconBrowser\Support\PageNonce::class)->value();
+    @endphp
+    @if($pageNonce !== null)
+        {{-- The host's or the package's CSP nonce: React Aria reads it here for the styles it injects. --}}
+        <meta name="csp-nonce" content="{{ $pageNonce }}">
+    @endif
+
+    <title inertia>{{ config('app.name', 'Ichava') }}</title>
+
+    @if(request()->routeIs('ichava.inertia.browser', 'ichava.inertia.icons.show'))
+        {{-- The browser and its icon pages at the configured path (`browser.path`), without the
+             filter query, so a moved browser's old URLs and every filtered view name one page. --}}
+        <link rel="canonical" href="{{ url()->current() }}">
+    @endif
+
+    @php
+        use Simtabi\Laranail\Ichava\Support\Helpers;
+        $viteHost = config('ichava.icon-browser.vite.host', 'localhost');
+        $vitePort = (int) config('ichava.icon-browser.vite.port', 5174);
+        $viteBase = "http://{$viteHost}:{$vitePort}";
+        $viteClient = "{$viteBase}/@vite/client";
+        $viteDev = (bool) config('ichava.icon-browser.vite_dev_mode', false) && (bool) config('app.debug');
+        if ($viteDev) {
+            try {
+                $fp = @fsockopen($viteHost, $vitePort, $errno, $errstr, 0.2);
+                if (is_resource($fp)) {
+                    fclose($fp);
+                } else {
+                    $viteDev = false;
+                }
+            } catch (\Throwable $e) {
+                $viteDev = false;
+            }
+        }
+    @endphp
+
+    @if($viteDev)
+        <script type="module" @if($pageNonce !== null) nonce="{{ $pageNonce }}" @endif>
+            import RefreshRuntime from '{{ $viteBase }}/@react-refresh';
+            RefreshRuntime.injectIntoGlobalHook(window);
+            window.$RefreshReg$ = () => {};
+            window.$RefreshSig$ = () => (type) => type;
+            window.__vite_plugin_react_preamble_installed__ = true;
+        </script>
+        <script type="module" src="{{ $viteClient }}" @if($pageNonce !== null) nonce="{{ $pageNonce }}" @endif></script>
+        <script type="module" src="{{ $viteBase }}/resources/js/app.tsx" @if($pageNonce !== null) nonce="{{ $pageNonce }}" @endif></script>
+    @else
+        <link rel="stylesheet" href="{{ asset('vendor/ichava/assets/css/inertia-app.css') }}?v={{ Helpers::assetVersion('vendor/ichava/assets/css/inertia-app.css') }}" @if($pageNonce !== null) nonce="{{ $pageNonce }}" @endif>
+    @endif
+
+    @inertiaHead
+
+    <style @if($pageNonce !== null) nonce="{{ $pageNonce }}" @endif>
+        #app { display: flex; flex-direction: column; flex: 1 0 auto; min-height: 100dvh; }
+    </style>
+</head>
+{{-- The browser's warm frame (`--canvas`) and ink, so nothing flashes between the prepaint and the mount. --}}
+<body class="antialiased h-full bg-[#ece8de] text-[#1f1c17] dark:bg-[#14120e] dark:text-[#f6f4ee]">
+    {{-- First, so the loader paints before the bundle downloads; the app removes it on mount. --}}
+    <x-ichava-icon-browser::prepaint />
+
+    <div class="flex min-h-dvh flex-col">
+        @inertia
+    </div>
+
+    @if(! $viteDev)
+        {{-- No ?v= on the entry: its page chunks import it back as `./inertia-app.js`, and a module
+             URL with a query is a different module. Two copies of the entry meant two Inertia
+             contexts, so every page threw "usePage must be used within the Inertia component". --}}
+        <script src="{{ asset('vendor/ichava/assets/js/inertia-app.js') }}" type="module" @if($pageNonce !== null) nonce="{{ $pageNonce }}" @endif></script>
+    @endif
+</body>
+</html>

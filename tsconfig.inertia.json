@@ -1,0 +1,19 @@
+{
+    "//": "The browser's source came from react-icon-browser with its compiler settings (tsconfig.base.json, a copy of js-ui-kernel's config/tsconfig.base.json); since react consolidation 3d (2026-11-12) the whole of resources/js is checked under them, the adapter included.",
+    "extends": ["./tsconfig.base.json", "./tsconfig.json"],
+    "compilerOptions": {
+        "target": "ES2022",
+        "module": "ESNext",
+        "moduleResolution": "bundler",
+        "jsx": "react-jsx",
+        "strict": true,
+        "skipLibCheck": true,
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "resolveJsonModule": true,
+        "isolatedModules": true,
+        "noEmit": true,
+        "types": ["vite/client", "node"]
+    },
+    "include": ["resources/js/**/*", "vite.inertia.config.ts", "vite.utility-scope.d.mts"]
+}

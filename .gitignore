@@ -1,0 +1,68 @@
+# Dependencies
+/vendor
+/node_modules
+
+# IDE / editor cruft
+/.idea
+/.vscode
+/.fleet
+/.zed
+*.swp
+*.swo
+*~
+
+# OS cruft
+.DS_Store
+Thumbs.db
+
+# Composer
+composer.lock
+auth.json
+
+# PHP test + lint caches
+/.phpunit.cache
+.phpunit.result.cache
+/.phpstan.cache
+/.pint.cache
+/.php-cs-fixer.cache
+/.psalm
+/coverage
+coverage.xml
+clover.xml
+
+# Frontend build output
+/public/build
+/public/.vite
+/public/hot
+/public/vendor
+
+# Local env / config overrides
+.env
+.env.local
+.env.*.local
+composer.local.json
+
+# Logs
+*.log
+
+# Local dev tooling — log directories created by .dev/ helper scripts.
+# Pattern matches .dev/.<basename>-logs/ for any helper following the
+# convention.
+/.dev/.*-logs/
+package-lock.json
+
+# Agent worktrees and local design notes. Tailwind's source scan honours this file but not
+# a global git excludes file, so without this line it reads every checkout under
+# .claude/worktrees/ and the committed inertia-app.css grows by the classes they use.
+/.claude/
+
+# The svg-baseline rendering check samples the public packs only since react consolidation 3.1
+# (2026-11-13), so its sample (.dev/browser/public/baseline/) is tracked. A contact sheet from the
+# private bundled or Metronic packs is never tracked: this repository is public.
+/e2e/browser/svg-baseline.spec.ts-snapshots/*bundled*
+/e2e/browser/svg-baseline.spec.ts-snapshots/*metronic*
+
+# The e2e harness build (e2e/browser/vite.config.ts) and Playwright output.
+/.cache/
+/playwright-report/
+/test-results/

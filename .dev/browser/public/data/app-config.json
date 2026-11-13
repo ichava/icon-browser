@@ -1,0 +1,154 @@
+{
+  "meta": {
+    "generated": "2026-07-21",
+    "author": "Simtabi LLC",
+    "sets": 70,
+    "license": "Proprietary",
+    "url": "https://simtabi.com"
+  },
+  "seo": {
+    "title": "Ichava Browser — every icon your Laravel app needs",
+    "description": "Any SVG, icons and illustrations, from open-source sets. Search, restyle, animate and copy — visual browser, REST API and Blade components for Laravel."
+  },
+  "features": {
+    "devtools": true,
+    "collections": true,
+    "history": true,
+    "motion": true,
+    "treatments": true,
+    "multiSelect": true,
+    "presence": true,
+    "demo": true
+  },
+  "user": {
+    "mode": "guest",
+    "name": "Amina K.",
+    "email": "amina@simtabi.com",
+    "initials": "AK",
+    "plan": "TEAM",
+    "workspaces": [
+      {
+        "id": "simtabi",
+        "name": "Simtabi Team",
+        "plan": "TEAM",
+        "active": true
+      },
+      {
+        "id": "personal",
+        "name": "Personal",
+        "plan": "FREE",
+        "active": false
+      }
+    ]
+  },
+  "ui": {
+    "defaultTheme": "light",
+    "scale": "m",
+    "density": "compact",
+    "accentOptions": [
+      "#0e7c66",
+      "#2f54d6",
+      "#c2410c",
+      "#7c3aed",
+      "#be185d"
+    ],
+    "perPageOptions": [
+      30,
+      60,
+      120
+    ]
+  },
+  "storage": {
+    "frontendDriver": "local",
+    "laravelDriver": "session"
+  },
+  "boot": {
+    "variant": "bar",
+    "background": "gradient",
+    "brand": {
+      "tagline": "Every icon your Laravel app needs"
+    },
+    "showStats": true,
+    "tips": {
+      "enabled": true,
+      "items": [
+        "Press ⌘K anywhere to open the command palette.",
+        "Icons inherit currentColor — theme them with one CSS variable.",
+        "Star an icon to add it to your Favorites."
+      ]
+    },
+    "stats": [
+      {
+        "key": "icons",
+        "label": "Icons",
+        "to": 8686
+      },
+      {
+        "key": "packages",
+        "label": "Packages",
+        "to": 3
+      },
+      {
+        "key": "categories",
+        "label": "Categories",
+        "to": 84
+      }
+    ]
+  },
+  "team": [
+    {
+      "initials": "JD",
+      "name": "Jonas D.",
+      "online": true,
+      "status": "online"
+    },
+    {
+      "initials": "RK",
+      "name": "Rita K.",
+      "online": true,
+      "status": "online"
+    },
+    {
+      "initials": "MO",
+      "name": "Moses O.",
+      "online": false,
+      "status": "away"
+    }
+  ],
+  "defaults": {
+    "collections": [
+      {
+        "id": "c-nav",
+        "name": "Nav icons",
+        "icons": [
+          1,
+          3,
+          2
+        ]
+      },
+      {
+        "id": "c-dashboard",
+        "name": "Dashboard set",
+        "icons": [
+          38,
+          2,
+          10,
+          5,
+          24
+        ],
+        "shared": true,
+        "role": "editor",
+        "sharedWith": [
+          {
+            "initials": "JD",
+            "name": "Jonas D."
+          },
+          {
+            "initials": "RK",
+            "name": "Rita K."
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,110 @@
+[
+  {
+    "pack": "icon-sets-tabler",
+    "feature": "current_color",
+    "file": "icon-sets-tabler__current_color__accessible.svg",
+    "bytes": 746
+  },
+  {
+    "pack": "icon-sets-tabler",
+    "feature": "current_color",
+    "file": "icon-sets-tabler__current_color__ad-circle.svg",
+    "bytes": 794
+  },
+  {
+    "pack": "icon-sets-tabler",
+    "feature": "current_color",
+    "file": "icon-sets-tabler__current_color__ad.svg",
+    "bytes": 787
+  },
+  {
+    "pack": "icon-sets-flag",
+    "feature": "defs_ids",
+    "file": "icon-sets-flag__defs_ids__ag.svg",
+    "bytes": 750
+  },
+  {
+    "pack": "icon-sets-flag",
+    "feature": "defs_ids",
+    "file": "icon-sets-flag__defs_ids__ai.svg",
+    "bytes": 2313
+  },
+  {
+    "pack": "icon-sets-flag",
+    "feature": "defs_ids",
+    "file": "icon-sets-flag__defs_ids__aw.svg",
+    "bytes": 10354
+  },
+  {
+    "pack": "icon-sets-flag",
+    "feature": "use_ref",
+    "file": "icon-sets-flag__use_ref__ad.svg",
+    "bytes": 29141
+  },
+  {
+    "pack": "icon-sets-flag",
+    "feature": "use_ref",
+    "file": "icon-sets-flag__use_ref__af.svg",
+    "bytes": 18983
+  },
+  {
+    "pack": "icon-sets-flag",
+    "feature": "use_ref",
+    "file": "icon-sets-flag__use_ref__al.svg",
+    "bytes": 3138
+  },
+  {
+    "pack": "icon-sets-flag",
+    "feature": "gradient",
+    "file": "icon-sets-flag__gradient__bz.svg",
+    "bytes": 42676
+  },
+  {
+    "pack": "icon-sets-flag",
+    "feature": "gradient",
+    "file": "icon-sets-flag__gradient__fk.svg",
+    "bytes": 28488
+  },
+  {
+    "pack": "icon-sets-flag",
+    "feature": "gradient",
+    "file": "icon-sets-flag__gradient__gs.svg",
+    "bytes": 31921
+  },
+  {
+    "pack": "icon-sets-flag",
+    "feature": "clip_or_mask",
+    "file": "icon-sets-flag__clip_or_mask__ax.svg",
+    "bytes": 542
+  },
+  {
+    "pack": "icon-sets-flag",
+    "feature": "clip_or_mask",
+    "file": "icon-sets-flag__clip_or_mask__ba.svg",
+    "bytes": 1171
+  },
+  {
+    "pack": "icon-sets-flag",
+    "feature": "clip_or_mask",
+    "file": "icon-sets-flag__clip_or_mask__bi.svg",
+    "bytes": 1051
+  },
+  {
+    "pack": "icon-sets-flag",
+    "feature": "own_colour",
+    "file": "icon-sets-flag__own_colour__ae.svg",
+    "bytes": 273
+  },
+  {
+    "pack": "icon-sets-flag",
+    "feature": "own_colour",
+    "file": "icon-sets-flag__own_colour__am.svg",
+    "bytes": 235
+  },
+  {
+    "pack": "icon-sets-flag",
+    "feature": "own_colour",
+    "file": "icon-sets-flag__own_colour__ao.svg",
+    "bytes": 1601
+  }
+]
