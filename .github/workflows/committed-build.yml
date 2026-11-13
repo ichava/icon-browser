@@ -47,8 +47,10 @@ jobs:
 
       - name: Compare with the committed bundle
         run: |
-          if ! git diff --exit-code --stat public/assets; then
-            echo "::error title=Committed bundle is stale::public/assets differs from a fresh build of this tree. Run 'npm install --no-package-lock && npm run build:prod' and commit the changes under public/assets."
+          # build:prod also writes resources/views/prepaint.html (react consolidation 4.1), which the
+          # prepaint component inlines, so it is compared with the bundle.
+          if ! git diff --exit-code --stat public/assets resources/views/prepaint.html; then
+            echo "::error title=Committed bundle is stale::public/assets or resources/views/prepaint.html differs from a fresh build of this tree. Run 'npm install --no-package-lock && npm run build:prod' and commit the changes."
             exit 1
           fi
           if [ -n "$(git status --porcelain --untracked-files=all public/assets)" ]; then

@@ -42,13 +42,15 @@ const BROWSER_SCOPE = '[data-ichava-theme]';
  * `scopeThemeTokens` and `scopeUtilityLayer`. Those ran over every emitted stylesheet; here the
  * browser's CSS shares one bundle with this package's own (ichava.scss, pages.css), whose
  * `:root` and `body` rules must stay global. So this runs on the browser's module alone, after
- * Tailwind has compiled and minified it, and before Vite joins the stylesheets. Build only, like
- * the two plugins it replaces.
+ * Tailwind has compiled it, and before Vite joins the stylesheets.
+ *
+ * It runs under `npm run dev` too (react consolidation 4.1, 2026-11-13). It used to be build only,
+ * so the dev server put the browser's tokens on `:root` and its rules on the whole host page, and
+ * a page looked different in dev from what a host receives. `DevStylesheetTest` pins both modes.
  */
 function browserStylesheet(): Plugin {
     return {
         name: 'ichava:browser-stylesheet',
-        apply: 'build',
         transform(code, id) {
             if (id.split('?')[0] !== BROWSER_STYLESHEET) return null;
             return { code: scopeSheet(scopeTokens(code, BROWSER_SCOPE), BROWSER_SCOPE), map: null };
@@ -85,13 +87,30 @@ function shipFonts(): Plugin {
     };
 }
 
+/**
+ * Serve the fonts under `npm run dev`. theme.css asks for `/fonts/...`, which only the build
+ * rewrites (shipFonts); the dev server serves the repository at its root, so in dev the URLs point
+ * at the files in resources/assets/fonts instead of at a path nothing serves.
+ */
+function devFonts(): Plugin {
+    return {
+        name: 'ichava:browser-dev-fonts',
+        apply: 'serve',
+        enforce: 'post',
+        transform(code, id) {
+            if (id.split('?')[0] !== BROWSER_STYLESHEET) return null;
+            return { code: code.replace(/url\((['"]?)\/fonts\//g, 'url($1/resources/assets/fonts/'), map: null };
+        },
+    };
+}
+
 /** package.json's version, for the browser's `config.meta.version`. */
 const VERSION = (JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8')) as { version: string }).version;
 
 export default defineConfig({
     base: './',
     define: { __ICHAVA_BROWSER_VERSION__: JSON.stringify(VERSION) },
-    plugins: [react(), tailwindcss(), browserStylesheet(), shipFonts()],
+    plugins: [react(), tailwindcss(), browserStylesheet(), shipFonts(), devFonts()],
     resolve: {
         alias: {
             '@': fileURLToPath(new URL('./resources/js', import.meta.url)),
