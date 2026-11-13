@@ -6,11 +6,15 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
 
 ### Added
 
+- **[Work on the browser UI](docs/recipes/frontend-development.md)**, a recipe for the dev server with hot reload, the checks, the Playwright suite and its baselines, and the build.
 - **The browser's Playwright suite and guards run here** (react consolidation 2.6, 3.1 and 3.3). react-icon-browser's 20 e2e specs and their harness pages moved to `e2e/browser/`, built from `resources/js` by `e2e/browser/vite.config.ts` and run by `npm run e2e:browser` (98 tests, as in react-icon-browser); `npm run visual` compares the 12 committed Linux baselines inside the pinned Playwright image. `.github/workflows/browser.yml` runs the guards and the e2e suite on pull requests and the visual suite weekly and by dispatch; `visual-baselines.yml` seeds baselines on a pull request's branch. New npm scripts: `typecheck:domain`, `typecheck:e2e`, `boundaries`, `check:boundary-rules`, `check:schema-types`, `schema:types`, `check:dead-classes`, `check:dead-links`, `check:playwright-image`, `visual`, `visual:update`, `visual:linux`, `visual:linux:check`, `e2e:linux`.
 - **The SVG rendering sample is tracked, with the public packs only** (tabler and flag, react-icon-browser's own 18 files). The svg-baseline spec no longer renders the private bundled and Metronic packs, so it covers six archetypes, not eight; `noPrivateContent.test.ts` fails if the sample holds anything else.
 
 ### Changed
 
+- **`npm run dev` serves the browser as it ships** (react consolidation 4.1). The dev server scopes the browser's stylesheet to its root and serves its fonts, as the build always did; before, a page in dev carried the browser's tokens on `:root` and its rules on the whole host page, with fallback fonts. `devStylesheet.test.ts` pins it.
+- **One build per UI change.** `npm run build` and `npm run build:prod` write `resources/views/prepaint.html` before the bundle; `npm run build:prepaint` still works alone. `committed-build.yml` compares the prepaint view as well as `public/assets`.
+- **The Composer archive leaves out `e2e/`, `.dependency-cruiser.cjs` and `tsconfig.domain.json`**, which the previous change had added (484 files, from 529).
 - `core/minifiedBundle.ts`, used only by its test, moved to `resources/js/test/minifiedBundle.ts`; dependency-cruiser's `no-unreachable` rule reported it.
 
 ### Fixed

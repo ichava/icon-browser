@@ -32,3 +32,10 @@
 /resources/js/**/*.test.ts      export-ignore
 /resources/js/**/*.test.tsx     export-ignore
 /resources/js/test              export-ignore
+
+# The browser's Playwright suite (e2e/browser, with its baselines and harness pages) and the host
+# e2e check, and the two guard configs that came with them (react consolidation 3.1/3.3), are
+# development-only.
+/e2e                     export-ignore
+/.dependency-cruiser.cjs export-ignore
+/tsconfig.domain.json    export-ignore

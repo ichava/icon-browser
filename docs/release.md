@@ -64,11 +64,11 @@ The browser's source lives in `resources/js` since 2026-11-12 (see [Architecture
 ```bash
 npm install
 npm run typecheck:inertia && npm run lint && npm run test:js
-npm run build:prod          # then commit public/assets
-npm run build:prepaint      # only when resources/js/boot/prepaint.html changed
+npm run e2e:browser         # the browser's Playwright suite, on its standalone harness
+npm run build:prod          # then commit public/assets and resources/views/prepaint.html
 ```
 
-`npm run build:prepaint` writes `resources/views/prepaint.html`, which the prepaint component inlines; commit it with the bundle. The vendored `resources/vendor/react-icon-browser` and its `sync:react-icon-browser` and `build:lib` scripts were removed on 2026-11-13.
+`npm run build:prod` is the one build: it writes `resources/views/prepaint.html`, which the prepaint component inlines, and then the bundle. Commit both; `committed-build.yml` fails when either differs from a fresh build. [Work on the browser UI](recipes/frontend-development.md) covers the dev server, every check and the visual baselines. The vendored `resources/vendor/react-icon-browser` and its `sync:react-icon-browser` and `build:lib` scripts were removed on 2026-11-13.
 
 The source and the committed bundle contain Untitled UI PRO components, used under the Untitled UI licence as part of this product ([LICENSE](../LICENSE), [Architecture](architecture.md#untitled-ui-pro-components)). The repository is public (decided 2026-10-30) and the package stays proprietary. A release tag on the public repository publishes normally: `release.yml` does not gate on repository visibility. Its other safeguards stand, namely the tag-only trigger, the refusal of any ref that is not a `vX.Y.Z` tag, and the changelog section it extracts and fails closed without.
 

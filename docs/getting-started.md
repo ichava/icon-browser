@@ -54,6 +54,7 @@ Browser adapts to the host application rather than imposing a stack, so the prot
 
 ## See also
 
+- [Work on the browser UI](recipes/frontend-development.md), to change the React source in `resources/js` with hot reload
 - [Configuration](configuration.md)
 - [Environment variables](environment.md)
 - [Architecture](architecture.md)
