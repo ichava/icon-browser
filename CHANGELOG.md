@@ -4,7 +4,7 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
 
 ## [Unreleased]
 
-## [0.1.0] - TBD
+## [0.1.0] - 2026-11-13
 
 First release of `ichava/icon-browser`. The repository is published as a single commit; the 0.1.x tags cut between 2026-10-23 and 2026-11-02 (v0.1.0 to v0.1.1, including the release-please v0.1.1 of 2026-11-02) are folded into this release, and their notes are kept below under *Archived history*.
 
