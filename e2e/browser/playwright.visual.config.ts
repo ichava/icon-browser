@@ -24,6 +24,6 @@ export default defineConfig({
   retries: 0,
   // On CI the `github` reporter adds each failure as a run annotation, readable without the log.
   reporter: process.env.CI
-    ? [['list'], ['html', { open: 'never' }], ['github']]
-    : [['list'], ['html', { open: 'never' }]],
+    ? [['list'], ['html', { open: 'never', outputFolder: '../../playwright-report' }], ['github']]
+    : [['list'], ['html', { open: 'never', outputFolder: '../../playwright-report' }]],
 });

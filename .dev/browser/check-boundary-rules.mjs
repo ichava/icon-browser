@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Proves the module boundary rules in .dependency-cruiser.cjs can fail.
 //
-// The rules for src/modules/ and src/state/ land before the code they govern
+// The rules for resources/js/modules/ and resources/js/state/ land before the code they govern
 // (architecture.md 4.1), so on a tree with no modules they match nothing, and "no
 // violations" would say nothing about whether they work. `core-no-react` once shipped
 // matching nothing for exactly that reason.
@@ -16,10 +16,11 @@ import { mkdirSync, rmdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const A = 'src/modules/__probe_a__';
-const B = 'src/modules/__probe_b__';
-const STATE = 'src/state/__probe__.ts';
+// .dev/browser/ -> the repository root (react consolidation 3.3, 2026-11-13).
+const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
+const A = 'resources/js/modules/__probe_a__';
+const B = 'resources/js/modules/__probe_b__';
+const STATE = 'resources/js/state/__probe__.ts';
 const PLANTED = [A, B, STATE];
 
 /** file -> source. Each import names an existing module or another plant. */
@@ -48,7 +49,7 @@ const CONTROL = `${B}/domain/through-index.ts`;
 function cleanup() {
   for (const p of PLANTED) rmSync(join(root, p), { recursive: true, force: true });
   // Remove the parent directories too when the plants were all they held.
-  for (const dir of ['src/modules', 'src/state']) {
+  for (const dir of ['resources/js/modules', 'resources/js/state']) {
     try {
       rmdirSync(join(root, dir));
     } catch {

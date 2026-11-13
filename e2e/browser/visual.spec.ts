@@ -83,11 +83,11 @@ const REQUIRED_FONTS: string[] = [
  * `landing.html` in a fallback face: a 4,639-pixel diff, stable across both attempts,
  * which is what made it read as a real regression rather than a race.
  *
- * The fix is in `src/styles/theme.css` -- the faces are self-hosted and declared in the
+ * The fix is in `resources/js/styles/theme.css` -- the faces are self-hosted and declared in the
  * render-blocking bundle, so they exist before first paint. This is the matching barrier:
  * `load()` forces each fetch rather than waiting to be told about it, and `check()` then
  * confirms the face is genuinely usable. Asserting the result matters as much as awaiting
- * it. A missing woff2, a renamed family or a `public/fonts` that failed to copy would
+ * it. A missing woff2, a renamed family or a `resources/assets/fonts` file the harness failed to emit would
  * otherwise reproduce exactly the original failure -- a silent fallback face baked into a
  * baseline -- and this suite exists to catch changes that nothing else notices.
  */
@@ -101,7 +101,7 @@ async function fonts(page: Page) {
   expect(
     missing,
     `Self-hosted faces did not load, so this shot would bake in a fallback font. ` +
-      `Check public/fonts/*.woff2 and the @font-face block in src/styles/theme.css. ` +
+      `Check resources/assets/fonts/*.woff2 and the @font-face block in resources/js/styles/theme.css. ` +
       `Unavailable: ${missing.join(', ')}`,
   ).toEqual([]);
 }

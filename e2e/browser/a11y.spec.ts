@@ -8,7 +8,7 @@ import { expect, test, type Page } from '@playwright/test';
  *
  * The theme is chosen through `prefers-color-scheme` with no stored preference, so this
  * also exercises L9: a first load follows the system scheme. The structural rules are
- * pinned in jsdom too (src/IchavaBrowser.a11y.test.tsx); colour contrast needs a real
+ * pinned in jsdom too (resources/js/IchavaBrowser.a11y.test.tsx); colour contrast needs a real
  * renderer, which is why this suite exists.
  *
  * Moderate and minor findings are not gated here. Lower the bar only with a reason.

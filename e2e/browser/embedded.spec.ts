@@ -11,7 +11,7 @@ import { test, expect, type Page } from '@playwright/test';
  * first place, so the kill switch defeated itself.
  *
  * `embedded.html` is a host page with its own title, lang, dir, meta and chrome.
- * `src/embedded.tsx` mounts through `mountIchavaBrowser` with the defaults.
+ * `resources/js/embedded.tsx` mounts through `mountIchavaBrowser` with the defaults.
  */
 
 const HOST = {

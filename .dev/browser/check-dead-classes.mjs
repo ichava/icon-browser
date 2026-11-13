@@ -15,7 +15,10 @@
  * source that was meant to produce it. Grepping the Tailwind config or the component
  * proves how the class was written, never what the compiler kept.
  *
- * Run after `npm run build`, against `dist/`.
+ * Run after `npm run build:prod`, against the committed bundle's stylesheet in public/assets/css/,
+ * which is what a host receives. Moved from react-icon-browser's scripts/ (react consolidation 3.3,
+ * 2026-11-13): it read that repository's dist/assets and src/; the standalone harness pages it
+ * also scanned now live in e2e/browser/.
  *
  * WHAT IT DOES NOT COVER, so nobody reads a pass as more than it is:
  *
@@ -32,9 +35,10 @@ import { readFileSync, readdirSync, statSync, existsSync } from 'node:fs';
 import { join, extname, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const ROOT = fileURLToPath(new URL('..', import.meta.url));
-const CSS_DIR = join(ROOT, 'dist/assets');
-const SRC_DIR = join(ROOT, 'src');
+const ROOT = fileURLToPath(new URL('../..', import.meta.url));
+const CSS_DIR = join(ROOT, 'public/assets/css');
+const SRC_DIR = join(ROOT, 'resources/js');
+const HTML_DIR = join(ROOT, 'e2e/browser');
 
 /**
  * Class names that are expected to emit nothing, each with the reason it is not a defect.
@@ -84,9 +88,9 @@ function collectTokens() {
   };
 
   walk(SRC_DIR).forEach(scan);
-  readdirSync(ROOT)
+  readdirSync(HTML_DIR)
     .filter((f) => f.endsWith('.html'))
-    .forEach((f) => scan(join(ROOT, f)));
+    .forEach((f) => scan(join(HTML_DIR, f)));
 
   return tokens;
 }
@@ -98,11 +102,11 @@ function collectTokens() {
  */
 function loadCss() {
   if (!existsSync(CSS_DIR)) {
-    fail(`No ${relative(ROOT, CSS_DIR)} directory. Run \`npm run build\` first.`);
+    fail(`No ${relative(ROOT, CSS_DIR)} directory. Run \`npm run build:prod\` first.`);
   }
   const files = readdirSync(CSS_DIR).filter((f) => f.endsWith('.css'));
   if (files.length === 0) {
-    fail(`No CSS in ${relative(ROOT, CSS_DIR)}. Run \`npm run build\` first.`);
+    fail(`No CSS in ${relative(ROOT, CSS_DIR)}. Run \`npm run build:prod\` first.`);
   }
   const css = files.map((f) => readFileSync(join(CSS_DIR, f), 'utf8')).join('\n');
   return { css: css.replace(/\\/g, ''), files };

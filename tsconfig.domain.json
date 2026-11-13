@@ -2,13 +2,19 @@
 // its own step, so a vendored component can never make it fail. `lib` has no DOM, so a
 // domain file that reaches for document, window or localStorage does not compile: the
 // compiler-level twin of dependency-cruiser's module-domain-is-plain-ts rule.
+//
+// react-icon-browser's tsconfig.domain.json, its paths moved from src/ to resources/js/ (react
+// consolidation 3.3, 2026-11-13). It extended that repository's tsconfig.app.json, which was the
+// base config plus JSX and the `@/` path; both are spelled out here.
 {
-  "extends": "./tsconfig.app.json",
+  "extends": "./tsconfig.base.json",
   "compilerOptions": {
+    "jsx": "react-jsx",
+    "paths": { "@/*": ["./resources/js/*"] },
     "exactOptionalPropertyTypes": true,
     "lib": ["ES2023", "ESNext.Disposable"],
     "types": []
   },
-  "include": ["src/modules/*/domain", "src/modules/*/application"],
-  "exclude": ["src/**/*.test.ts", "src/**/*.test.tsx"]
+  "include": ["resources/js/modules/*/domain", "resources/js/modules/*/application"],
+  "exclude": ["resources/js/**/*.test.ts", "resources/js/**/*.test.tsx"]
 }

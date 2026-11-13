@@ -61,3 +61,8 @@ package-lock.json
 /.dev/browser/public/baseline/
 /.dev/imported/react-icon-browser/e2e/svg-baseline.spec.ts-snapshots/*bundled*
 /.dev/imported/react-icon-browser/e2e/svg-baseline.spec.ts-snapshots/*metronic*
+
+# The e2e harness build (e2e/browser/vite.config.ts) and Playwright output.
+/.cache/
+/playwright-report/
+/test-results/

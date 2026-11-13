@@ -22,13 +22,14 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
-const root = join(dirname(fileURLToPath(import.meta.url)), '..');
+// .dev/browser/ -> the repository root (react consolidation 3.3, 2026-11-13).
+const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const IMAGE = /mcr\.microsoft\.com\/playwright:(v[\d.]+-\w+)/g;
 
 const sources = [
-  ['.github/workflows/ci.yml', 'CI visual job container'],
+  ['.github/workflows/browser.yml', 'CI visual job container'],
   ['.github/workflows/visual-baselines.yml', 'seed workflow container'],
-  ['scripts/linux.sh', 'npm run visual:linux, visual:linux:check and e2e:linux'],
+  ['.dev/browser/linux.sh', 'npm run visual:linux, visual:linux:check and e2e:linux'],
 ];
 
 const found = [];

@@ -25,7 +25,7 @@ async function dismissFirstRun(page: Page) {
 // assets; the next regeneration made it 200 and every spec in this file failed on
 // a `beforeEach` that had nothing to do with what they test.
 const FIXTURE_ICON_COUNT = JSON.parse(
-  readFileSync(new URL('../public/data/icons.json', import.meta.url), 'utf8'),
+  readFileSync(new URL('../../.dev/browser/public/data/icons.json', import.meta.url), 'utf8'),
 ).icons.length;
 const ALL_FIXTURE_ICONS = new RegExp(`${FIXTURE_ICON_COUNT} icons`);
 
