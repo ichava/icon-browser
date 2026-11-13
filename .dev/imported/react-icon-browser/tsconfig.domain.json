@@ -1,0 +1,14 @@
+// The stricter overlay for framework-free code (architecture.md 1.4). Typechecked in CI as
+// its own step, so a vendored component can never make it fail. `lib` has no DOM, so a
+// domain file that reaches for document, window or localStorage does not compile: the
+// compiler-level twin of dependency-cruiser's module-domain-is-plain-ts rule.
+{
+  "extends": "./tsconfig.app.json",
+  "compilerOptions": {
+    "exactOptionalPropertyTypes": true,
+    "lib": ["ES2023", "ESNext.Disposable"],
+    "types": []
+  },
+  "include": ["src/modules/*/domain", "src/modules/*/application"],
+  "exclude": ["src/**/*.test.ts", "src/**/*.test.tsx"]
+}

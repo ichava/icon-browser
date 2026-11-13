@@ -1,0 +1,145 @@
+import { useMemo, useState } from 'react';
+import { Link, router, usePage } from '@inertiajs/react';
+import { HeartIcon } from '@/components/HeartIcon';
+import { IconImage } from '@/components/IconImage';
+import { FlashBanner } from '@/components/FlashBanner';
+import { normalizeRawIcon } from '@/core/propsToCatalog';
+import { snippets, SNIPPET_TABS, toIcon, type RawIcon, type SnippetFormat } from '@/lib/browser';
+import type { SharedProps } from '@/types';
+import { iconPageBase } from '@/core/browserPath';
+
+interface BrowserShowProps extends SharedProps {
+  icon: RawIcon | null;
+  related: RawIcon[];
+}
+
+export default function BrowserShow() {
+  const { props } = usePage<BrowserShowProps>();
+  const [tab, setTab] = useState<SnippetFormat>('svg');
+  const [copied, setCopied] = useState(false);
+
+  const icon = useMemo(() => (props.icon ? toIcon(normalizeRawIcon(props.icon)) : null), [props.icon]);
+  const related = useMemo(
+    () => props.related.map((r) => toIcon(normalizeRawIcon(r))),
+    [props.related],
+  );
+
+  const snippet = useMemo(
+    () => (icon ? snippets.build(tab, icon, { size: 24, unit: 'px', color: null, strokeWidth: 2 }) : ''),
+    [icon, tab],
+  );
+
+  if (!icon) {
+    return (
+      <div className="theme-bg-page theme-text-primary min-h-screen p-8">
+        <p className="theme-text-muted text-sm">Icon not found.</p>
+      </div>
+    );
+  }
+
+  const showBase = iconPageBase(props.ichava);
+
+  // The forked UI's `useCopy` also raised a toast through the browser store. This page mounts
+  // no browser, and the button's own "Copied!" state was always the feedback here.
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(snippet);
+    } catch {
+      return;
+    }
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1500);
+  };
+
+  return (
+    <div className="theme-bg-page theme-text-primary min-h-screen p-8">
+      <div className="mx-auto max-w-5xl">
+        <Link href={props.ichava.routes.browser} className="theme-text-accent theme-link text-sm">
+          ← Back to browser
+        </Link>
+
+        <FlashBanner />
+
+        <div className="mt-4 grid gap-6 md:grid-cols-[280px_1fr]">
+          <div className="theme-bg-card rounded-xl border theme-border flex items-center justify-center p-10">
+            <IconImage icon={icon} size={160} label={icon.name} />
+          </div>
+
+          <div>
+            <h1 className="text-2xl font-semibold">{icon.name}</h1>
+            <p className="theme-text-secondary mt-1 text-sm">
+              {icon.package}
+              {icon.category ? ` · ${icon.category}` : ''} · {icon.variant}
+            </p>
+            <button
+              onClick={() =>
+                router.post(
+                  `${props.ichava.routes.favorites}/${icon.id}/toggle`,
+                  {},
+                  { preserveState: true },
+                )
+              }
+              className="theme-bg-muted theme-text-secondary mt-3 flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium"
+            >
+              <HeartIcon aria-hidden className="size-[13px]" />
+              Toggle favorite
+            </button>
+
+            {icon.tags.length > 0 && (
+              <div className="mt-3 flex flex-wrap gap-1.5">
+                {icon.tags.map((tag) => (
+                  <span key={tag} className="theme-bg-muted rounded px-2 py-0.5 text-xs theme-text-secondary">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
+
+            <div className="mt-6">
+              <div className="flex gap-1">
+                {SNIPPET_TABS.map((t) => (
+                  <button
+                    key={t.id}
+                    onClick={() => setTab(t.id)}
+                    className={`rounded-md px-3 py-1.5 text-xs font-medium theme-transition ${
+                      tab === t.id ? 'theme-bg-accent theme-text-inverse' : 'theme-bg-muted theme-text-secondary'
+                    }`}
+                  >
+                    {t.label}
+                  </button>
+                ))}
+              </div>
+              <pre className="theme-bg-card mt-2 overflow-x-auto rounded-lg border theme-border p-4 text-xs">
+                {snippet}
+              </pre>
+              <button
+                onClick={handleCopy}
+                className="theme-bg-muted mt-2 rounded-md px-3 py-1.5 text-xs font-medium theme-text-secondary"
+              >
+                {copied ? 'Copied!' : 'Copy snippet'}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {related.length > 0 && (
+          <section className="mt-10">
+            <h2 className="text-lg font-semibold">Related</h2>
+            <div className="mt-3 grid grid-cols-4 gap-3 sm:grid-cols-6 md:grid-cols-8">
+              {related.map((rel) => (
+                <Link
+                  key={rel.id}
+                  href={`${showBase}/${rel.id}`}
+                  className="theme-bg-card theme-bg-card-hover rounded-lg border theme-border flex flex-col items-center gap-1 p-3 theme-transition"
+                >
+                  <IconImage icon={rel} size={32} />
+                  <span className="theme-text-muted w-full truncate text-center text-[11px]">{rel.name}</span>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+      </div>
+    </div>
+  );
+}
