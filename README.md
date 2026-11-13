@@ -76,6 +76,7 @@ The docs live in this repository, under [`docs/`](docs/).
 - [REST mode in a non-Inertia app](docs/recipes/rest-mode.md) — the API without the Inertia pages
 - [Grant admin access](docs/recipes/grant-admin-access.md) — one Gate for status and the cache
 - [Turn features off](docs/recipes/turn-features-off.md) — hide what the host does not offer
+- [Work on the browser UI](docs/recipes/frontend-development.md) — dev server with hot reload, checks, e2e and the one build
 
 ### Ecosystem
 

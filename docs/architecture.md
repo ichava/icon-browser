@@ -33,11 +33,18 @@ that repository's built library, vendored under `resources/vendor/react-icon-bro
   radio buttons, toggle, featured icon and `uui-theme.css`) come from
   `@ichava/js-ui-kernel/react`, pinned to `#v0.1.0` (the tree of `bc5120c`). Their old paths are deprecated re-exports.
   The tabs and the dropdown stay local.
-- The standalone demo (`main.tsx`, `StandaloneApp.tsx`, `embedded.tsx`, `components/boot/`) came
-  with the snapshot and is not built here.
-- `.dev/browser/` holds the browser's build plugins, generators and the fixture catalogue its tests
-  read. `.dev/imported/react-icon-browser/` holds the rest of that repository's root files
-  (configs, docs, e2e, the standalone pages). Both are left out of the Composer archive.
+- The standalone demo (`main.tsx`, `StandaloneApp.tsx`, `embedded.tsx`, `components/boot/`) is not
+  shipped. It is the fixture react-icon-browser's Playwright suite drives: `e2e/browser/` holds the
+  specs, their baselines and the two harness pages, which `e2e/browser/vite.config.ts` builds from
+  `resources/js` with a static catalog (`npm run e2e:browser`, `npm run visual`).
+- `.dev/browser/` holds the browser's build plugins, generators, guard scripts and the fixture
+  catalogue its tests read. `.dev/imported/react-icon-browser/` holds the rest of that repository's
+  root files (its docs, configs and manifest). `.dev/`, `e2e/` and the tests are left out of the
+  Composer archive.
+- The layering rules came across too: `.dependency-cruiser.cjs` (`npm run boundaries`, proven able
+  to fail by `npm run check:boundary-rules`) and the stricter `tsconfig.domain.json` for
+  `modules/*/domain` and `application` (`npm run typecheck:domain`). `.github/workflows/browser.yml`
+  runs them, the other guards and the e2e suite on every pull request, and the visual suite weekly.
 
 `resources/js` is also the Inertia adapter around the browser:
 
@@ -87,8 +94,8 @@ baselines of the private Metronic pack) were not imported.
 `sync:react-icon-browser` and `check:consumers` scripts that had only printed where the work
 moved. The one file still read from it, `prepaint.html`, now lives at
 `resources/views/prepaint.html`: the `<x-ichava-icon-browser::prepaint />` component inlines it,
-`npm run build:prepaint` writes it from `resources/js/boot/prepaint.html`, and a Vitest test
-fails while the two differ.
+`npm run build:prod` writes it from `resources/js/boot/prepaint.html` before it builds the bundle
+(`npm run build:prepaint` does it alone), and a Vitest test fails while the two differ.
 
 The look comes with the library: since the 0.1.0 restyle the browser draws Ichava's warm greys,
 the teal `#0e7c66` default accent, a 6px radius, Tabler chrome icons, square tags and tabs, flat
