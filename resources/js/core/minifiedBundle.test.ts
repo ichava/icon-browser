@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
-import { minificationProblems } from './minifiedBundle';
+import { minificationProblems } from '@/test/minifiedBundle';
 
 /**
  * The browser code this public repository ships is fully minified: the page bundle built from
- * resources/js (see `minifiedBundle.ts`). The vendored react-icon-browser build was removed on 2026-11-13.
+ * resources/js (see `test/minifiedBundle.ts`). The vendored react-icon-browser build was removed on 2026-11-13.
  */
 const page = resolve(process.cwd(), 'public/assets/js/inertia-app.js');
 
