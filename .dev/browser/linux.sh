@@ -11,7 +11,7 @@
 # visual job, the seed workflow or @playwright/test.
 set -eu
 
-IMAGE=mcr.microsoft.com/playwright:v1.65.0-noble
+IMAGE=mcr.microsoft.com/playwright:v1.65.1-noble
 mode=${1:?usage: .dev/browser/linux.sh visual-update|visual-check|e2e [playwright args]}
 shift
 
