@@ -143,7 +143,7 @@ jobs:
     # `npm run check:playwright-image` asserts this tag, the seed workflow's and linux.sh's all
     # agree, and that they match @playwright/test. Do not edit one alone.
     container:
-      image: mcr.microsoft.com/playwright:v1.65.0-noble
+      image: mcr.microsoft.com/playwright:v1.65.1-noble
       options: --ipc=host
 
     # A containerised job does NOT inherit the runner's bash default: Actions runs `run:` steps
