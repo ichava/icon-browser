@@ -35,7 +35,7 @@ npm run e2e:browser         # 98 behavioural tests
 npm run visual:linux:check  # 12 screenshots, inside CI's Playwright image (needs Docker)
 ```
 
-Screenshots are compared only in `mcr.microsoft.com/playwright:v1.65.0-noble`; `npm run check:playwright-image` fails when that tag drifts between `browser.yml`, `visual-baselines.yml`, `.dev/browser/linux.sh` and `@playwright/test`. To regenerate baselines for a pull request, dispatch the seeding workflow on its branch; it commits the changed PNGs and comments the drift:
+Screenshots are compared only in `mcr.microsoft.com/playwright:v1.65.1-noble`; `npm run check:playwright-image` fails when that tag drifts between `browser.yml`, `visual-baselines.yml`, `.dev/browser/linux.sh` and `@playwright/test`. To regenerate baselines for a pull request, dispatch the seeding workflow on its branch; it commits the changed PNGs and comments the drift:
 
 ```bash
 gh workflow run visual-baselines.yml --repo ichava/icon-browser --ref <your-branch> -f commit=true

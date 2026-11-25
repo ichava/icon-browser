@@ -45,7 +45,7 @@ jobs:
     # workflow starts producing baselines the gate rejects, and the failure reads as a
     # rendering regression rather than a configuration one.
     container:
-      image: mcr.microsoft.com/playwright:v1.65.0-noble
+      image: mcr.microsoft.com/playwright:v1.65.1-noble
       options: --ipc=host
 
     # A containerised job does NOT inherit the runner's bash default -- Actions runs
