@@ -4,6 +4,10 @@ All notable changes to `ichava/icon-browser` follow [Keep a Changelog](https://k
 
 ## [Unreleased]
 
+### Changed
+
+- **Visual tests run in `mcr.microsoft.com/playwright:v1.65.1-noble` with `@playwright/test ~1.65.1`.** `~1.65.0` already resolved 1.65.1, whose `-noble` image was published after v0.1.0, so the image and the library are moved together in `browser.yml`, `visual-baselines.yml`, `.dev/browser/linux.sh` and `package.json`; `check:playwright-image` checks all four.
+
 ## [0.1.0] - 2026-11-13
 
 First release of `ichava/icon-browser`. The repository is published as a single commit; the 0.1.x tags cut between 2026-10-23 and 2026-11-02 (v0.1.0 to v0.1.1, including the release-please v0.1.1 of 2026-11-02) are folded into this release, and their notes are kept below under *Archived history*.
